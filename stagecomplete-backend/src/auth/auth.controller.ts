@@ -1,13 +1,23 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { LoginDto, RegisterDto } from './dto';
+import { AuthResponseDto, LoginDto, RegisterDto } from './dto';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-  @Post('test-register')
-  testRegister(@Body() registerDto: RegisterDto) {
+  constructor(private authService: AuthService) {}
+
+  @Post('register')
+  async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
+    return await this.authService.register(registerDto);
+  }
+
+  // Endpoint utilitaire pour vérifier si un email existe
+  @Post('check-email')
+  async checkEmail(@Body('email') email: string) {
+    const exists = await this.authService.emailExists(email);
     return {
-      message: 'Validation réussie !',
-      data: registerDto,
+      exists,
+      message: exists ? 'Email déjà utilisé' : 'Email disponible',
     };
   }
 
