@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { JwtService } from '@nestjs/jwt';
 import { Role } from 'generated/prisma';
 import * as bcrypt from 'bcryptjs';
 
@@ -36,6 +37,13 @@ describe('AuthService', () => {
     $transaction: jest.fn(),
   };
 
+  const mockJwtService = {
+    sign: jest.fn(),
+    signAsync: jest.fn(),
+    verify: jest.fn(),
+    verifyAsync: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -43,6 +51,10 @@ describe('AuthService', () => {
         {
           provide: PrismaService,
           useValue: mockPrismaService,
+        },
+        {
+          provide: JwtService,
+          useValue: mockJwtService,
         },
       ],
     }).compile();
@@ -67,6 +79,7 @@ describe('AuthService', () => {
       // Setup mocks
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       (mockedBcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
+      mockJwtService.signAsync.mockResolvedValue('mock-jwt-token');
 
       const mockUser = {
         id: '1',
@@ -123,6 +136,7 @@ describe('AuthService', () => {
       // Setup
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       (mockedBcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
+      mockJwtService.signAsync.mockResolvedValue('mock-jwt-token');
 
       mockPrismaService.$transaction.mockImplementation(async (callback) => {
         return {

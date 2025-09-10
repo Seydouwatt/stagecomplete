@@ -4,13 +4,23 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { RegisterDto, AuthResponseDto } from './dto';
+import { RegisterDto, AuthResponseDto, JwtPayload } from './dto';
 import * as bcrypt from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
+// Interface pour le payload JWT
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
+  /**
+   *  Méthode pour enregistrer un utilisateur
+   * @param registerDto
+   * @returns
+   */
   async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
     const { email, password, name, role } = registerDto;
 
@@ -99,9 +109,16 @@ export class AuthService {
         );
       }
 
-      // 5. Formater la réponse (pas de JWT pour l'instant)
+      // 5. Générer le JWT token
+      const token = await this.generateJwtToken({
+        sub: completeUser.id,
+        email: completeUser.email,
+        role: completeUser.role,
+      });
+
+      // 6. Formater la réponse (pas de JWT pour l'instant)
       return {
-        access_token: 'temp_token', // À remplacer par JWT dans AUTH-004
+        access_token: token, // À remplacer par JWT dans AUTH-004
         user: {
           id: completeUser.id,
           email: completeUser.email,
@@ -138,6 +155,67 @@ export class AuthService {
     }
   }
 
+  // ==========  MÉTHODES JWT ==========
+
+  /**
+   * Génère un token JWT pour un utilisateur
+   */
+  async generateJwtToken(
+    payload: Omit<JwtPayload, 'iat' | 'exp'>,
+  ): Promise<string> {
+    return this.jwtService.signAsync(payload);
+  }
+
+  /**
+   * Vérifie et decode un token JWT
+   */
+  async verifyJwtToken(token: string): Promise<JwtPayload> {
+    try {
+      return await this.jwtService.verifyAsync(token);
+    } catch (error) {
+      throw new Error('Token invalide ou expiré');
+    }
+  }
+
+  /**
+   * Génère un refresh token (durée plus longue)
+   */
+  async generateRefreshToken(userId: string): Promise<string> {
+    return this.jwtService.signAsync(
+      { sub: userId, type: 'refresh' },
+      { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' },
+    );
+  }
+
+  /**
+   * Récupère un utilisateur depuis un token JWT
+   */
+  async getUserFromToken(token: string) {
+    try {
+      const payload = await this.verifyJwtToken(token);
+
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.sub },
+        include: {
+          profile: {
+            include: {
+              artist: true,
+              venue: true,
+            },
+          },
+        },
+      });
+
+      if (!user) {
+        throw new Error('Utilisateur non trouvé');
+      }
+
+      return user;
+    } catch (error) {
+      throw new Error('Token invalide');
+    }
+  }
+
   // Méthode utilitaire pour vérifier si un email existe
   async emailExists(email: string): Promise<boolean> {
     const user = await this.prisma.user.findUnique({
@@ -157,5 +235,20 @@ export class AuthService {
     hashedPassword: string,
   ): Promise<boolean> {
     return bcrypt.compare(password, hashedPassword);
+  }
+
+  // Méthode pour trouver un utilisateur par ID (pour JWT strategy)
+  async findUserById(userId: string) {
+    return this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        profile: {
+          include: {
+            artist: true,
+            venue: true,
+          },
+        },
+      },
+    });
   }
 }

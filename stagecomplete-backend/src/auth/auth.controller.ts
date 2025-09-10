@@ -1,6 +1,13 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { AuthResponseDto, LoginDto, RegisterDto } from './dto';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  AuthResponseDto,
+  LoginDto,
+  RegisterDto,
+  VerifyTokenResponseDto,
+} from './dto';
 import { AuthService } from './auth.service';
+import { AuthGuard } from '@nestjs/passport';
+import { AuthenticatedUser, GetUser } from './decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -9,6 +16,34 @@ export class AuthController {
   @Post('register')
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
     return await this.authService.register(registerDto);
+  }
+
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  async getProfile(@GetUser() user: AuthenticatedUser) {
+    return {
+      message: 'Profil récupéré avec succès',
+      user: user,
+    };
+  }
+
+  @Post('verify-token')
+  async verifyToken(
+    @Body('token') token: string,
+  ): Promise<VerifyTokenResponseDto> {
+    try {
+      const payload = await this.authService.verifyJwtToken(token);
+      return {
+        valid: true,
+        payload: payload,
+        message: 'Token valide',
+      };
+    } catch (error) {
+      return {
+        valid: false,
+        message: 'Token invalide ou expiré',
+      };
+    }
   }
 
   // Endpoint utilitaire pour vérifier si un email existe
