@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   ConflictException,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -174,6 +175,132 @@ describe('AuthService', () => {
 
       // Assert
       expect(mockedBcrypt.hash).toHaveBeenCalledWith('Password123!', 12);
+    });
+  });
+
+  // Ajouter après les tests register existants
+
+  describe('login', () => {
+    const mockLoginDto = {
+      email: 'test@example.com',
+      password: 'Password123!',
+    };
+
+    const mockUser = {
+      id: '1',
+      email: 'test@example.com',
+      password: 'hashedPassword',
+      role: Role.ARTIST,
+      profile: {
+        id: '1',
+        name: 'John Doe',
+        bio: 'Artist bio',
+        avatar: null,
+        location: null,
+        website: null,
+        socialLinks: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        artist: {},
+        venue: null,
+      },
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    it('should successfully login with valid credentials', async () => {
+      // Setup mocks
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+      (mockedBcrypt.compare as jest.Mock).mockResolvedValue(true);
+      service.generateJwtToken = jest.fn().mockResolvedValue('jwt-token');
+
+      // Execute
+      const result = await service.login(mockLoginDto);
+
+      // Assertions
+      expect(result).toHaveProperty('access_token', 'jwt-token');
+      expect(result).toHaveProperty('user');
+      expect(result.user.email).toBe('test@example.com');
+      expect(result.user.role).toBe(Role.ARTIST);
+      expect(result.message).toContain('Bienvenue');
+      expect(result.message).toContain('John Doe');
+    });
+
+    it('should throw UnauthorizedException if user not found', async () => {
+      // Setup: Utilisateur n'existe pas
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+
+      // Execute & Assert
+      await expect(service.login(mockLoginDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(service.login(mockLoginDto)).rejects.toThrow(
+        'Email ou mot de passe incorrect',
+      );
+    });
+
+    it('should throw UnauthorizedException if password is incorrect', async () => {
+      // Setup: Utilisateur existe mais mauvais mot de passe
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+      (mockedBcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+      // Execute & Assert
+      await expect(service.login(mockLoginDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      await expect(service.login(mockLoginDto)).rejects.toThrow(
+        'Email ou mot de passe incorrect',
+      );
+    });
+
+    it('should call password verification with correct parameters', async () => {
+      // Setup
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+      (mockedBcrypt.compare as jest.Mock).mockResolvedValue(true);
+      service.generateJwtToken = jest.fn().mockResolvedValue('jwt-token');
+
+      // Execute
+      await service.login(mockLoginDto);
+
+      // Assert
+      expect(mockedBcrypt.compare).toHaveBeenCalledWith(
+        'Password123!',
+        'hashedPassword',
+      );
+    });
+
+    it('should generate JWT token with correct payload', async () => {
+      // Setup
+      mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
+      (mockedBcrypt.compare as jest.Mock).mockResolvedValue(true);
+      const generateTokenSpy = jest
+        .spyOn(service, 'generateJwtToken')
+        .mockResolvedValue('jwt-token');
+
+      // Execute
+      await service.login(mockLoginDto);
+
+      // Assert
+      expect(generateTokenSpy).toHaveBeenCalledWith({
+        sub: '1',
+        email: 'test@example.com',
+        role: Role.ARTIST,
+      });
+    });
+
+    it('should throw InternalServerErrorException if user has no profile', async () => {
+      // Setup: Utilisateur sans profil
+      const userWithoutProfile = {
+        ...mockUser,
+        profile: null,
+      };
+      mockPrismaService.user.findUnique.mockResolvedValue(userWithoutProfile);
+      (mockedBcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      // Execute & Assert
+      await expect(service.login(mockLoginDto)).rejects.toThrow(
+        InternalServerErrorException,
+      );
     });
   });
 

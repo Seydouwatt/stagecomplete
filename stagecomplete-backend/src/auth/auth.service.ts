@@ -2,9 +2,10 @@ import {
   Injectable,
   ConflictException,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { RegisterDto, AuthResponseDto, JwtPayload } from './dto';
+import { RegisterDto, AuthResponseDto, JwtPayload, LoginDto } from './dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 // Interface pour le payload JWT
@@ -151,6 +152,96 @@ export class AuthService {
       // Erreur générique pour l'utilisateur
       throw new InternalServerErrorException(
         'Une erreur est survenue lors de la création du compte. Veuillez réessayer.',
+      );
+    }
+  }
+
+  /**
+   * Méthode pour se connecter un utilisateur
+   * @param loginDto
+   * @returns
+   * @throws UnauthorizedException
+   */
+  async login(loginDto: LoginDto): Promise<AuthResponseDto> {
+    const { email, password } = loginDto;
+
+    try {
+      // 1. Chercher l'utilisateur par email avec toutes ses relations
+      const user = await this.prisma.user.findUnique({
+        where: { email },
+        include: {
+          profile: {
+            include: {
+              artist: true,
+              venue: true,
+            },
+          },
+        },
+      });
+
+      // 2. Vérifier que l'utilisateur existe
+      if (!user) {
+        throw new UnauthorizedException('Email ou mot de passe incorrect');
+      }
+
+      // 3. Vérifier le mot de passe
+      const isPasswordValid = await this.verifyPassword(
+        password,
+        user.password,
+      );
+      if (!isPasswordValid) {
+        throw new UnauthorizedException('Email ou mot de passe incorrect');
+      }
+
+      // 4. Vérifier que l'utilisateur a un profil
+      if (!user.profile) {
+        throw new InternalServerErrorException(
+          'Profil utilisateur introuvable',
+        );
+      }
+
+      // 5. Générer le JWT token
+      const token = await this.generateJwtToken({
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      // 6. Retourner la réponse avec token et informations utilisateur
+      return {
+        access_token: token,
+        user: {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          profile: {
+            id: user.profile.id,
+            name: user.profile.name,
+            bio: user.profile.bio ?? undefined,
+            avatar: user.profile.avatar ?? undefined,
+            location: user.profile.location ?? undefined,
+            website: user.profile.website ?? undefined,
+            socialLinks: user.profile.socialLinks,
+            createdAt: user.profile.createdAt,
+            updatedAt: user.profile.updatedAt,
+          },
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        },
+        message: `Bienvenue ${user.profile.name} ! Connexion réussie.`,
+      };
+    } catch (error) {
+      // Gestion des erreurs spécifiques
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+
+      // Log de l'erreur pour debugging
+      console.error('Erreur lors de la connexion:', error);
+
+      // Erreur générique pour l'utilisateur (ne pas leak d'infos)
+      throw new InternalServerErrorException(
+        'Une erreur est survenue lors de la connexion. Veuillez réessayer.',
       );
     }
   }

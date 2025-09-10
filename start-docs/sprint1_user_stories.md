@@ -11,19 +11,19 @@
 **Afin de** avoir une base solide pour développer l'API
 
 **Critères d'acceptation :**
-- [ ] Projet NestJS créé avec TypeScript
-- [ ] Prisma ORM configuré avec PostgreSQL
-- [ ] Variables d'environnement (.env) setup
-- [ ] Base de données connectée et accessible
-- [ ] Premier modèle User créé et migré
-- [ ] API accessible sur http://localhost:3000
+- [x] Projet NestJS créé avec TypeScript
+- [x] Prisma ORM configuré avec PostgreSQL
+- [x] Variables d'environnement (.env) setup
+- [x] Base de données connectée et accessible
+- [x] Premier modèle User créé et migré
+- [x] API accessible sur http://localhost:3000
 - [ ] Documentation Swagger basique générée
 
 **Issues techniques :**
-- [ ] **SETUP-001**: Initialiser projet NestJS + dépendances
-- [ ] **SETUP-002**: Configurer Prisma + PostgreSQL local/cloud
-- [ ] **SETUP-003**: Créer modèles Prisma initiaux
-- [ ] **SETUP-004**: Setup variables d'environnement
+- [x] **SETUP-001**: Initialiser projet NestJS + dépendances
+- [x] **SETUP-002**: Configurer Prisma + PostgreSQL local/cloud
+- [x] **SETUP-003**: Créer modèles Prisma initiaux
+- [x] **SETUP-004**: Setup variables d'environnement
 - [ ] **SETUP-005**: Premier deploy staging Render
 
 ---
@@ -62,19 +62,19 @@
 - [ ] Page d'inscription accessible via /register
 - [ ] Formulaire avec email, password, nom, rôle (ARTIST/VENUE)
 - [ ] Validation côté client (email valide, mot de passe 6+ caractères)
-- [ ] Validation côté serveur identique
-- [ ] Email unique enforced en base
-- [ ] Mot de passe hashé avec bcrypt
-- [ ] Profil par défaut créé automatiquement
-- [ ] Token JWT retourné après inscription
+- [x] Validation côté serveur identique
+- [x] Email unique enforced en base
+- [x] Mot de passe hashé avec bcrypt
+- [x] Profil par défaut créé automatiquement
+- [x] Token JWT retourné après inscription
 - [ ] Redirection vers dashboard selon rôle
-- [ ] Messages d'erreur clairs (email existe, validation failed)
+- [x] Messages d'erreur clairs (email existe, validation failed)
 
 **Issues techniques :**
-- [ ] **AUTH-001**: Créer DTO RegisterDto avec validation
-- [ ] **AUTH-002**: Implémenter endpoint POST /auth/register
-- [ ] **AUTH-003**: Hash password avec bcrypt
-- [ ] **AUTH-004**: Générer JWT token après création
+- [x] **AUTH-001**: Créer DTO RegisterDto avec validation
+- [x] **AUTH-002**: Implémenter endpoint POST /auth/register
+- [x] **AUTH-003**: Hash password avec bcrypt
+- [x] **AUTH-004**: Générer JWT token après création
 - [ ] **AUTH-005**: Créer page Register React avec validation
 - [ ] **AUTH-006**: Intégrer formulaire avec API
 - [ ] **AUTH-007**: Gérer états loading/error/success
@@ -115,20 +115,20 @@
 **Afin de** sécuriser l'accès aux données
 
 **Critères d'acceptation :**
-- [ ] JWT strategy Passport configurée
+- [x] JWT strategy Passport configurée
 - [ ] Middleware @UseGuards(JwtAuthGuard) fonctionnel
-- [ ] Routes protégées retournent 401 si pas de token
+- [x] Routes protégées retournent 401 si pas de token
 - [ ] User context accessible dans controllers (@GetUser())
-- [ ] Token validation et parsing automatiques
-- [ ] Gestion erreurs token expiré/invalide
+- [x] Token validation et parsing automatiques
+- [x] Gestion erreurs token expiré/invalide
 - [ ] Documentation endpoints protégés
 
 **Issues techniques :**
-- [ ] **AUTH-015**: Configurer Passport JWT strategy
+- [x] **AUTH-015**: Configurer Passport JWT strategy
 - [ ] **AUTH-016**: Créer JwtAuthGuard
 - [ ] **AUTH-017**: Implémenter décorateur @GetUser()
 - [ ] **AUTH-018**: Tester protection routes
-- [ ] **AUTH-019**: Gérer erreurs JWT (expired, invalid)
+- [x] **AUTH-019**: Gérer erreurs JWT (expired, invalid)
 
 ---
 
@@ -233,19 +233,19 @@
 **Afin d'** afficher et modifier les données utilisateur
 
 **Critères d'acceptation :**
-- [ ] GET /auth/me retourne user + profile complet
+- [x] GET /auth/me retourne user + profile complet
 - [ ] PUT /auth/profile permet mise à jour profil
-- [ ] Validation des données côté serveur
-- [ ] Gestion erreurs 400/401/404
-- [ ] Response format consistant
+- [x] Validation des données côté serveur
+- [x] Gestion erreurs 400/401/404
+- [x] Response format consistant
 - [ ] Documentation Swagger endpoints
 
 **Issues techniques :**
-- [ ] **API-001**: Endpoint GET /auth/me
+- [x] **API-001**: Endpoint GET /auth/me
 - [ ] **API-002**: Endpoint PUT /auth/profile  
 - [ ] **API-003**: DTO UpdateProfileDto avec validation
 - [ ] **API-004**: Service ProfileService pour logique métier
-- [ ] **API-005**: Tests unitaires controllers
+- [x] **API-005**: Tests unitaires controllers
 
 ---
 

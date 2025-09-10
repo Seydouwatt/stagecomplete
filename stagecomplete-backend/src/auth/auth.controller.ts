@@ -18,6 +18,11 @@ export class AuthController {
     return await this.authService.register(registerDto);
   }
 
+  @Post('login')
+  async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
+    return await this.authService.login(loginDto);
+  }
+
   @Get('me')
   @UseGuards(AuthGuard('jwt'))
   async getProfile(@GetUser() user: AuthenticatedUser) {
