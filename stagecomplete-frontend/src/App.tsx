@@ -9,6 +9,7 @@ import { ProtectedRoute } from "./components/auth";
 import { MainLayout } from "./components/layout";
 import { Login, Register } from "./pages/auth";
 import { ArtistDashboard, VenueDashboard } from "./pages/dashboard";
+import { Profile } from "./pages/profile";
 import { useAuthStore } from "./stores/authStore";
 import { ROUTES } from "./constants";
 
@@ -168,7 +169,7 @@ function App() {
               path="/profile"
               element={
                 <ProtectedRoute>
-                  <ComingSoon title="Mon Profil" />
+                  <Profile />
                 </ProtectedRoute>
               }
             />

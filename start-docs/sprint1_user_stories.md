@@ -1,16 +1,19 @@
 # SPRINT 1 - USER STORIES & ISSUES
-## *Foundation & Authentication (Jours 1-7)*
+
+## _Foundation & Authentication (Jours 1-7)_
 
 ---
 
 ## 🏗️ **EPIC 1: PROJECT SETUP**
 
 ### **US-001: Setup Backend Infrastructure**
+
 **En tant que** développeur  
 **Je veux** configurer l'infrastructure backend  
 **Afin de** avoir une base solide pour développer l'API
 
 **Critères d'acceptation :**
+
 - [x] Projet NestJS créé avec TypeScript
 - [x] Prisma ORM configuré avec PostgreSQL
 - [x] Variables d'environnement (.env) setup
@@ -20,20 +23,23 @@
 - [x] Documentation Swagger basique générée
 
 **Issues techniques :**
+
 - [x] **SETUP-001**: Initialiser projet NestJS + dépendances
 - [x] **SETUP-002**: Configurer Prisma + PostgreSQL local/cloud
 - [x] **SETUP-003**: Créer modèles Prisma initiaux
 - [x] **SETUP-004**: Setup variables d'environnement
-- [x] **SETUP-005**: Premier deploy staging Render
+- [ ] **SETUP-005**: Premier deploy staging Render
 
 ---
 
 ### **US-002: Setup Frontend Infrastructure**
+
 **En tant que** développeur  
 **Je veux** configurer l'infrastructure frontend  
 **Afin de** avoir une base moderne et maintenable
 
 **Critères d'acceptation :**
+
 - [x] Projet React + Vite + TypeScript créé
 - [x] TailwindCSS + DaisyUI configurés
 - [x] Routing React Router v6 setup
@@ -43,6 +49,7 @@
 - [x] Design system DaisyUI opérationnel
 
 **Issues techniques :**
+
 - [x] **SETUP-006**: Initialiser React + Vite + TypeScript
 - [x] **SETUP-007**: Configurer TailwindCSS + DaisyUI
 - [x] **SETUP-008**: Setup React Router + layouts
@@ -54,11 +61,13 @@
 ## 🔐 **EPIC 2: USER AUTHENTICATION**
 
 ### **US-003: User Registration**
+
 **En tant qu'** utilisateur non connecté  
 **Je veux** créer un compte  
 **Afin de** accéder à la plateforme selon mon rôle
 
 **Critères d'acceptation :**
+
 - [x] Page d'inscription accessible via /register
 - [x] Formulaire avec email, password, nom, rôle (ARTIST/VENUE)
 - [x] Validation côté client (email valide, mot de passe 6+ caractères)
@@ -71,6 +80,7 @@
 - [x] Messages d'erreur clairs (email existe, validation failed)
 
 **Issues techniques :**
+
 - [x] **AUTH-001**: Créer DTO RegisterDto avec validation
 - [x] **AUTH-002**: Implémenter endpoint POST /auth/register
 - [x] **AUTH-003**: Hash password avec bcrypt
@@ -82,11 +92,13 @@
 ---
 
 ### **US-004: User Login**
+
 **En tant qu'** utilisateur avec compte  
 **Je veux** me connecter  
 **Afin d'** accéder à mon espace personnalisé
 
 **Critères d'acceptation :**
+
 - [x] Page de connexion accessible via /login
 - [x] Formulaire avec email et password
 - [x] Validation côté client (email valide, champs requis)
@@ -99,6 +111,7 @@
 - [x] Link vers page Register
 
 **Issues techniques :**
+
 - [x] **AUTH-008**: Créer DTO LoginDto avec validation
 - [x] **AUTH-009**: Implémenter endpoint POST /auth/login
 - [x] **AUTH-010**: Vérifier password avec bcrypt.compare
@@ -110,11 +123,13 @@
 ---
 
 ### **US-005: JWT Authentication Middleware**
+
 **En tant que** développeur  
 **Je veux** protéger les routes API  
 **Afin de** sécuriser l'accès aux données
 
 **Critères d'acceptation :**
+
 - [x] JWT strategy Passport configurée
 - [x] Middleware @UseGuards(JwtAuthGuard) fonctionnel
 - [x] Routes protégées retournent 401 si pas de token
@@ -124,6 +139,7 @@
 - [ ] Documentation endpoints protégés
 
 **Issues techniques :**
+
 - [x] **AUTH-015**: Configurer Passport JWT strategy
 - [x] **AUTH-016**: Créer JwtAuthGuard
 - [x] **AUTH-017**: Implémenter décorateur @GetUser()
@@ -133,11 +149,13 @@
 ---
 
 ### **US-006: Session Management Frontend**
+
 **En tant qu'** utilisateur connecté  
 **Je veux** que ma session persiste  
 **Afin de** ne pas me reconnecter à chaque visite
 
 **Critères d'acceptation :**
+
 - [x] Session sauvegardée automatiquement
 - [x] App charge session au démarrage
 - [x] Token attaché automatiquement aux requêtes API
@@ -147,6 +165,7 @@
 - [x] Loading state pendant vérification session
 
 **Issues techniques :**
+
 - [x] **AUTH-020**: Configurer zustand persist middleware
 - [x] **AUTH-021**: Créer axios interceptor pour token
 - [x] **AUTH-022**: Implémenter auto-refresh token logic
@@ -158,11 +177,13 @@
 ## 🎨 **EPIC 3: USER INTERFACE FOUNDATION**
 
 ### **US-007: Main Layout & Navigation**
+
 **En tant qu'** utilisateur connecté  
 **Je veux** naviguer facilement dans l'app  
 **Afin d'** accéder aux différentes fonctionnalités
 
 **Critères d'acceptation :**
+
 - [x] Header fixe avec logo StageComplete
 - [x] Navigation différente selon rôle (ARTIST/VENUE)
 - [x] Menu utilisateur avec photo/initiales + dropdown
@@ -173,6 +194,7 @@
 - [x] Logout fonctionnel depuis header
 
 **Issues techniques :**
+
 - [x] **UI-001**: Créer composant Header avec logo
 - [x] **UI-002**: Implémenter user dropdown menu
 - [x] **UI-003**: Créer Sidebar avec navigation rôle-based
@@ -182,11 +204,13 @@
 ---
 
 ### **US-008: Dashboard Landing Pages**
+
 **En tant qu'** utilisateur connecté  
 **Je veux** voir un dashboard adapté à mon rôle  
 **Afin d'** avoir une vue d'ensemble de mon activité
 
 **Critères d'acceptation :**
+
 - [x] Dashboard artiste avec statistiques basiques
 - [x] Dashboard venue avec overview
 - [x] Redirection automatique selon rôle après login
@@ -196,6 +220,7 @@
 - [x] Design cohérent et professionnel
 
 **Issues techniques :**
+
 - [x] **UI-006**: Créer page Dashboard Artist
 - [x] **UI-007**: Créer page Dashboard Venue
 - [x] **UI-008**: Implémenter redirection role-based
@@ -205,11 +230,13 @@
 ---
 
 ### **US-009: Basic Profile Display**
+
 **En tant qu'** utilisateur connecté  
 **Je veux** voir mes informations de profil  
 **Afin de** vérifier mes données actuelles
 
 **Critères d'acceptation :**
+
 - [x] Page profil accessible depuis navigation
 - [x] Affichage nom, email, rôle
 - [x] Placeholder pour photo de profil
@@ -218,6 +245,7 @@
 - [x] Design card cohérent avec theme
 
 **Issues techniques :**
+
 - [x] **UI-011**: Créer page Profile basique
 - [x] **UI-012**: Composant ProfileCard
 - [x] **UI-013**: Gestion affichage données manquantes
@@ -228,33 +256,38 @@
 ## 🔄 **EPIC 4: API FOUNDATION**
 
 ### **US-010: User Profile API**
+
 **En tant que** frontend developer  
 **Je veux** des endpoints pour gérer les profils  
 **Afin d'** afficher et modifier les données utilisateur
 
 **Critères d'acceptation :**
+
 - [x] GET /auth/me retourne user + profile complet
-- [x] PUT /auth/profile permet mise à jour profil
-- [x] Validation des données côté serveur
-- [x] Gestion erreurs 400/401/404
-- [x] Response format consistant
-- [x] Documentation Swagger endpoints
+- [ ] PUT /auth/profile permet mise à jour profil
+- [ ] Validation des données côté serveur
+- [ ] Gestion erreurs 400/401/404
+- [ ] Response format consistant
+- [ ] Documentation Swagger endpoints
 
 **Issues techniques :**
+
 - [x] **API-001**: Endpoint GET /auth/me
-- [x] **API-002**: Endpoint PUT /auth/profile  
-- [x] **API-003**: DTO UpdateProfileDto avec validation
-- [x] **API-004**: Service ProfileService pour logique métier
-- [x] **API-005**: Tests unitaires controllers
+- [ ] **API-002**: Endpoint PUT /auth/profile
+- [ ] **API-003**: DTO UpdateProfileDto avec validation
+- [ ] **API-004**: Service ProfileService pour logique métier
+- [ ] **API-005**: Tests unitaires controllers
 
 ---
 
 ### **US-011: Error Handling & Validation**
+
 **En tant qu'** utilisateur  
 **Je veux** des messages d'erreur clairs  
 **Afin de** comprendre ce qui ne va pas
 
 **Critères d'acceptation :**
+
 - [ ] Messages d'erreur en français et explicites
 - [ ] Validation côté client avec feedback visuel
 - [ ] Validation côté serveur avec messages détaillés
@@ -263,6 +296,7 @@
 - [ ] Toast notifications pour succès/erreurs
 
 **Issues techniques :**
+
 - [ ] **ERROR-001**: Global exception filter NestJS
 - [ ] **ERROR-002**: Messages erreur personnalisés
 - [ ] **ERROR-003**: Validation pipe globale
@@ -274,11 +308,13 @@
 ## 🧪 **EPIC 5: TESTING & DEPLOYMENT**
 
 ### **US-012: Local Development Setup**
+
 **En tant que** développeur  
 **Je veux** un environnement de dev stable  
 **Afin de** développer efficacement
 
 **Critères d'acceptation :**
+
 - [ ] Base de données locale setup
 - [ ] Hot reload fonctionnel front et back
 - [ ] Variables d'environnement bien configurées
@@ -287,6 +323,7 @@
 - [ ] Seed data pour tests locaux
 
 **Issues techniques :**
+
 - [ ] **DEV-001**: Docker compose pour PostgreSQL local
 - [ ] **DEV-002**: Scripts package.json optimisés
 - [ ] **DEV-003**: Seed script pour données test
@@ -296,11 +333,13 @@
 ---
 
 ### **US-013: Staging Deployment**
+
 **En tant que** développeur  
 **Je veux** déployer sur staging  
 **Afin de** tester en conditions réelles
 
 **Critères d'acceptation :**
+
 - [ ] Backend déployé sur Render
 - [ ] Frontend déployé sur Vercel/Netlify
 - [ ] Base de données cloud configurée
@@ -309,6 +348,7 @@
 - [ ] Monitoring basique erreurs
 
 **Issues techniques :**
+
 - [ ] **DEPLOY-001**: Config Render pour backend
 - [ ] **DEPLOY-002**: Config Vercel pour frontend
 - [ ] **DEPLOY-003**: PostgreSQL cloud (Supabase/Railway)
@@ -320,6 +360,7 @@
 ## ✅ **DEFINITION OF DONE - SPRINT 1**
 
 ### **Critères globaux :**
+
 - [ ] **Fonctionnel**: Auth flow complet register → login → dashboard
 - [ ] **Technique**: Code review passé, pas de debt majeure
 - [ ] **Qualité**: Responsive design, gestion erreurs
@@ -328,6 +369,7 @@
 - [ ] **Testé**: Happy path testé end-to-end
 
 ### **User Acceptance Testing :**
+
 - [ ] Un nouvel utilisateur peut créer un compte artiste
 - [ ] Un nouvel utilisateur peut créer un compte venue
 - [ ] Un utilisateur peut se connecter avec ses credentials
@@ -341,21 +383,24 @@
 ## 📊 **ESTIMATION & PRIORITÉS**
 
 ### **MUST HAVE (Critique) :**
+
 - US-001, US-002: Setup projects (8h)
 - US-003, US-004: Auth register/login (12h)
 - US-005, US-006: JWT security (8h)
 - US-007, US-008: Basic UI layout (10h)
 
 ### **SHOULD HAVE (Important) :**
+
 - US-009: Profile display (4h)
 - US-010: Profile API (6h)
 - US-011: Error handling (6h)
 
 ### **COULD HAVE (Nice to have) :**
+
 - US-012: Dev environment (4h)
 - US-013: Staging deployment (6h)
 
-### **TOTAL ESTIMATION: ~64h = 8 jours** *(avec votre expérience, réalisable en 7 jours)*
+### **TOTAL ESTIMATION: ~64h = 8 jours** _(avec votre expérience, réalisable en 7 jours)_
 
 ---
 
