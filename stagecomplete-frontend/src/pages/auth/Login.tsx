@@ -30,7 +30,6 @@ export const Login: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   });

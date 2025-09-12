@@ -34,20 +34,20 @@
 **Afin de** avoir une base moderne et maintenable
 
 **Critères d'acceptation :**
-- [ ] Projet React + Vite + TypeScript créé
-- [ ] TailwindCSS + DaisyUI configurés
-- [ ] Routing React Router v6 setup
-- [ ] Store Zustand + persistence configuré
-- [ ] Build et dev server fonctionnels
-- [ ] App accessible sur http://localhost:5173
-- [ ] Design system DaisyUI opérationnel
+- [x] Projet React + Vite + TypeScript créé
+- [x] TailwindCSS + DaisyUI configurés
+- [x] Routing React Router v6 setup
+- [x] Store Zustand + persistence configuré
+- [x] Build et dev server fonctionnels
+- [x] App accessible sur http://localhost:5173
+- [x] Design system DaisyUI opérationnel
 
 **Issues techniques :**
-- [ ] **SETUP-006**: Initialiser React + Vite + TypeScript
-- [ ] **SETUP-007**: Configurer TailwindCSS + DaisyUI
-- [ ] **SETUP-008**: Setup React Router + layouts
-- [ ] **SETUP-009**: Configurer Zustand store structure
-- [ ] **SETUP-010**: Setup utils et services API
+- [x] **SETUP-006**: Initialiser React + Vite + TypeScript
+- [x] **SETUP-007**: Configurer TailwindCSS + DaisyUI
+- [x] **SETUP-008**: Setup React Router + layouts
+- [x] **SETUP-009**: Configurer Zustand store structure
+- [x] **SETUP-010**: Setup utils et services API
 
 ---
 
@@ -59,15 +59,15 @@
 **Afin de** accéder à la plateforme selon mon rôle
 
 **Critères d'acceptation :**
-- [ ] Page d'inscription accessible via /register
-- [ ] Formulaire avec email, password, nom, rôle (ARTIST/VENUE)
-- [ ] Validation côté client (email valide, mot de passe 6+ caractères)
+- [x] Page d'inscription accessible via /register
+- [x] Formulaire avec email, password, nom, rôle (ARTIST/VENUE)
+- [x] Validation côté client (email valide, mot de passe 6+ caractères)
 - [x] Validation côté serveur identique
 - [x] Email unique enforced en base
 - [x] Mot de passe hashé avec bcrypt
 - [x] Profil par défaut créé automatiquement
 - [x] Token JWT retourné après inscription
-- [ ] Redirection vers dashboard selon rôle
+- [x] Redirection vers dashboard selon rôle
 - [x] Messages d'erreur clairs (email existe, validation failed)
 
 **Issues techniques :**
@@ -75,9 +75,9 @@
 - [x] **AUTH-002**: Implémenter endpoint POST /auth/register
 - [x] **AUTH-003**: Hash password avec bcrypt
 - [x] **AUTH-004**: Générer JWT token après création
-- [ ] **AUTH-005**: Créer page Register React avec validation
-- [ ] **AUTH-006**: Intégrer formulaire avec API
-- [ ] **AUTH-007**: Gérer états loading/error/success
+- [x] **AUTH-005**: Créer page Register React avec validation
+- [x] **AUTH-006**: Intégrer formulaire avec API
+- [x] **AUTH-007**: Gérer états loading/error/success
 
 ---
 
@@ -87,25 +87,25 @@
 **Afin d'** accéder à mon espace personnalisé
 
 **Critères d'acceptation :**
-- [ ] Page de connexion accessible via /login
-- [ ] Formulaire avec email et password
-- [ ] Validation côté client (email valide, champs requis)
-- [ ] Authentification sécurisée côté serveur
-- [ ] JWT token retourné si credentials valides
-- [ ] Session sauvegardée localement (localStorage)
-- [ ] Redirection vers dashboard après connexion
-- [ ] Message d'erreur si credentials invalides
-- [ ] Bouton "show/hide password"
-- [ ] Link vers page Register
+- [x] Page de connexion accessible via /login
+- [x] Formulaire avec email et password
+- [x] Validation côté client (email valide, champs requis)
+- [x] Authentification sécurisée côté serveur
+- [x] JWT token retourné si credentials valides
+- [x] Session sauvegardée localement (localStorage)
+- [x] Redirection vers dashboard après connexion
+- [x] Message d'erreur si credentials invalides
+- [x] Bouton "show/hide password"
+- [x] Link vers page Register
 
 **Issues techniques :**
-- [ ] **AUTH-008**: Créer DTO LoginDto avec validation
-- [ ] **AUTH-009**: Implémenter endpoint POST /auth/login
-- [ ] **AUTH-010**: Vérifier password avec bcrypt.compare
-- [ ] **AUTH-011**: Retourner JWT + user data
-- [ ] **AUTH-012**: Créer page Login React
-- [ ] **AUTH-013**: Intégrer avec Zustand store
-- [ ] **AUTH-014**: Persistance session avec zustand/persist
+- [x] **AUTH-008**: Créer DTO LoginDto avec validation
+- [x] **AUTH-009**: Implémenter endpoint POST /auth/login
+- [x] **AUTH-010**: Vérifier password avec bcrypt.compare
+- [x] **AUTH-011**: Retourner JWT + user data
+- [x] **AUTH-012**: Créer page Login React
+- [x] **AUTH-013**: Intégrer avec Zustand store
+- [x] **AUTH-014**: Persistance session avec zustand/persist
 
 ---
 
@@ -116,18 +116,18 @@
 
 **Critères d'acceptation :**
 - [x] JWT strategy Passport configurée
-- [ ] Middleware @UseGuards(JwtAuthGuard) fonctionnel
+- [x] Middleware @UseGuards(JwtAuthGuard) fonctionnel
 - [x] Routes protégées retournent 401 si pas de token
-- [ ] User context accessible dans controllers (@GetUser())
+- [x] User context accessible dans controllers (@GetUser())
 - [x] Token validation et parsing automatiques
 - [x] Gestion erreurs token expiré/invalide
 - [ ] Documentation endpoints protégés
 
 **Issues techniques :**
 - [x] **AUTH-015**: Configurer Passport JWT strategy
-- [ ] **AUTH-016**: Créer JwtAuthGuard
-- [ ] **AUTH-017**: Implémenter décorateur @GetUser()
-- [ ] **AUTH-018**: Tester protection routes
+- [x] **AUTH-016**: Créer JwtAuthGuard
+- [x] **AUTH-017**: Implémenter décorateur @GetUser()
+- [x] **AUTH-018**: Tester protection routes
 - [x] **AUTH-019**: Gérer erreurs JWT (expired, invalid)
 
 ---
@@ -138,20 +138,20 @@
 **Afin de** ne pas me reconnecter à chaque visite
 
 **Critères d'acceptation :**
-- [ ] Session sauvegardée automatiquement
-- [ ] App charge session au démarrage
-- [ ] Token attaché automatiquement aux requêtes API
-- [ ] Refresh page ne déconnecte pas l'utilisateur
-- [ ] Logout efface complètement la session
-- [ ] Gestion token expiré avec redirection login
-- [ ] Loading state pendant vérification session
+- [x] Session sauvegardée automatiquement
+- [x] App charge session au démarrage
+- [x] Token attaché automatiquement aux requêtes API
+- [x] Refresh page ne déconnecte pas l'utilisateur
+- [x] Logout efface complètement la session
+- [x] Gestion token expiré avec redirection login
+- [x] Loading state pendant vérification session
 
 **Issues techniques :**
-- [ ] **AUTH-020**: Configurer zustand persist middleware
-- [ ] **AUTH-021**: Créer axios interceptor pour token
-- [ ] **AUTH-022**: Implémenter auto-refresh token logic
-- [ ] **AUTH-023**: Gérer déconnexion automatique si token expiré
-- [ ] **AUTH-024**: Loading screen initialisation app
+- [x] **AUTH-020**: Configurer zustand persist middleware
+- [x] **AUTH-021**: Créer axios interceptor pour token
+- [x] **AUTH-022**: Implémenter auto-refresh token logic
+- [x] **AUTH-023**: Gérer déconnexion automatique si token expiré
+- [x] **AUTH-024**: Loading screen initialisation app
 
 ---
 
@@ -163,21 +163,21 @@
 **Afin d'** accéder aux différentes fonctionnalités
 
 **Critères d'acceptation :**
-- [ ] Header fixe avec logo StageComplete
-- [ ] Navigation différente selon rôle (ARTIST/VENUE)
-- [ ] Menu utilisateur avec photo/initiales + dropdown
-- [ ] Sidebar avec navigation principale
+- [x] Header fixe avec logo StageComplete
+- [x] Navigation différente selon rôle (ARTIST/VENUE)
+- [x] Menu utilisateur avec photo/initiales + dropdown
+- [x] Sidebar avec navigation principale
 - [ ] Footer basique avec liens
-- [ ] Responsive design mobile/desktop
-- [ ] Thème cohérent DaisyUI
-- [ ] Logout fonctionnel depuis header
+- [x] Responsive design mobile/desktop
+- [x] Thème cohérent DaisyUI
+- [x] Logout fonctionnel depuis header
 
 **Issues techniques :**
-- [ ] **UI-001**: Créer composant Header avec logo
-- [ ] **UI-002**: Implémenter user dropdown menu
-- [ ] **UI-003**: Créer Sidebar avec navigation rôle-based
-- [ ] **UI-004**: Layout responsive avec Tailwind
-- [ ] **UI-005**: Intégrer logout dans header
+- [x] **UI-001**: Créer composant Header avec logo
+- [x] **UI-002**: Implémenter user dropdown menu
+- [x] **UI-003**: Créer Sidebar avec navigation rôle-based
+- [x] **UI-004**: Layout responsive avec Tailwind
+- [x] **UI-005**: Intégrer logout dans header
 
 ---
 
@@ -187,20 +187,20 @@
 **Afin d'** avoir une vue d'ensemble de mon activité
 
 **Critères d'acceptation :**
-- [ ] Dashboard artiste avec statistiques basiques
-- [ ] Dashboard venue avec overview
-- [ ] Redirection automatique selon rôle après login
-- [ ] Sections placeholder pour futures features
-- [ ] Cards avec informations profil
-- [ ] Quick actions selon le rôle
-- [ ] Design cohérent et professionnel
+- [x] Dashboard artiste avec statistiques basiques
+- [x] Dashboard venue avec overview
+- [x] Redirection automatique selon rôle après login
+- [x] Sections placeholder pour futures features
+- [x] Cards avec informations profil
+- [x] Quick actions selon le rôle
+- [x] Design cohérent et professionnel
 
 **Issues techniques :**
-- [ ] **UI-006**: Créer page Dashboard Artist
-- [ ] **UI-007**: Créer page Dashboard Venue
-- [ ] **UI-008**: Implémenter redirection role-based
-- [ ] **UI-009**: Cards overview avec placeholder data
-- [ ] **UI-010**: Quick actions buttons (profile, browse, etc)
+- [x] **UI-006**: Créer page Dashboard Artist
+- [x] **UI-007**: Créer page Dashboard Venue
+- [x] **UI-008**: Implémenter redirection role-based
+- [x] **UI-009**: Cards overview avec placeholder data
+- [x] **UI-010**: Quick actions buttons (profile, browse, etc)
 
 ---
 
@@ -210,18 +210,18 @@
 **Afin de** vérifier mes données actuelles
 
 **Critères d'acceptation :**
-- [ ] Page profil accessible depuis navigation
-- [ ] Affichage nom, email, rôle
-- [ ] Placeholder pour photo de profil
-- [ ] Informations de base (bio, localisation si existantes)
-- [ ] Message si profil incomplet
-- [ ] Design card cohérent avec theme
+- [x] Page profil accessible depuis navigation
+- [x] Affichage nom, email, rôle
+- [x] Placeholder pour photo de profil
+- [x] Informations de base (bio, localisation si existantes)
+- [x] Message si profil incomplet
+- [x] Design card cohérent avec theme
 
 **Issues techniques :**
-- [ ] **UI-011**: Créer page Profile basique
-- [ ] **UI-012**: Composant ProfileCard
-- [ ] **UI-013**: Gestion affichage données manquantes
-- [ ] **UI-014**: Placeholder avatar par défaut
+- [x] **UI-011**: Créer page Profile basique
+- [x] **UI-012**: Composant ProfileCard
+- [x] **UI-013**: Gestion affichage données manquantes
+- [x] **UI-014**: Placeholder avatar par défaut
 
 ---
 

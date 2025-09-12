@@ -26,7 +26,7 @@ const registerSchema = z.object({
       "Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre"
     ),
   role: z.enum(["ARTIST", "VENUE"], {
-    required_error: "Veuillez sélectionner votre rôle",
+    message: "Veuillez sélectionner votre rôle",
   }),
 });
 
