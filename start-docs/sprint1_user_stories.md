@@ -17,14 +17,14 @@
 - [x] Base de données connectée et accessible
 - [x] Premier modèle User créé et migré
 - [x] API accessible sur http://localhost:3000
-- [ ] Documentation Swagger basique générée
+- [x] Documentation Swagger basique générée
 
 **Issues techniques :**
 - [x] **SETUP-001**: Initialiser projet NestJS + dépendances
 - [x] **SETUP-002**: Configurer Prisma + PostgreSQL local/cloud
 - [x] **SETUP-003**: Créer modèles Prisma initiaux
 - [x] **SETUP-004**: Setup variables d'environnement
-- [ ] **SETUP-005**: Premier deploy staging Render
+- [x] **SETUP-005**: Premier deploy staging Render
 
 ---
 
@@ -167,7 +167,7 @@
 - [x] Navigation différente selon rôle (ARTIST/VENUE)
 - [x] Menu utilisateur avec photo/initiales + dropdown
 - [x] Sidebar avec navigation principale
-- [ ] Footer basique avec liens
+- [x] Footer basique avec liens
 - [x] Responsive design mobile/desktop
 - [x] Thème cohérent DaisyUI
 - [x] Logout fonctionnel depuis header
@@ -234,17 +234,17 @@
 
 **Critères d'acceptation :**
 - [x] GET /auth/me retourne user + profile complet
-- [ ] PUT /auth/profile permet mise à jour profil
+- [x] PUT /auth/profile permet mise à jour profil
 - [x] Validation des données côté serveur
 - [x] Gestion erreurs 400/401/404
 - [x] Response format consistant
-- [ ] Documentation Swagger endpoints
+- [x] Documentation Swagger endpoints
 
 **Issues techniques :**
 - [x] **API-001**: Endpoint GET /auth/me
-- [ ] **API-002**: Endpoint PUT /auth/profile  
-- [ ] **API-003**: DTO UpdateProfileDto avec validation
-- [ ] **API-004**: Service ProfileService pour logique métier
+- [x] **API-002**: Endpoint PUT /auth/profile  
+- [x] **API-003**: DTO UpdateProfileDto avec validation
+- [x] **API-004**: Service ProfileService pour logique métier
 - [x] **API-005**: Tests unitaires controllers
 
 ---

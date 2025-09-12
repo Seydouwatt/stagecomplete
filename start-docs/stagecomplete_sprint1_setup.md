@@ -5,32 +5,32 @@
 
 ## 🚀 **SETUP PROJET - JOUR 1**
 
-### **Backend Setup (NestJS)**
+### **✅ Backend Setup (NestJS) - TERMINÉ**
 
 ```bash
-# 1. Créer le projet backend
+# ✅ 1. Créer le projet backend
 npx @nestjs/cli new stagecomplete-backend
 cd stagecomplete-backend
 
-# 2. Installer les dépendances essentielles
+# ✅ 2. Installer les dépendances essentielles
 npm install @prisma/client prisma
 npm install @nestjs/jwt @nestjs/passport passport passport-jwt
 npm install bcryptjs class-validator class-transformer
 npm install @nestjs/websockets @nestjs/platform-socket.io
 npm install --save-dev @types/bcryptjs @types/passport-jwt
 
-# 3. Setup Prisma
+# ✅ 3. Setup Prisma
 npx prisma init
 ```
 
-### **Frontend Setup (React + Vite)**
+### **✅ Frontend Setup (React + Vite) - TERMINÉ**
 
 ```bash
-# 1. Créer le projet frontend
+# ✅ 1. Créer le projet frontend
 npm create vite@latest stagecomplete-frontend -- --template react-ts
 cd stagecomplete-frontend
 
-# 2. Installer les dépendances
+# ✅ 2. Installer les dépendances
 npm install
 npm install tailwindcss daisyui @types/node
 npm install react-router-dom @tanstack/react-query
@@ -38,7 +38,7 @@ npm install zustand react-hook-form @hookform/resolvers zod
 npm install socket.io-client axios
 npm install lucide-react framer-motion
 
-# 3. Setup TailwindCSS + DaisyUI
+# ✅ 3. Setup TailwindCSS + DaisyUI
 npx tailwindcss init -p
 ```
 
@@ -692,7 +692,7 @@ export const Login: React.FC = () => {
 
 ### **✅ Checklist de fin de sprint :**
 
-**Backend :**
+**✅ Backend :**
 - [x] Projet NestJS setup avec Prisma
 - [x] Base de données PostgreSQL opérationnelle
 - [x] Modèles User/Profile/Artist/Venue/Event/Message
@@ -700,19 +700,21 @@ export const Login: React.FC = () => {
 - [x] JWT middleware protection
 - [x] Validation des données avec class-validator
 
-**Frontend :**
+**✅ Frontend :**
 - [x] Projet React + Vite + TailwindCSS + DaisyUI
 - [x] Auth store avec Zustand + persist
 - [x] Pages Login/Register avec validation
 - [x] Layout principal avec Header/Sidebar
 - [x] Routing protégé selon rôle
 - [x] Design system cohérent
+- [x] Composants UI de base (Button, Input)
+- [x] Charts components (DonutChart, LineChart, BarChart)
 
-**Tests :**
-- [x] Auth flow complet : Register → Login → Dashboard
-- [x] Gestion erreurs auth (email exists, wrong password)
-- [x] Persistance session (refresh page)
-- [x] Responsive mobile basique
+**🔄 Tests en cours :**
+- [ ] Auth flow complet : Register → Login → Dashboard (à tester)
+- [ ] Gestion erreurs auth (email exists, wrong password)
+- [ ] Persistance session (refresh page)
+- [ ] Responsive mobile basique
 
 ### **🎯 Definition of Done Sprint 1 :**
 - ✅ Un utilisateur peut créer un compte (ARTIST ou VENUE)
