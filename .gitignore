@@ -10,8 +10,8 @@ node_modules/
 *.env
 
 # Prisma generated
-generated/
-*/generated/
+# generated/
+# */generated/
 
 # Logs
 logs/
