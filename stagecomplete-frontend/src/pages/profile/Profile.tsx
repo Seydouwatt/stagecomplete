@@ -8,7 +8,7 @@ import { ProfileCard } from "../../components/profile";
 
 export const Profile: React.FC = () => {
   const { user } = useAuthStore();
-  const [isEditing, setIsEditing] = useState(false);
+  const [, setIsEditing] = useState(false);
 
   if (!user) {
     return (

@@ -5,12 +5,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PrismaModule } from '../prisma/prisma.module';
+import { ProfileModule } from '../profile/profile.module';
 import { JwtStrategy } from './strategies';
 
 @Module({
   imports: [
     ConfigModule,
     PrismaModule,
+    ProfileModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],

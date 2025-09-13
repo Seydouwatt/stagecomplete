@@ -3,9 +3,11 @@ import {
   ConflictException,
   InternalServerErrorException,
   UnauthorizedException,
+  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { RegisterDto, AuthResponseDto, JwtPayload, LoginDto } from './dto';
+import { RegisterDto, AuthResponseDto, JwtPayload, LoginDto, UpdateProfileDto } from './dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 // Interface pour le payload JWT
@@ -341,5 +343,75 @@ export class AuthService {
         },
       },
     });
+  }
+
+  // Méthode pour mettre à jour le profil utilisateur (version simplifiée)
+  async updateUserProfile(userId: string, updateData: UpdateProfileDto) {
+    try {
+      // Vérifier que l'utilisateur existe
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        include: { profile: true },
+      });
+
+      if (!user) {
+        throw new NotFoundException('Utilisateur non trouvé');
+      }
+
+      if (!user.profile) {
+        throw new NotFoundException('Profil non trouvé');
+      }
+
+      // Préparer les données pour la mise à jour
+      const updateFields: any = {
+        updatedAt: new Date(),
+      };
+
+      // Copier les champs simples
+      if (updateData.name !== undefined) updateFields.name = updateData.name;
+      if (updateData.bio !== undefined) updateFields.bio = updateData.bio;
+      if (updateData.avatar !== undefined) updateFields.avatar = updateData.avatar;
+      if (updateData.location !== undefined) updateFields.location = updateData.location;
+      if (updateData.phone !== undefined) updateFields.phone = updateData.phone;
+      if (updateData.website !== undefined) updateFields.website = updateData.website;
+      
+      // Gérer socialLinks (conversion JSON)
+      if (updateData.socialLinks !== undefined) {
+        updateFields.socialLinks = updateData.socialLinks;
+      }
+
+      // Mettre à jour le profil
+      await this.prisma.profile.update({
+        where: { id: user.profile.id },
+        data: updateFields,
+      });
+
+      // Retourner l'utilisateur complet mis à jour
+      const updatedUser = await this.prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+          profile: {
+            include: {
+              artist: true,
+              venue: true,
+            },
+          },
+        },
+      });
+
+      return updatedUser;
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+
+      console.error('Erreur lors de la mise à jour du profil:', error);
+      throw new BadRequestException(
+        'Erreur lors de la mise à jour du profil',
+      );
+    }
   }
 }

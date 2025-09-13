@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filters';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -40,10 +41,38 @@ async function bootstrap() {
   // Global prefix
   app.setGlobalPrefix('api');
 
+  // Swagger Configuration
+  const config = new DocumentBuilder()
+    .setTitle('StageComplete API')
+    .setDescription('API pour la plateforme StageComplete - Mise en relation artistes et lieux de spectacle')
+    .setVersion('1.0')
+    .addTag('auth', 'Authentification et gestion des utilisateurs')
+    .addTag('profile', 'Gestion des profils utilisateur')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Token JWT pour authentification',
+        in: 'header',
+      },
+      'JWT-auth',
+    )
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document, {
+    customSiteTitle: 'StageComplete API Documentation',
+    customfavIcon: '/favicon.ico',
+    customCss: '.swagger-ui .topbar { display: none }',
+  });
+
   const port = process.env.PORT || 3000;
   await app.listen(port);
 
   console.log(`🚀 Server running on http://localhost:${port}/api`);
+  console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
   console.log(`📊 Prisma Studio: npx prisma studio`);
 }
 bootstrap();

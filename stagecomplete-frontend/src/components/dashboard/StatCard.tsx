@@ -9,7 +9,7 @@ interface StatCardProps {
     value: number;
     type: "increase" | "decrease" | "neutral";
   };
-  icon: React.ComponentType;
+  icon: React.ComponentType<{ className?: string }>;
   color?: "primary" | "secondary" | "success" | "warning" | "error" | "info";
   trend?: Array<{ name: string; value: number }>;
 }

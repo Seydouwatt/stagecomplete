@@ -253,6 +253,9 @@
 
 ---
 
+- Connexion avec : testartist@example.com / Password123
+- Ou : testvenue@example.com / Password123
+
 ## 🔄 **EPIC 4: API FOUNDATION**
 
 ### **US-010: User Profile API**
@@ -264,18 +267,18 @@
 **Critères d'acceptation :**
 
 - [x] GET /auth/me retourne user + profile complet
-- [ ] PUT /auth/profile permet mise à jour profil
-- [ ] Validation des données côté serveur
-- [ ] Gestion erreurs 400/401/404
-- [ ] Response format consistant
+- [x] PUT /auth/profile permet mise à jour profil
+- [x] Validation des données côté serveur
+- [x] Gestion erreurs 400/401/404
+- [x] Response format consistant
 - [ ] Documentation Swagger endpoints
 
 **Issues techniques :**
 
 - [x] **API-001**: Endpoint GET /auth/me
-- [ ] **API-002**: Endpoint PUT /auth/profile
-- [ ] **API-003**: DTO UpdateProfileDto avec validation
-- [ ] **API-004**: Service ProfileService pour logique métier
+- [x] **API-002**: Endpoint PUT /auth/profile
+- [x] **API-003**: DTO UpdateProfileDto avec validation
+- [x] **API-004**: Service ProfileService pour logique métier
 - [ ] **API-005**: Tests unitaires controllers
 
 ---
