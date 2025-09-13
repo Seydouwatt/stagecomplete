@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
 
-    "build": "prisma generate && nest build",
+    "build": "prisma generate && tsc -p tsconfig.build.json",
     "start:prod": "node dist/main",
     "start:render": "prisma migrate deploy && node dist/main",
 

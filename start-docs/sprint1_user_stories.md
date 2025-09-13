@@ -291,20 +291,20 @@
 
 **Critères d'acceptation :**
 
-- [ ] Messages d'erreur en français et explicites
-- [ ] Validation côté client avec feedback visuel
-- [ ] Validation côté serveur avec messages détaillés
-- [ ] Gestion erreurs réseau (500, timeout)
-- [ ] Loading states pendant requêtes
-- [ ] Toast notifications pour succès/erreurs
+- [x] Messages d'erreur en français et explicites
+- [x] Validation côté client avec feedback visuel
+- [x] Validation côté serveur avec messages détaillés
+- [x] Gestion erreurs réseau (500, timeout)
+- [x] Loading states pendant requêtes
+- [x] Toast notifications pour succès/erreurs
 
 **Issues techniques :**
 
-- [ ] **ERROR-001**: Global exception filter NestJS
-- [ ] **ERROR-002**: Messages erreur personnalisés
-- [ ] **ERROR-003**: Validation pipe globale
-- [ ] **ERROR-004**: Toast notification system React
-- [ ] **ERROR-005**: Loading states components
+- [x] **ERROR-001**: Global exception filter NestJS
+- [x] **ERROR-002**: Messages erreur personnalisés
+- [x] **ERROR-003**: Validation pipe globale
+- [x] **ERROR-004**: Toast notification system React
+- [x] **ERROR-005**: Loading states components
 
 ---
 
