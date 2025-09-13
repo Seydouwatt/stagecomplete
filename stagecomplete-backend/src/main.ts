@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { RequestMethod, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filters';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
@@ -39,7 +39,9 @@ async function bootstrap() {
   });
 
   // Global prefix
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api', {
+    exclude: [{ path: 'health', method: RequestMethod.GET }],
+  });
 
   // Swagger Configuration
   const config = new DocumentBuilder()
