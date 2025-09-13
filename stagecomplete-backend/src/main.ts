@@ -44,7 +44,9 @@ async function bootstrap() {
   // Swagger Configuration
   const config = new DocumentBuilder()
     .setTitle('StageComplete API')
-    .setDescription('API pour la plateforme StageComplete - Mise en relation artistes et lieux de spectacle')
+    .setDescription(
+      'API pour la plateforme StageComplete - Mise en relation artistes et lieux de spectacle',
+    )
     .setVersion('1.0')
     .addTag('auth', 'Authentification et gestion des utilisateurs')
     .addTag('profile', 'Gestion des profils utilisateur')
@@ -68,8 +70,8 @@ async function bootstrap() {
     customCss: '.swagger-ui .topbar { display: none }',
   });
 
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  await app.listen(port, '0.0.0.0');
 
   console.log(`🚀 Server running on http://localhost:${port}/api`);
   console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
