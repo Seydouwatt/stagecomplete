@@ -14,6 +14,7 @@ import { useAuthStore } from "./stores/authStore";
 import { ROUTES } from "./constants";
 import ToastContainer from "./components/ui/Toast";
 import ErrorHandlingDemo from "./pages/ErrorHandlingDemo";
+import { Browse } from "./pages/Browse";
 
 // Page temporaire pour les routes non implémentées
 const ComingSoon: React.FC<{ title: string }> = ({ title }) => (
@@ -53,7 +54,7 @@ function App() {
           {/* Routes publiques */}
           <Route path={ROUTES.LOGIN} element={<Login />} />
           <Route path={ROUTES.REGISTER} element={<Register />} />
-          
+
           {/* Demo page (temporary) */}
           <Route path="/demo" element={<ErrorHandlingDemo />} />
 
@@ -68,7 +69,7 @@ function App() {
           >
             {/* Dashboard redirect selon rôle */}
             <Route path={ROUTES.DASHBOARD} element={<DashboardRedirect />} />
-
+            <Route path="/browse" element={<Browse />} />
             {/* Routes Artist */}
             <Route
               path="/artist/dashboard"

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { X, MapPin, Calendar, DollarSign, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface FilterOptions {
+export interface FilterOptions {
   genres: string[];
   locations: string[];
   priceRange: [number, number];
@@ -16,7 +16,7 @@ interface FilterPanelProps {
   isOpen: boolean;
   onClose: () => void;
   onFiltersChange: (filters: FilterOptions) => void;
-  userRole: "ARTIST" | "VENUE";
+  userRole: "ARTIST" | "VENUE" | "ADMIN";
 }
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({
@@ -63,7 +63,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     "Lille",
   ];
 
-  // const experiences = ["BEGINNER", "INTERMEDIATE", "PROFESSIONAL"];
+  const experiences = ["BEGINNER", "INTERMEDIATE", "PROFESSIONAL"];
 
   const handleGenreToggle = (genre: string) => {
     const newGenres = filters.genres.includes(genre)

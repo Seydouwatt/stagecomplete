@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Search, X, Filter } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface SearchSuggestion {
+export interface SearchSuggestion {
   id: string;
   type: "artist" | "venue" | "genre" | "location";
   title: string;
@@ -17,6 +17,7 @@ interface SearchBarProps {
   suggestions?: SearchSuggestion[];
   isLoading?: boolean;
   showFilters?: boolean;
+  value?: string; // optional controlled value
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
@@ -26,6 +27,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   suggestions = [],
   isLoading = false,
   showFilters = true,
+  value,
 }) => {
   const [query, setQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
@@ -39,6 +41,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       setShowSuggestions(false);
     }
   }, [query, suggestions, isFocused]);
+
+  // Sync controlled value into local state when provided
+  useEffect(() => {
+    if (typeof value === "string" && value !== query) {
+      setQuery(value);
+    }
+  }, [value]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

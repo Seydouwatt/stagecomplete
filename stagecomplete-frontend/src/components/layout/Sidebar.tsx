@@ -198,6 +198,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
               </li>
             );
           })}
+          <Link to="/browse" className="btn btn-ghost">
+            {user?.role === "ARTIST"
+              ? "Découvrir les venues"
+              : "Découvrir les artistes"}
+          </Link>
         </ul>
 
         {/* Bottom section */}
