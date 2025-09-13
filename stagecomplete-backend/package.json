@@ -9,7 +9,7 @@
 
     "build": "prisma generate && tsc -p tsconfig.build.json",
     "start:prod": "node dist/main",
-    "start:render": "prisma migrate deploy && node dist/main",
+    "start:render": "prisma generate && prisma migrate deploy && node dist/main",
 
     
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -96,9 +96,6 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "moduleNameMapper": {
-      "^generated/prisma$": "<rootDir>/../generated/prisma"
-    }
+    "testEnvironment": "node"
   }
 }
