@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { LoginCredentials, RegisterData, AuthResponse } from "../types";
 import { API_URL, API_ENDPOINTS } from "../constants";
+import { toast } from "../stores/useToastStore";
 
 // Configuration axios
 const api = axios.create({
@@ -26,15 +27,34 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Intercepteur pour gérer les erreurs d'authentification
+// Intercepteur pour gérer les erreurs d'authentification et afficher les toasts
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    const data = error.response?.data;
+    
+    if (status === 401) {
       // Token expiré ou invalide, nettoyer le store
       localStorage.removeItem("stagecomplete-auth");
+      toast.error("Session expirée, veuillez vous reconnecter");
       window.location.href = "/login";
+    } else if (status >= 400 && status < 500) {
+      // Erreurs client (4xx)
+      const message = data?.message || data?.error || "Une erreur est survenue";
+      if (Array.isArray(message)) {
+        message.forEach((msg: string) => toast.error(msg));
+      } else {
+        toast.error(message);
+      }
+    } else if (status >= 500) {
+      // Erreurs serveur (5xx)
+      toast.error("Erreur serveur, veuillez réessayer plus tard");
+    } else if (error.code === 'ECONNREFUSED' || error.message === 'Network Error') {
+      // Erreurs réseau
+      toast.error("Impossible de se connecter au serveur");
     }
+    
     return Promise.reject(error);
   }
 );

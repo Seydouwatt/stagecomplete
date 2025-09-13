@@ -12,6 +12,8 @@ import { ArtistDashboard, VenueDashboard } from "./pages/dashboard";
 import { Profile } from "./pages/profile";
 import { useAuthStore } from "./stores/authStore";
 import { ROUTES } from "./constants";
+import ToastContainer from "./components/ui/Toast";
+import ErrorHandlingDemo from "./pages/ErrorHandlingDemo";
 
 // Page temporaire pour les routes non implémentées
 const ComingSoon: React.FC<{ title: string }> = ({ title }) => (
@@ -51,6 +53,9 @@ function App() {
           {/* Routes publiques */}
           <Route path={ROUTES.LOGIN} element={<Login />} />
           <Route path={ROUTES.REGISTER} element={<Register />} />
+          
+          {/* Demo page (temporary) */}
+          <Route path="/demo" element={<ErrorHandlingDemo />} />
 
           {/* Routes protégées avec layout */}
           <Route
@@ -195,6 +200,7 @@ function App() {
             element={<Navigate to={ROUTES.DASHBOARD} replace />}
           />
         </Routes>
+        <ToastContainer />
       </Router>
     </div>
   );

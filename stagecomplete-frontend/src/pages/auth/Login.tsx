@@ -6,9 +6,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { Input, Button } from "../../components/ui";
+import { Input } from "../../components/ui";
+import LoadingButton from "../../components/ui/LoadingButton";
 import { useAuthStore } from "../../stores/authStore";
 import { ROUTES } from "../../constants";
+import { toast } from "../../stores/useToastStore";
 
 // Validation schema
 const loginSchema = z.object({
@@ -49,9 +51,10 @@ export const Login: React.FC = () => {
   const onSubmit = async (data: LoginForm) => {
     try {
       await login(data);
+      toast.success("Connexion réussie !");
       navigate(ROUTES.DASHBOARD);
     } catch (error: any) {
-      // Error is handled by the store
+      // Error is handled by axios interceptor
       console.error("Login error:", error);
     }
   };
@@ -126,16 +129,19 @@ export const Login: React.FC = () => {
               />
 
               {/* Submit Button */}
-              <Button
+              <LoadingButton
                 type="submit"
                 variant="primary"
                 size="lg"
-                className="w-full"
+                fullWidth
                 isLoading={isLoading}
-                rightIcon={<ArrowRight />}
+                loadingText="Connexion en cours..."
               >
-                Se connecter
-              </Button>
+                <span className="flex items-center justify-center">
+                  Se connecter
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </span>
+              </LoadingButton>
             </form>
 
             {/* Divider */}
