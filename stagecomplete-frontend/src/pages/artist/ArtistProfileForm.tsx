@@ -681,7 +681,7 @@ const PortfolioTab: React.FC<{
   formData: UpdateArtistProfileData;
   updateFormData: (field: keyof UpdateArtistProfileData, value: any) => void;
   updateNestedFormData: (field: string, subField: string, value: any) => void;
-}> = ({ formData, updateFormData, updateNestedFormData }) => {
+}> = ({ formData, updateFormData: _updateFormData, updateNestedFormData }) => {
   return (
     <div className="space-y-8">
       <h3 className="text-xl font-semibold">Portfolio multimédia</h3>

@@ -70,7 +70,7 @@ export const Browse: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
 
   // Type de contenu basé sur le rôle utilisateur
@@ -143,73 +143,109 @@ export const Browse: React.FC = () => {
 
   // Filtrage des résultats
   const filteredItems = useMemo(() => {
-    let results = browseType === "artist" ? [...artists] : [...venues];
+    if (browseType === "artist") {
+      let results = [...artists];
 
-    // Recherche textuelle
-    if (searchQuery) {
-      results = results.filter(
-        (item) =>
-          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (browseType === "artist" &&
-            (item as any).genres.some((genre: string) =>
+      // Recherche textuelle
+      if (searchQuery) {
+        results = results.filter(
+          (item) =>
+            item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.genres.some((genre: string) =>
               genre.toLowerCase().includes(searchQuery.toLowerCase())
-            ))
-      );
-    }
+            )
+        );
+      }
 
-    // Filtres
-    if (filters.genres.length > 0 && browseType === "artist") {
-      results = results.filter((item) =>
-        filters.genres.some((genre) => (item as any).genres.includes(genre))
-      );
-    }
+      // Filtres
+      if (filters.genres.length > 0) {
+        results = results.filter((item) =>
+          filters.genres.some((genre) => item.genres.includes(genre))
+        );
+      }
 
-    if (filters.locations.length > 0) {
-      results = results.filter((item) =>
-        filters.locations.some((location) => item.location?.includes(location))
-      );
-    }
+      if (filters.locations.length > 0) {
+        results = results.filter((item) =>
+          filters.locations.some((location) => item.location?.includes(location))
+        );
+      }
 
-    if (filters.rating > 0) {
-      results = results.filter(
-        (item) => (item as any).rating >= filters.rating
-      );
-    }
+      if (filters.rating > 0) {
+        results = results.filter((item) => item.rating >= filters.rating);
+      }
 
-    // Experience (for artists)
-    if (filters.experience && browseType === "artist") {
-      results = results.filter(
-        (item) => (item as any).experience === filters.experience
-      );
-    }
+      // Experience (for artists)
+      if (filters.experience) {
+        results = results.filter((item) => item.experience === filters.experience);
+      }
 
-    // Capacity upper-bound (for venues)
-    if (filters.capacity && browseType === "venue") {
-      const maxCap = filters.capacity[1];
-      results = results.filter((item) => (item as any).capacity <= maxCap);
-    }
+      // Price upper-bound (parse from string like "800-1200€")
+      if (filters.priceRange && filters.priceRange[1] > 0) {
+        const maxPrice = filters.priceRange[1];
+        const parseMaxFromPrice = (priceStr: string): number => {
+          const nums = (priceStr.match(/\d+/g) || []).map((n) => parseInt(n, 10));
+          if (nums.length === 0) return 0;
+          return Math.max(...nums);
+        };
+        results = results.filter((item) => {
+          if (!item.priceRange) return true;
+          return parseMaxFromPrice(item.priceRange) <= maxPrice;
+        });
+      }
 
-    // Price upper-bound (parse from string like "800-1200€" or "500-800€/soirée")
-    if (filters.priceRange && filters.priceRange[1] > 0) {
-      const maxPrice = filters.priceRange[1];
-      const parseMaxFromPrice = (priceStr: string): number => {
-        const nums = (priceStr.match(/\d+/g) || []).map((n) => parseInt(n, 10));
-        if (nums.length === 0) return 0;
-        return Math.max(...nums);
-      };
-      results = results.filter((item) => {
-        const priceStr = (item as any).priceRange as string | undefined;
-        if (!priceStr) return true;
-        return parseMaxFromPrice(priceStr) <= maxPrice;
-      });
-    }
+      // Availability: if any availability filter selected, require item to be available
+      if (filters.availability) {
+        results = results.filter((item) => item.availability === true);
+      }
 
-    // Availability: if any availability filter selected, require item to be available
-    if (filters.availability) {
-      results = results.filter((item) => (item as any).availability === true);
-    }
+      return results;
+    } else {
+      let results = [...venues];
 
-    return results;
+      // Recherche textuelle
+      if (searchQuery) {
+        results = results.filter((item) =>
+          item.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      if (filters.locations.length > 0) {
+        results = results.filter((item) =>
+          filters.locations.some((location) => item.location?.includes(location))
+        );
+      }
+
+      if (filters.rating > 0) {
+        results = results.filter((item) => item.rating >= filters.rating);
+      }
+
+      // Capacity upper-bound (for venues)
+      if (filters.capacity) {
+        const maxCap = filters.capacity[1];
+        results = results.filter((item) => item.capacity <= maxCap);
+      }
+
+      // Price upper-bound (parse from string like "500-800€/soirée")
+      if (filters.priceRange && filters.priceRange[1] > 0) {
+        const maxPrice = filters.priceRange[1];
+        const parseMaxFromPrice = (priceStr: string): number => {
+          const nums = (priceStr.match(/\d+/g) || []).map((n) => parseInt(n, 10));
+          if (nums.length === 0) return 0;
+          return Math.max(...nums);
+        };
+        results = results.filter((item) => {
+          if (!item.priceRange) return true;
+          return parseMaxFromPrice(item.priceRange) <= maxPrice;
+        });
+      }
+
+      // Availability: if any availability filter selected, require item to be available
+      if (filters.availability) {
+        results = results.filter((item) => item.availability === true);
+      }
+
+      return results;
+    }
   }, [artists, venues, searchQuery, filters, browseType]);
 
   // Handlers
@@ -280,7 +316,7 @@ export const Browse: React.FC = () => {
           transition={{ delay: 0.2 }}
         >
           <BrowseGrid
-            items={filteredItems}
+            items={filteredItems as any}
             itemType={browseType}
             isLoading={isLoading}
             onItemContact={handleContact}
