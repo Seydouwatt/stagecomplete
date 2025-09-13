@@ -1,52 +1,56 @@
-import { ButtonHTMLAttributes, forwardRef } from 'react'
-import clsx from 'clsx'
-import Spinner from './Spinner'
+import { forwardRef } from "react";
+import type { ButtonHTMLAttributes } from "react";
+import clsx from "clsx";
+import Spinner from "./Spinner";
 
 interface LoadingButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  isLoading?: boolean
-  loadingText?: string
-  variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'link' | 'outline'
-  size?: 'xs' | 'sm' | 'md' | 'lg'
-  fullWidth?: boolean
+  isLoading?: boolean;
+  loadingText?: string;
+  variant?: "primary" | "secondary" | "accent" | "ghost" | "link" | "outline";
+  size?: "xs" | "sm" | "md" | "lg";
+  fullWidth?: boolean;
 }
 
 const LoadingButton = forwardRef<HTMLButtonElement, LoadingButtonProps>(
-  ({
-    children,
-    isLoading = false,
-    loadingText,
-    variant = 'primary',
-    size = 'md',
-    fullWidth = false,
-    disabled,
-    className,
-    ...props
-  }, ref) => {
-    const isDisabled = disabled || isLoading
+  (
+    {
+      children,
+      isLoading = false,
+      loadingText,
+      variant = "primary",
+      size = "md",
+      fullWidth = false,
+      disabled,
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const isDisabled = disabled || isLoading;
 
     return (
       <button
         ref={ref}
         disabled={isDisabled}
         className={clsx(
-          'btn',
+          "btn",
           `btn-${variant}`,
           `btn-${size}`,
           {
-            'w-full': fullWidth,
-            'loading': isLoading
+            "w-full": fullWidth,
+            loading: isLoading,
           },
           className
         )}
         {...props}
       >
         {isLoading && <Spinner size="sm" />}
-        {isLoading ? loadingText || 'Chargement...' : children}
+        {isLoading ? loadingText || "Chargement..." : children}
       </button>
-    )
+    );
   }
-)
+);
 
-LoadingButton.displayName = 'LoadingButton'
+LoadingButton.displayName = "LoadingButton";
 
-export default LoadingButton
+export default LoadingButton;

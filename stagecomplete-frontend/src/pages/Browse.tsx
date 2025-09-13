@@ -75,7 +75,8 @@ export const Browse: React.FC = () => {
 
   // Type de contenu basé sur le rôle utilisateur
   const browseType = user?.role === "ARTIST" ? "venue" : "artist";
-  const items = browseType === "artist" ? mockArtists : mockVenues;
+  const artists = mockArtists;
+  const venues = mockVenues;
 
   // Filtres
   const [filters, setFilters] = useState<FilterOptions>({
@@ -101,7 +102,8 @@ export const Browse: React.FC = () => {
     const suggestions = [] as SearchSuggestion[];
 
     // Suggestions d'artistes/venues
-    items.forEach((item) => {
+    const currentItems = browseType === "artist" ? artists : venues;
+    currentItems.forEach((item) => {
       if (item.name.toLowerCase().includes(searchQuery.toLowerCase())) {
         suggestions.push({
           id: item.id,
@@ -114,7 +116,7 @@ export const Browse: React.FC = () => {
           avatar:
             browseType === "artist"
               ? (item as any).avatar
-              : (item as any).images[0],
+              : (item as any).images?.[0],
         });
       }
     });
@@ -122,7 +124,7 @@ export const Browse: React.FC = () => {
     // Suggestions de genres
     const allGenres =
       browseType === "artist"
-        ? [...new Set((items as any[]).flatMap((item) => item.genres))]
+        ? [...new Set(artists.flatMap((item) => item.genres))]
         : [];
 
     allGenres.forEach((genre) => {
@@ -137,11 +139,11 @@ export const Browse: React.FC = () => {
     });
 
     return suggestions.slice(0, 8);
-  }, [searchQuery, items, browseType]);
+  }, [searchQuery, artists, venues, browseType]);
 
   // Filtrage des résultats
   const filteredItems = useMemo(() => {
-    let results = items;
+    let results = browseType === "artist" ? [...artists] : [...venues];
 
     // Recherche textuelle
     if (searchQuery) {
@@ -208,7 +210,7 @@ export const Browse: React.FC = () => {
     }
 
     return results;
-  }, [items, searchQuery, filters, browseType]);
+  }, [artists, venues, searchQuery, filters, browseType]);
 
   // Handlers
   const handleSearch = (query: string) => {

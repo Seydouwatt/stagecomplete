@@ -1,44 +1,50 @@
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
-import { toast } from '../stores/useToastStore'
-import { useAsyncOperation } from '../hooks/useAsyncOperation'
-import LoadingButton from '../components/ui/LoadingButton'
-import LoadingOverlay from '../components/ui/LoadingOverlay'
-import Spinner from '../components/ui/Spinner'
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { toast } from "../stores/useToastStore";
+import { useAsyncOperation } from "../hooks/useAsyncOperation";
+import LoadingButton from "../components/ui/LoadingButton";
+import LoadingOverlay from "../components/ui/LoadingOverlay";
+import Spinner from "../components/ui/Spinner";
 
 export const ErrorHandlingDemo: React.FC = () => {
-  const [showOverlay, setShowOverlay] = useState(false)
-  const { isLoading, execute } = useAsyncOperation()
+  const [showOverlay, setShowOverlay] = useState(false);
+  const { isLoading, execute } = useAsyncOperation();
 
   const simulateSuccess = async () => {
-    await execute(async () => {
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      return { message: 'Opération réussie!' }
-    }, {
-      successMessage: 'Données sauvegardées avec succès ✨'
-    })
-  }
+    await execute(
+      async () => {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        return { message: "Opération réussie!" };
+      },
+      {
+        successMessage: "Données sauvegardées avec succès ✨",
+      }
+    );
+  };
 
   const simulateError = async () => {
-    await execute(async () => {
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      throw new Error('Erreur simulée pour démonstration')
-    }, {
-      errorMessage: 'Échec de la simulation 😞'
-    })
-  }
+    await execute(
+      async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        throw new Error("Erreur simulée pour démonstration");
+      },
+      {
+        errorMessage: "Échec de la simulation 😞",
+      }
+    );
+  };
 
   const showToasts = () => {
-    toast.success('Succès ! Tout fonctionne parfaitement 🎉')
-    setTimeout(() => toast.info('Information utile 💡'), 500)
-    setTimeout(() => toast.warning('Attention aux détails ⚠️'), 1000)
-    setTimeout(() => toast.error('Erreur pour test uniquement ❌'), 1500)
-  }
+    toast.success("Succès ! Tout fonctionne parfaitement 🎉");
+    setTimeout(() => toast.info("Information utile 💡"), 500);
+    setTimeout(() => toast.warning("Attention aux détails ⚠️"), 1000);
+    setTimeout(() => toast.error("Erreur pour test uniquement ❌"), 1500);
+  };
 
   const showOverlayDemo = () => {
-    setShowOverlay(true)
-    setTimeout(() => setShowOverlay(false), 3000)
-  }
+    setShowOverlay(true);
+    setTimeout(() => setShowOverlay(false), 3000);
+  };
 
   return (
     <div className="min-h-screen bg-base-200 p-6 relative">
@@ -64,33 +70,33 @@ export const ErrorHandlingDemo: React.FC = () => {
               <p className="text-base-content/70 mb-4">
                 Testez les différents types de notifications
               </p>
-              
+
               <div className="space-y-2">
-                <button 
+                <button
                   className="btn btn-success btn-sm w-full"
-                  onClick={() => toast.success('Super ! Ça marche ✨')}
+                  onClick={() => toast.success("Super ! Ça marche ✨")}
                 >
                   Success Toast
                 </button>
-                <button 
+                <button
                   className="btn btn-error btn-sm w-full"
-                  onClick={() => toast.error('Oops, une erreur ! 😓')}
+                  onClick={() => toast.error("Oops, une erreur ! 😓")}
                 >
                   Error Toast
                 </button>
-                <button 
+                <button
                   className="btn btn-warning btn-sm w-full"
-                  onClick={() => toast.warning('Attention! ⚠️')}
+                  onClick={() => toast.warning("Attention! ⚠️")}
                 >
                   Warning Toast
                 </button>
-                <button 
+                <button
                   className="btn btn-info btn-sm w-full"
-                  onClick={() => toast.info('Info importante 💡')}
+                  onClick={() => toast.info("Info importante 💡")}
                 >
                   Info Toast
                 </button>
-                <button 
+                <button
                   className="btn btn-primary btn-sm w-full"
                   onClick={showToasts}
                 >
@@ -107,7 +113,7 @@ export const ErrorHandlingDemo: React.FC = () => {
               <p className="text-base-content/70 mb-4">
                 Différents spinners et états de chargement
               </p>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <span className="text-sm">Small:</span>
@@ -130,7 +136,7 @@ export const ErrorHandlingDemo: React.FC = () => {
                 </LoadingButton>
 
                 <LoadingButton
-                  variant="error"
+                  variant="accent"
                   size="sm"
                   fullWidth
                   isLoading={isLoading}
@@ -158,31 +164,31 @@ export const ErrorHandlingDemo: React.FC = () => {
             <p className="text-base-content/70 mb-4">
               Testez la gestion d'erreurs réseau et serveur
             </p>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <button 
+              <button
                 className="btn btn-outline btn-error"
                 onClick={() => {
                   // Simuler erreur 400
-                  toast.error('Erreur 400: Requête invalide')
+                  toast.error("Erreur 400: Requête invalide");
                 }}
               >
                 Erreur 400
               </button>
-              <button 
+              <button
                 className="btn btn-outline btn-warning"
                 onClick={() => {
                   // Simuler erreur 401
-                  toast.error('Erreur 401: Non autorisé')
+                  toast.error("Erreur 401: Non autorisé");
                 }}
               >
                 Erreur 401
               </button>
-              <button 
+              <button
                 className="btn btn-outline btn-error"
                 onClick={() => {
                   // Simuler erreur 500
-                  toast.error('Erreur 500: Erreur serveur')
+                  toast.error("Erreur 500: Erreur serveur");
                 }}
               >
                 Erreur 500
@@ -197,7 +203,9 @@ export const ErrorHandlingDemo: React.FC = () => {
             ✅ Fonctionnalités implémentées
           </h3>
           <ul className="list-disc list-inside space-y-1 text-success-content/80">
-            <li>Toast notifications avec 4 types (success, error, warning, info)</li>
+            <li>
+              Toast notifications avec 4 types (success, error, warning, info)
+            </li>
             <li>Animations Framer Motion pour les toasts</li>
             <li>Loading states avec spinners personnalisés</li>
             <li>LoadingButton avec états de chargement</li>
@@ -210,13 +218,13 @@ export const ErrorHandlingDemo: React.FC = () => {
       </motion.div>
 
       {/* Loading Overlay Demo */}
-      <LoadingOverlay 
+      <LoadingOverlay
         isLoading={showOverlay}
         message="Démonstration de l'overlay de chargement..."
         backdrop="dark"
       />
     </div>
-  )
-}
+  );
+};
 
-export default ErrorHandlingDemo
+export default ErrorHandlingDemo;

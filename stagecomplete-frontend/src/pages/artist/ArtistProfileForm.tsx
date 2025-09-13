@@ -1,64 +1,135 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  UserIcon, 
-  MusicalNoteIcon, 
-  CurrencyDollarIcon, 
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import {
+  UserIcon,
+  MusicalNoteIcon,
+  CurrencyDollarIcon,
   PhotoIcon,
   ShareIcon,
   ArrowLeftIcon,
-  EyeIcon
-} from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
-import { useAuthStore } from '../../stores/authStore';
-import { artistService } from '../../services/artistService';
-import { toast } from '../../stores/useToastStore';
-import type { 
-  ExtendedUser, 
-  UpdateArtistProfileData, 
-  Experience, 
-  ArtistSpecialty 
-} from '../../types';
-import { MultiSelect } from '../../components/forms/MultiSelect';
-import { ImageUpload } from '../../components/forms/ImageUpload';
-import { LoadingOverlay } from '../../components/ui/LoadingOverlay';
+  EyeIcon,
+} from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
+import { useAuthStore } from "../../stores/authStore";
+import { artistService } from "../../services/artistService";
+import { toast } from "../../stores/useToastStore";
+import type {
+  ExtendedUser,
+  UpdateArtistProfileData,
+  Experience,
+  ArtistSpecialty,
+} from "../../types";
+import { MultiSelect } from "../../components/forms/MultiSelect";
+import { ImageUpload } from "../../components/forms/ImageUpload";
+import { LoadingOverlay } from "../../components/ui/LoadingOverlay";
 
 // Options prédéfinies
 const GENRES_OPTIONS = [
-  'Rock', 'Pop', 'Jazz', 'Blues', 'Classical', 'Folk', 'Country', 'R&B', 'Soul', 'Funk',
-  'Electronic', 'House', 'Techno', 'Hip Hop', 'Rap', 'Reggae', 'Ska', 'Punk', 'Metal',
-  'Alternative', 'Indie', 'World Music', 'Latin', 'Bossa Nova', 'Chanson Française'
+  "Rock",
+  "Pop",
+  "Jazz",
+  "Blues",
+  "Classical",
+  "Folk",
+  "Country",
+  "R&B",
+  "Soul",
+  "Funk",
+  "Electronic",
+  "House",
+  "Techno",
+  "Hip Hop",
+  "Rap",
+  "Reggae",
+  "Ska",
+  "Punk",
+  "Metal",
+  "Alternative",
+  "Indie",
+  "World Music",
+  "Latin",
+  "Bossa Nova",
+  "Chanson Française",
 ];
 
 const INSTRUMENTS_OPTIONS = [
-  'Guitare', 'Piano', 'Chant', 'Batterie', 'Basse', 'Violon', 'Violoncelle', 'Flûte',
-  'Saxophone', 'Trompette', 'Trombone', 'Accordéon', 'Harmonica', 'Ukulélé', 'Mandoline',
-  'Banjo', 'Orgue', 'Synthétiseur', 'DJ', 'Percussions', 'Harmonie', 'Direction'
+  "Guitare",
+  "Piano",
+  "Chant",
+  "Batterie",
+  "Basse",
+  "Violon",
+  "Violoncelle",
+  "Flûte",
+  "Saxophone",
+  "Trompette",
+  "Trombone",
+  "Accordéon",
+  "Harmonica",
+  "Ukulélé",
+  "Mandoline",
+  "Banjo",
+  "Orgue",
+  "Synthétiseur",
+  "DJ",
+  "Percussions",
+  "Harmonie",
+  "Direction",
 ];
 
 const EQUIPMENT_OPTIONS = [
-  'Micro', 'Amplificateur', 'Guitare électrique', 'Clavier', 'Batterie électronique',
-  'Pédales d\'effet', 'Table de mixage', 'Enceintes', 'Câbles', 'Stands', 'Éclairage'
+  "Micro",
+  "Amplificateur",
+  "Guitare électrique",
+  "Clavier",
+  "Batterie électronique",
+  "Pédales d'effet",
+  "Table de mixage",
+  "Enceintes",
+  "Câbles",
+  "Stands",
+  "Éclairage",
 ];
 
 const REQUIREMENTS_OPTIONS = [
-  'Scène', 'Système son', 'Éclairage', 'Micro sans fil', 'Piano acoustique', 
-  'Batterie acoustique', 'Loges', 'Parking', 'Sécurité', 'Catering', 'Technicien son'
+  "Scène",
+  "Système son",
+  "Éclairage",
+  "Micro sans fil",
+  "Piano acoustique",
+  "Batterie acoustique",
+  "Loges",
+  "Parking",
+  "Sécurité",
+  "Catering",
+  "Technicien son",
 ];
 
-const EXPERIENCE_OPTIONS: Experience[] = ['BEGINNER', 'INTERMEDIATE', 'PROFESSIONAL'];
-const SPECIALTY_OPTIONS: ArtistSpecialty[] = ['CONCERT', 'STUDIO', 'TEACHING', 'WEDDING', 'CORPORATE', 'PRIVATE'];
-const PRICE_RANGE_OPTIONS = ['0-200', '200-500', '500-1000', '1000-2000', '2000+'];
+const SPECIALTY_OPTIONS: ArtistSpecialty[] = [
+  "CONCERT",
+  "STUDIO",
+  "TEACHING",
+  "WEDDING",
+  "CORPORATE",
+  "PRIVATE",
+];
+const PRICE_RANGE_OPTIONS = [
+  "0-200",
+  "200-500",
+  "500-1000",
+  "1000-2000",
+  "2000+",
+];
 
-type TabType = 'general' | 'artistic' | 'pricing' | 'portfolio' | 'public';
+type TabType = "general" | "artistic" | "pricing" | "portfolio" | "public";
 
 export const ArtistProfileForm: React.FC = () => {
   const { user } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<TabType>('general');
+  const [activeTab, setActiveTab] = useState<TabType>("general");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [artistData, setArtistData] = useState<ExtendedUser | null>(null);
-  const [generatedSlug, setGeneratedSlug] = useState('');
+  const [_artistData, setArtistData] = useState<ExtendedUser | null>(null);
+  const [, setGeneratedSlug] = useState("");
 
   // Form state
   const [formData, setFormData] = useState<UpdateArtistProfileData>({
@@ -69,14 +140,14 @@ export const ArtistProfileForm: React.FC = () => {
     requirements: [],
     socialLinks: {},
     priceDetails: {},
-    portfolio: { photos: [], videos: [], audio: [] }
+    portfolio: { photos: [], videos: [], audio: [] },
   });
 
   // Charger les données du profil artiste
   useEffect(() => {
     const loadArtistProfile = async () => {
-      if (user?.role !== 'ARTIST') {
-        toast.error('Cette page est réservée aux artistes');
+      if (user?.role !== "ARTIST") {
+        toast.error("Cette page est réservée aux artistes");
         return;
       }
 
@@ -84,7 +155,7 @@ export const ArtistProfileForm: React.FC = () => {
         setIsLoading(true);
         const profile = await artistService.getMyArtistProfile();
         setArtistData(profile);
-        
+
         // Pré-remplir le formulaire avec les données existantes
         const artist = profile.profile.artist;
         if (artist) {
@@ -101,14 +172,18 @@ export const ArtistProfileForm: React.FC = () => {
             priceDetails: artist.priceDetails || {},
             travelRadius: artist.travelRadius,
             socialLinks: artist.socialLinks || {},
-            portfolio: artist.portfolio || { photos: [], videos: [], audio: [] },
+            portfolio: artist.portfolio || {
+              photos: [],
+              videos: [],
+              audio: [],
+            },
             isPublic: artist.isPublic,
-            publicSlug: artist.publicSlug
+            publicSlug: artist.publicSlug,
           });
         }
       } catch (error) {
-        console.error('Error loading artist profile:', error);
-        toast.error('Erreur lors du chargement du profil');
+        console.error("Error loading artist profile:", error);
+        toast.error("Erreur lors du chargement du profil");
       } finally {
         setIsLoading(false);
       }
@@ -123,10 +198,10 @@ export const ArtistProfileForm: React.FC = () => {
       setIsSaving(true);
       const updatedProfile = await artistService.updateArtistProfile(formData);
       setArtistData(updatedProfile);
-      toast.success('Profil sauvegardé avec succès !');
+      toast.success("Profil sauvegardé avec succès !");
     } catch (error) {
-      console.error('Error saving artist profile:', error);
-      toast.error('Erreur lors de la sauvegarde');
+      console.error("Error saving artist profile:", error);
+      toast.error("Erreur lors de la sauvegarde");
     } finally {
       setIsSaving(false);
     }
@@ -134,41 +209,50 @@ export const ArtistProfileForm: React.FC = () => {
 
   // Générer un slug
   const handleGenerateSlug = async () => {
-    if (!artistData?.profile.name) {
-      toast.error('Veuillez renseigner votre nom dans le profil');
+    if (!_artistData?.profile.name) {
+      toast.error("Veuillez renseigner votre nom dans le profil");
       return;
     }
 
     try {
-      const slug = await artistService.generateSlug(artistData.profile.name);
+      const slug = await artistService.generateSlug(_artistData.profile.name);
       setGeneratedSlug(slug);
-      setFormData(prev => ({ ...prev, publicSlug: slug }));
-      toast.success('Slug généré !');
+      setFormData((prev) => ({ ...prev, publicSlug: slug }));
+      toast.success("Slug généré !");
     } catch (error) {
-      console.error('Error generating slug:', error);
-      toast.error('Erreur lors de la génération du slug');
+      console.error("Error generating slug:", error);
+      toast.error("Erreur lors de la génération du slug");
     }
   };
 
   const updateFormData = (field: keyof UpdateArtistProfileData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const updateNestedFormData = (field: string, subField: string, value: any) => {
-    setFormData(prev => ({
+  const updateNestedFormData = (
+    field: string,
+    subField: string,
+    value: any
+  ) => {
+    setFormData((prev) => ({
       ...prev,
       [field]: {
-        ...prev[field as keyof UpdateArtistProfileData],
-        [subField]: value
-      }
+        ...(prev[field as keyof UpdateArtistProfileData] as Record<string, any> ?? {}),
+        [subField]: value,
+      },
     }));
   };
 
   if (isLoading) {
-    return <LoadingOverlay message="Chargement du profil artiste..." />;
+    return (
+      <LoadingOverlay
+        isLoading={isLoading}
+        message="Chargement du profil artiste..."
+      />
+    );
   }
 
-  if (user?.role !== 'ARTIST') {
+  if (user?.role !== "ARTIST") {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center">
@@ -185,11 +269,23 @@ export const ArtistProfileForm: React.FC = () => {
   }
 
   const tabs = [
-    { id: 'general' as TabType, label: 'Informations générales', icon: UserIcon },
-    { id: 'artistic' as TabType, label: 'Profil artistique', icon: MusicalNoteIcon },
-    { id: 'pricing' as TabType, label: 'Tarifs & Conditions', icon: CurrencyDollarIcon },
-    { id: 'portfolio' as TabType, label: 'Portfolio', icon: PhotoIcon },
-    { id: 'public' as TabType, label: 'Profil public', icon: ShareIcon },
+    {
+      id: "general" as TabType,
+      label: "Informations générales",
+      icon: UserIcon,
+    },
+    {
+      id: "artistic" as TabType,
+      label: "Profil artistique",
+      icon: MusicalNoteIcon,
+    },
+    {
+      id: "pricing" as TabType,
+      label: "Tarifs & Conditions",
+      icon: CurrencyDollarIcon,
+    },
+    { id: "portfolio" as TabType, label: "Portfolio", icon: PhotoIcon },
+    { id: "public" as TabType, label: "Profil public", icon: ShareIcon },
   ];
 
   return (
@@ -201,17 +297,16 @@ export const ArtistProfileForm: React.FC = () => {
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8"
       >
         <div>
-          <h1 className="text-3xl font-bold text-base-content">Mon Profil Artiste</h1>
+          <h1 className="text-3xl font-bold text-base-content">
+            Mon Profil Artiste
+          </h1>
           <p className="text-base-content/60 mt-1">
             Créez votre vitrine professionnelle complète
           </p>
         </div>
 
         <div className="flex gap-3">
-          <Link
-            to="/dashboard"
-            className="btn btn-outline btn-sm gap-2"
-          >
+          <Link to="/dashboard" className="btn btn-outline btn-sm gap-2">
             <ArrowLeftIcon className="w-4 h-4" />
             Dashboard
           </Link>
@@ -235,7 +330,7 @@ export const ArtistProfileForm: React.FC = () => {
             {isSaving ? (
               <span className="loading loading-spinner loading-sm"></span>
             ) : (
-              'Sauvegarder'
+              "Sauvegarder"
             )}
           </button>
         </div>
@@ -249,13 +344,13 @@ export const ArtistProfileForm: React.FC = () => {
             <button
               key={tab.id}
               className={`tab gap-2 flex-nowrap whitespace-nowrap ${
-                activeTab === tab.id ? 'tab-active' : ''
+                activeTab === tab.id ? "tab-active" : ""
               }`}
               onClick={() => setActiveTab(tab.id)}
             >
               <Icon className="w-4 h-4" />
               <span className="hidden sm:inline">{tab.label}</span>
-              <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
+              <span className="sm:hidden">{tab.label.split(" ")[0]}</span>
             </button>
           );
         })}
@@ -270,21 +365,21 @@ export const ArtistProfileForm: React.FC = () => {
         className="card bg-base-100 shadow-lg"
       >
         <div className="card-body">
-          {activeTab === 'general' && (
+          {activeTab === "general" && (
             <GeneralInfoTab
               formData={formData}
               updateFormData={updateFormData}
             />
           )}
 
-          {activeTab === 'artistic' && (
+          {activeTab === "artistic" && (
             <ArtisticProfileTab
               formData={formData}
               updateFormData={updateFormData}
             />
           )}
 
-          {activeTab === 'pricing' && (
+          {activeTab === "pricing" && (
             <PricingTab
               formData={formData}
               updateFormData={updateFormData}
@@ -292,7 +387,7 @@ export const ArtistProfileForm: React.FC = () => {
             />
           )}
 
-          {activeTab === 'portfolio' && (
+          {activeTab === "portfolio" && (
             <PortfolioTab
               formData={formData}
               updateFormData={updateFormData}
@@ -300,12 +395,12 @@ export const ArtistProfileForm: React.FC = () => {
             />
           )}
 
-          {activeTab === 'public' && (
+          {activeTab === "public" && (
             <PublicProfileTab
               formData={formData}
               updateFormData={updateFormData}
               onGenerateSlug={handleGenerateSlug}
-              artistData={artistData}
+              artistData={_artistData}
             />
           )}
         </div>
@@ -322,12 +417,12 @@ const GeneralInfoTab: React.FC<{
   return (
     <div className="space-y-6">
       <h3 className="text-xl font-semibold">Informations de base</h3>
-      
+
       <MultiSelect
         label="Genres musicaux"
         options={GENRES_OPTIONS}
         value={formData.genres || []}
-        onChange={(value) => updateFormData('genres', value)}
+        onChange={(value) => updateFormData("genres", value)}
         maxSelections={8}
         allowCustom={true}
         placeholder="Sélectionnez vos genres..."
@@ -337,7 +432,7 @@ const GeneralInfoTab: React.FC<{
         label="Instruments / Compétences"
         options={INSTRUMENTS_OPTIONS}
         value={formData.instruments || []}
-        onChange={(value) => updateFormData('instruments', value)}
+        onChange={(value) => updateFormData("instruments", value)}
         maxSelections={10}
         allowCustom={true}
         placeholder="Vos instruments et compétences..."
@@ -350,8 +445,10 @@ const GeneralInfoTab: React.FC<{
           </label>
           <select
             className="select select-bordered"
-            value={formData.experience || ''}
-            onChange={(e) => updateFormData('experience', e.target.value as Experience)}
+            value={formData.experience || ""}
+            onChange={(e) =>
+              updateFormData("experience", e.target.value as Experience)
+            }
           >
             <option value="">Sélectionner...</option>
             <option value="BEGINNER">Débutant</option>
@@ -370,8 +467,13 @@ const GeneralInfoTab: React.FC<{
             placeholder="Ex: 5"
             min="0"
             max="50"
-            value={formData.yearsActive || ''}
-            onChange={(e) => updateFormData('yearsActive', parseInt(e.target.value) || undefined)}
+            value={formData.yearsActive || ""}
+            onChange={(e) =>
+              updateFormData(
+                "yearsActive",
+                parseInt(e.target.value) || undefined
+              )
+            }
           />
         </div>
       </div>
@@ -379,18 +481,20 @@ const GeneralInfoTab: React.FC<{
       <div className="form-control">
         <label className="label">
           <span className="label-text font-medium">Biographie artistique</span>
-          <span className="label-text-alt">Décrivez votre parcours et votre style</span>
+          <span className="label-text-alt">
+            Décrivez votre parcours et votre style
+          </span>
         </label>
         <textarea
           className="textarea textarea-bordered h-32"
           placeholder="Parlez de votre parcours musical, vos influences, votre style..."
-          value={formData.artisticBio || ''}
-          onChange={(e) => updateFormData('artisticBio', e.target.value)}
+          value={formData.artisticBio || ""}
+          onChange={(e) => updateFormData("artisticBio", e.target.value)}
           maxLength={2000}
         />
         <label className="label">
           <span className="label-text-alt">
-            {(formData.artisticBio || '').length}/2000 caractères
+            {(formData.artisticBio || "").length}/2000 caractères
           </span>
         </label>
       </div>
@@ -405,12 +509,12 @@ const ArtisticProfileTab: React.FC<{
   return (
     <div className="space-y-6">
       <h3 className="text-xl font-semibold">Profil artistique</h3>
-      
+
       <MultiSelect
         label="Spécialités"
         options={SPECIALTY_OPTIONS}
         value={formData.specialties || []}
-        onChange={(value) => updateFormData('specialties', value)}
+        onChange={(value) => updateFormData("specialties", value)}
         maxSelections={6}
         placeholder="Types de prestations..."
       />
@@ -419,7 +523,7 @@ const ArtisticProfileTab: React.FC<{
         label="Équipements possédés"
         options={EQUIPMENT_OPTIONS}
         value={formData.equipment || []}
-        onChange={(value) => updateFormData('equipment', value)}
+        onChange={(value) => updateFormData("equipment", value)}
         allowCustom={true}
         placeholder="Votre matériel..."
       />
@@ -428,15 +532,19 @@ const ArtisticProfileTab: React.FC<{
         label="Équipements requis de la venue"
         options={REQUIREMENTS_OPTIONS}
         value={formData.requirements || []}
-        onChange={(value) => updateFormData('requirements', value)}
+        onChange={(value) => updateFormData("requirements", value)}
         allowCustom={true}
         placeholder="Ce dont vous avez besoin..."
       />
 
       <div className="form-control">
         <label className="label">
-          <span className="label-text font-medium">Rayon de déplacement (km)</span>
-          <span className="label-text-alt">Distance maximale depuis votre base</span>
+          <span className="label-text font-medium">
+            Rayon de déplacement (km)
+          </span>
+          <span className="label-text-alt">
+            Distance maximale depuis votre base
+          </span>
         </label>
         <input
           type="number"
@@ -444,8 +552,13 @@ const ArtisticProfileTab: React.FC<{
           placeholder="Ex: 50"
           min="0"
           max="500"
-          value={formData.travelRadius || ''}
-          onChange={(e) => updateFormData('travelRadius', parseInt(e.target.value) || undefined)}
+          value={formData.travelRadius || ""}
+          onChange={(e) =>
+            updateFormData(
+              "travelRadius",
+              parseInt(e.target.value) || undefined
+            )
+          }
         />
       </div>
     </div>
@@ -460,19 +573,23 @@ const PricingTab: React.FC<{
   return (
     <div className="space-y-6">
       <h3 className="text-xl font-semibold">Tarifs et conditions</h3>
-      
+
       <div className="form-control">
         <label className="label">
-          <span className="label-text font-medium">Fourchette de prix générale</span>
+          <span className="label-text font-medium">
+            Fourchette de prix générale
+          </span>
         </label>
         <select
           className="select select-bordered"
-          value={formData.priceRange || ''}
-          onChange={(e) => updateFormData('priceRange', e.target.value)}
+          value={formData.priceRange || ""}
+          onChange={(e) => updateFormData("priceRange", e.target.value)}
         >
           <option value="">Sélectionner...</option>
-          {PRICE_RANGE_OPTIONS.map(range => (
-            <option key={range} value={range}>{range}€</option>
+          {PRICE_RANGE_OPTIONS.map((range) => (
+            <option key={range} value={range}>
+              {range}€
+            </option>
           ))}
         </select>
       </div>
@@ -487,8 +604,14 @@ const PricingTab: React.FC<{
             className="input input-bordered"
             placeholder="500"
             min="0"
-            value={formData.priceDetails?.concert || ''}
-            onChange={(e) => updateNestedFormData('priceDetails', 'concert', parseInt(e.target.value) || undefined)}
+            value={formData.priceDetails?.concert || ""}
+            onChange={(e) =>
+              updateNestedFormData(
+                "priceDetails",
+                "concert",
+                parseInt(e.target.value) || undefined
+              )
+            }
           />
         </div>
 
@@ -501,8 +624,14 @@ const PricingTab: React.FC<{
             className="input input-bordered"
             placeholder="800"
             min="0"
-            value={formData.priceDetails?.wedding || ''}
-            onChange={(e) => updateNestedFormData('priceDetails', 'wedding', parseInt(e.target.value) || undefined)}
+            value={formData.priceDetails?.wedding || ""}
+            onChange={(e) =>
+              updateNestedFormData(
+                "priceDetails",
+                "wedding",
+                parseInt(e.target.value) || undefined
+              )
+            }
           />
         </div>
 
@@ -515,8 +644,14 @@ const PricingTab: React.FC<{
             className="input input-bordered"
             placeholder="600"
             min="0"
-            value={formData.priceDetails?.private || ''}
-            onChange={(e) => updateNestedFormData('priceDetails', 'private', parseInt(e.target.value) || undefined)}
+            value={formData.priceDetails?.private || ""}
+            onChange={(e) =>
+              updateNestedFormData(
+                "priceDetails",
+                "private",
+                parseInt(e.target.value) || undefined
+              )
+            }
           />
         </div>
       </div>
@@ -524,13 +659,17 @@ const PricingTab: React.FC<{
       <div className="form-control">
         <label className="label">
           <span className="label-text font-medium">Conditions et détails</span>
-          <span className="label-text-alt">Transport, matériel, conditions particulières...</span>
+          <span className="label-text-alt">
+            Transport, matériel, conditions particulières...
+          </span>
         </label>
         <textarea
           className="textarea textarea-bordered h-24"
           placeholder="Ex: Transport inclus dans un rayon de 50km, setup 1h avant..."
-          value={formData.priceDetails?.conditions || ''}
-          onChange={(e) => updateNestedFormData('priceDetails', 'conditions', e.target.value)}
+          value={formData.priceDetails?.conditions || ""}
+          onChange={(e) =>
+            updateNestedFormData("priceDetails", "conditions", e.target.value)
+          }
           maxLength={500}
         />
       </div>
@@ -546,12 +685,12 @@ const PortfolioTab: React.FC<{
   return (
     <div className="space-y-8">
       <h3 className="text-xl font-semibold">Portfolio multimédia</h3>
-      
+
       {/* Photos */}
       <ImageUpload
         label="Photos"
         value={formData.portfolio?.photos || []}
-        onChange={(value) => updateNestedFormData('portfolio', 'photos', value)}
+        onChange={(value) => updateNestedFormData("portfolio", "photos", value)}
         maxImages={8}
       />
 
@@ -567,8 +706,10 @@ const PortfolioTab: React.FC<{
               type="url"
               className="input input-bordered"
               placeholder="https://open.spotify.com/artist/..."
-              value={formData.socialLinks?.spotify || ''}
-              onChange={(e) => updateNestedFormData('socialLinks', 'spotify', e.target.value)}
+              value={formData.socialLinks?.spotify || ""}
+              onChange={(e) =>
+                updateNestedFormData("socialLinks", "spotify", e.target.value)
+              }
             />
           </div>
 
@@ -580,8 +721,10 @@ const PortfolioTab: React.FC<{
               type="url"
               className="input input-bordered"
               placeholder="https://youtube.com/@..."
-              value={formData.socialLinks?.youtube || ''}
-              onChange={(e) => updateNestedFormData('socialLinks', 'youtube', e.target.value)}
+              value={formData.socialLinks?.youtube || ""}
+              onChange={(e) =>
+                updateNestedFormData("socialLinks", "youtube", e.target.value)
+              }
             />
           </div>
 
@@ -593,8 +736,14 @@ const PortfolioTab: React.FC<{
               type="url"
               className="input input-bordered"
               placeholder="https://soundcloud.com/..."
-              value={formData.socialLinks?.soundcloud || ''}
-              onChange={(e) => updateNestedFormData('socialLinks', 'soundcloud', e.target.value)}
+              value={formData.socialLinks?.soundcloud || ""}
+              onChange={(e) =>
+                updateNestedFormData(
+                  "socialLinks",
+                  "soundcloud",
+                  e.target.value
+                )
+              }
             />
           </div>
 
@@ -606,8 +755,10 @@ const PortfolioTab: React.FC<{
               type="url"
               className="input input-bordered"
               placeholder="https://instagram.com/..."
-              value={formData.socialLinks?.instagram || ''}
-              onChange={(e) => updateNestedFormData('socialLinks', 'instagram', e.target.value)}
+              value={formData.socialLinks?.instagram || ""}
+              onChange={(e) =>
+                updateNestedFormData("socialLinks", "instagram", e.target.value)
+              }
             />
           </div>
         </div>
@@ -621,21 +772,23 @@ const PublicProfileTab: React.FC<{
   updateFormData: (field: keyof UpdateArtistProfileData, value: any) => void;
   onGenerateSlug: () => void;
   artistData: ExtendedUser | null;
-}> = ({ formData, updateFormData, onGenerateSlug, artistData }) => {
+}> = ({ formData, updateFormData, onGenerateSlug, artistData: _artistData }) => {
   return (
     <div className="space-y-6">
       <h3 className="text-xl font-semibold">Profil public</h3>
-      
+
       <div className="form-control">
         <label className="cursor-pointer label justify-start gap-4">
           <input
             type="checkbox"
             className="checkbox checkbox-primary"
             checked={formData.isPublic || false}
-            onChange={(e) => updateFormData('isPublic', e.target.checked)}
+            onChange={(e) => updateFormData("isPublic", e.target.checked)}
           />
           <div>
-            <span className="label-text font-medium">Rendre mon profil public</span>
+            <span className="label-text font-medium">
+              Rendre mon profil public
+            </span>
             <p className="text-sm text-base-content/60">
               Permettre aux venues de découvrir votre profil et vous contacter
             </p>
@@ -659,8 +812,8 @@ const PublicProfileTab: React.FC<{
                   type="text"
                   className="input input-bordered rounded-l-none flex-1"
                   placeholder="votre-nom-artiste"
-                  value={formData.publicSlug || ''}
-                  onChange={(e) => updateFormData('publicSlug', e.target.value)}
+                  value={formData.publicSlug || ""}
+                  onChange={(e) => updateFormData("publicSlug", e.target.value)}
                 />
               </div>
               <button
@@ -674,7 +827,8 @@ const PublicProfileTab: React.FC<{
             {formData.publicSlug && (
               <label className="label">
                 <span className="label-text-alt text-success">
-                  ✓ Votre profil sera accessible sur: stagecomplete.com/p/{formData.publicSlug}
+                  ✓ Votre profil sera accessible sur: stagecomplete.com/p/
+                  {formData.publicSlug}
                 </span>
               </label>
             )}
@@ -684,8 +838,9 @@ const PublicProfileTab: React.FC<{
             <div>
               <h4 className="font-medium">Profil public activé !</h4>
               <p className="text-sm">
-                Les venues pourront découvrir votre profil, voir vos informations artistiques
-                et vous contacter pour des opportunités.
+                Les venues pourront découvrir votre profil, voir vos
+                informations artistiques et vous contacter pour des
+                opportunités.
               </p>
             </div>
           </div>

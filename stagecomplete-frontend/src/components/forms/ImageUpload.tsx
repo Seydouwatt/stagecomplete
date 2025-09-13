@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
-import { PhotoIcon, XMarkIcon, PlusIcon } from '@heroicons/react/24/outline';
-import { artistService } from '../../services/artistService';
+import React, { useState, useRef } from "react";
+import { XMarkIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { artistService } from "../../services/artistService";
 
 interface ImageUploadProps {
   label: string;
@@ -17,12 +17,14 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   onChange,
   maxImages = 6,
   className = "",
-  error
+  error,
 }) => {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = Array.from(event.target.files || []);
     if (files.length === 0) return;
 
@@ -51,13 +53,13 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       // Ajouter les nouvelles images
       onChange([...value, ...newImages]);
     } catch (error) {
-      console.error('Error uploading images:', error);
-      alert('Erreur lors du téléchargement des images');
+      console.error("Error uploading images:", error);
+      alert("Erreur lors du téléchargement des images");
     } finally {
       setIsUploading(false);
       // Reset input
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = "";
       }
     }
   };
@@ -91,14 +93,14 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             className="relative group aspect-square bg-base-200 rounded-lg overflow-hidden"
             draggable
             onDragStart={(e) => {
-              e.dataTransfer.setData('text/plain', index.toString());
+              e.dataTransfer.setData("text/plain", index.toString());
             }}
             onDragOver={(e) => {
               e.preventDefault();
             }}
             onDrop={(e) => {
               e.preventDefault();
-              const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+              const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
               if (fromIndex !== index) {
                 reorderImages(fromIndex, index);
               }
@@ -109,7 +111,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               alt={`Portfolio ${index + 1}`}
               className="w-full h-full object-cover"
             />
-            
+
             {/* Overlay avec actions */}
             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
               <button
@@ -124,9 +126,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
             {/* Badge de position */}
             <div className="absolute top-2 left-2">
-              <span className="badge badge-primary badge-sm">
-                {index + 1}
-              </span>
+              <span className="badge badge-primary badge-sm">{index + 1}</span>
             </div>
           </div>
         ))}

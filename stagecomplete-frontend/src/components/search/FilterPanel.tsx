@@ -63,7 +63,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     "Lille",
   ];
 
-  const experiences = ["BEGINNER", "INTERMEDIATE", "PROFESSIONAL"];
 
   const handleGenreToggle = (genre: string) => {
     const newGenres = filters.genres.includes(genre)
