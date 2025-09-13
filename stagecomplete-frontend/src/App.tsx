@@ -10,6 +10,7 @@ import { MainLayout } from "./components/layout";
 import { Login, Register } from "./pages/auth";
 import { ArtistDashboard, VenueDashboard } from "./pages/dashboard";
 import { Profile } from "./pages/profile";
+import { ArtistProfileForm } from "./pages/artist/ArtistProfileForm";
 import { useAuthStore } from "./stores/authStore";
 import { ROUTES } from "./constants";
 import ToastContainer from "./components/ui/Toast";
@@ -83,7 +84,7 @@ function App() {
               path="/artist/portfolio"
               element={
                 <ProtectedRoute requiredRole="ARTIST">
-                  <ComingSoon title="Portfolio Artiste" />
+                  <ArtistProfileForm />
                 </ProtectedRoute>
               }
             />
