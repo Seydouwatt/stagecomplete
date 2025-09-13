@@ -1,6 +1,6 @@
 import { validate } from 'class-validator';
 import { RegisterDto } from './register.dto';
-import { Role } from 'generated/prisma';
+import { Role } from '@prisma/client';
 
 describe('RegisterDto', () => {
   it('should pass validation with valid data', async () => {

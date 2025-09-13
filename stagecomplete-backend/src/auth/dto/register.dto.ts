@@ -6,7 +6,7 @@ import {
   IsNotEmpty,
   Matches,
 } from 'class-validator';
-import { Role } from 'generated/prisma';
+import { Role } from '@prisma/client';
 
 export class RegisterDto {
   @IsEmail({}, { message: 'Email invalide' })

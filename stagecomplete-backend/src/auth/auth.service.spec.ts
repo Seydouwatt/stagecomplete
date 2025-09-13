@@ -7,7 +7,7 @@ import {
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from 'generated/prisma';
+import { Role } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 
 // Mock bcrypt
