@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { RegisterDto, AuthResponseDto, JwtPayload, LoginDto, UpdateProfileDto } from './dto';
+import { RegisterDto, AuthResponseDto, JwtPayload, LoginDto, UpdateProfileDto, UpdateArtistProfileDto } from './dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 // Interface pour le payload JWT
@@ -413,5 +413,285 @@ export class AuthService {
         'Erreur lors de la mise à jour du profil',
       );
     }
+  }
+
+  // ==========  MÉTHODES PROFIL ARTISTE ÉTENDU ==========
+
+  /**
+   * Met à jour le profil artiste étendu
+   */
+  async updateArtistProfile(userId: string, updateData: UpdateArtistProfileDto) {
+    try {
+      // Vérifier que l'utilisateur existe et est un artiste
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        include: { 
+          profile: {
+            include: {
+              artist: true
+            }
+          }
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException('Utilisateur non trouvé');
+      }
+
+      if (!user.profile) {
+        throw new NotFoundException('Profil non trouvé');
+      }
+
+      if (user.role !== 'ARTIST') {
+        throw new BadRequestException('Cette fonction n\'est disponible que pour les artistes');
+      }
+
+      // Préparer les données pour la mise à jour
+      const updateFields: any = {
+        updatedAt: new Date(),
+      };
+
+      // Copier tous les champs du DTO vers les champs de mise à jour
+      Object.keys(updateData).forEach(key => {
+        if (updateData[key] !== undefined) {
+          updateFields[key] = updateData[key];
+        }
+      });
+
+      let artistProfile;
+
+      if (user.profile.artist) {
+        // Mettre à jour le profil artiste existant
+        artistProfile = await this.prisma.artist.update({
+          where: { profileId: user.profile.id },
+          data: updateFields,
+        });
+      } else {
+        // Créer un nouveau profil artiste
+        artistProfile = await this.prisma.artist.create({
+          data: {
+            profileId: user.profile.id,
+            ...updateFields,
+          },
+        });
+      }
+
+      // Retourner l'utilisateur complet mis à jour
+      const updatedUser = await this.prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+          profile: {
+            include: {
+              artist: true,
+              venue: true,
+            },
+          },
+        },
+      });
+
+      return updatedUser;
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+
+      console.error('Erreur lors de la mise à jour du profil artiste:', error);
+      throw new BadRequestException(
+        'Erreur lors de la mise à jour du profil artiste',
+      );
+    }
+  }
+
+  /**
+   * Récupère le profil artiste complet pour un utilisateur
+   */
+  async getArtistProfile(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        profile: {
+          include: {
+            artist: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Utilisateur non trouvé');
+    }
+
+    if (user.role !== 'ARTIST') {
+      throw new BadRequestException('Cette fonction n\'est disponible que pour les artistes');
+    }
+
+    return user;
+  }
+
+  /**
+   * Récupère un profil artiste public par slug ou ID
+   */
+  async getPublicArtistProfile(identifier: string) {
+    // Essayer d'abord par slug, puis par ID
+    let artist = await this.prisma.artist.findFirst({
+      where: {
+        AND: [
+          { isPublic: true },
+          {
+            OR: [
+              { publicSlug: identifier },
+              { id: identifier }
+            ]
+          }
+        ]
+      },
+      include: {
+        profile: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: false, // Ne pas exposer l'email
+                role: true,
+                createdAt: true,
+              }
+            }
+          }
+        }
+      },
+    });
+
+    if (!artist) {
+      throw new NotFoundException('Profil artiste public non trouvé ou non visible');
+    }
+
+    return artist;
+  }
+
+  /**
+   * Recherche d'artistes avec filtres pour les venues
+   */
+  async searchArtists(filters: {
+    genres?: string[];
+    experience?: string;
+    priceRange?: string;
+    location?: string;
+    instruments?: string[];
+    isPublic?: boolean;
+    limit?: number;
+    offset?: number;
+  }) {
+    const {
+      genres,
+      experience,
+      priceRange,
+      location,
+      instruments,
+      isPublic = true,
+      limit = 20,
+      offset = 0
+    } = filters;
+
+    const whereConditions: any = {
+      isPublic,
+    };
+
+    // Filtres par genres
+    if (genres && genres.length > 0) {
+      whereConditions.genres = {
+        hasSome: genres
+      };
+    }
+
+    // Filtre par expérience
+    if (experience) {
+      whereConditions.experience = experience;
+    }
+
+    // Filtre par fourchette de prix
+    if (priceRange) {
+      whereConditions.priceRange = priceRange;
+    }
+
+    // Filtre par instruments
+    if (instruments && instruments.length > 0) {
+      whereConditions.instruments = {
+        hasSome: instruments
+      };
+    }
+
+    // Filtre par localisation (via le profil)
+    const profileFilter: any = {};
+    if (location) {
+      profileFilter.location = {
+        contains: location,
+        mode: 'insensitive'
+      };
+    }
+
+    // Construire la clause where complète si nécessaire
+    if (Object.keys(profileFilter).length > 0) {
+      whereConditions.profile = profileFilter;
+    }
+
+    const artists = await this.prisma.artist.findMany({
+      where: whereConditions,
+      include: {
+        profile: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                role: true,
+                createdAt: true,
+              }
+            }
+          }
+        }
+      },
+      take: limit,
+      skip: offset,
+      orderBy: {
+        updatedAt: 'desc'
+      }
+    });
+
+    // Compter le total pour la pagination
+    const total = await this.prisma.artist.count({
+      where: whereConditions,
+    });
+
+    return {
+      artists,
+      total,
+      hasMore: offset + limit < total
+    };
+  }
+
+  /**
+   * Génère un slug unique pour un artiste
+   */
+  async generateUniqueSlug(baseName: string): Promise<string> {
+    // Nettoyer le nom pour créer un slug
+    let slug = baseName
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '') // Supprimer caractères spéciaux
+      .replace(/\s+/g, '-') // Remplacer espaces par tirets
+      .replace(/-+/g, '-') // Éviter tirets multiples
+      .trim();
+
+    // Vérifier si le slug existe déjà
+    let uniqueSlug = slug;
+    let counter = 1;
+
+    while (await this.prisma.artist.findFirst({ where: { publicSlug: uniqueSlug } })) {
+      uniqueSlug = `${slug}-${counter}`;
+      counter++;
+    }
+
+    return uniqueSlug;
   }
 }

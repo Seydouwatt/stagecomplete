@@ -47,18 +47,42 @@ model Profile {
 }
 
 model Artist {
-  id          String   @id @default(cuid())
-  profileId   String   @unique
-  genres      String[] 
-  instruments String[]
-  priceRange  String?  // "100-500", "500-1000", etc
-  experience  String?  // "BEGINNER", "INTERMEDIATE", "PROFESSIONAL"
-  portfolio   Json?    // {photos: [], videos: [], audio: []}
-  availability Json?   // Calendar data
-  profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  events      Event[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String   @id @default(cuid())
+  profileId       String   @unique
+  
+  // Basic info
+  genres          String[] 
+  instruments     String[]
+  priceRange      String?     // "100-500", "500-1000", etc
+  experience      String?     // "BEGINNER", "INTERMEDIATE", "PROFESSIONAL"
+  yearsActive     Int?        // Années d'expérience
+  
+  // Extended profile fields
+  artisticBio     String?     // Bio artistique détaillée
+  specialties     String[]    // Spécialités (concert, studio, teaching, etc)
+  equipment       String[]    // Équipements possédés
+  requirements    String[]    // Équipements requis de la venue
+  
+  // Pricing & Conditions
+  priceDetails    Json?       // {concert: 500, private: 800, conditions: "..."}
+  travelRadius    Int?        // Rayon de déplacement en km
+  
+  // Media & Portfolio
+  portfolio       Json?       // {photos: [], videos: [], audio: []}
+  socialLinks     Json?       // {spotify: "", soundcloud: "", youtube: "", instagram: ""}
+  mediaLinks      Json?       // Links externes vers plateformes
+  
+  // Availability & Settings
+  availability    Json?       // Calendar data
+  isPublic        Boolean     @default(false)  // Profil public visible
+  publicSlug      String?     // Pour URL publique /p/slug
+  
+  // Relations
+  profile         Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  events          Event[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@map("artists")
 }

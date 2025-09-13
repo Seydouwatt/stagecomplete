@@ -25,6 +25,7 @@ import {
   RegisterDto,
   VerifyTokenResponseDto,
   UpdateProfileDto,
+  UpdateArtistProfileDto,
 } from './dto';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -273,5 +274,155 @@ export class AuthController {
       message: 'Validation réussie !',
       data: loginDto,
     };
+  }
+
+  // ========== ENDPOINTS PROFIL ARTISTE ÉTENDU ==========
+
+  @Get('artist/profile')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Récupérer le profil artiste étendu',
+    description: 'Retourne le profil artiste complet avec toutes les informations détaillées'
+  })
+  @ApiOkResponse({
+    description: 'Profil artiste récupéré avec succès',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        artist: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            profile: { type: 'object' },
+            genres: { type: 'array', items: { type: 'string' } },
+            instruments: { type: 'array', items: { type: 'string' } },
+            artisticBio: { type: 'string' },
+            experience: { type: 'string' },
+            yearsActive: { type: 'number' },
+            priceRange: { type: 'string' },
+            socialLinks: { type: 'object' },
+            portfolio: { type: 'object' },
+            isPublic: { type: 'boolean' },
+            publicSlug: { type: 'string' }
+          }
+        }
+      }
+    }
+  })
+  @ApiUnauthorizedResponse({ description: 'Non autorisé - réservé aux artistes' })
+  async getArtistProfile(@GetUser() user: AuthenticatedUser) {
+    const artistProfile = await this.authService.getArtistProfile(user.userId);
+    return {
+      message: 'Profil artiste récupéré avec succès',
+      artist: artistProfile,
+    };
+  }
+
+  @Put('artist/profile')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Mettre à jour le profil artiste étendu',
+    description: 'Met à jour toutes les informations du profil artiste'
+  })
+  @ApiBody({
+    type: UpdateArtistProfileDto,
+    description: 'Données du profil artiste à mettre à jour',
+    examples: {
+      complete: {
+        summary: 'Profil artiste complet',
+        value: {
+          genres: ['Rock', 'Blues', 'Jazz'],
+          instruments: ['Guitare', 'Piano', 'Chant'],
+          experience: 'PROFESSIONAL',
+          yearsActive: 10,
+          artisticBio: 'Musicien professionnel avec 10 ans d\'expérience sur scène...',
+          specialties: ['CONCERT', 'WEDDING'],
+          equipment: ['Guitare électrique', 'Amplificateur', 'Pédales'],
+          requirements: ['Scène', 'Système son', 'Éclairage'],
+          priceRange: '500-1000',
+          priceDetails: {
+            concert: 800,
+            wedding: 1200,
+            private: 600,
+            conditions: 'Transport inclus dans un rayon de 50km'
+          },
+          travelRadius: 50,
+          socialLinks: {
+            spotify: 'https://open.spotify.com/artist/123',
+            youtube: 'https://youtube.com/@artiste',
+            instagram: 'https://instagram.com/artiste_music'
+          },
+          isPublic: true,
+          publicSlug: 'jean-dupont-music'
+        }
+      }
+    }
+  })
+  @ApiOkResponse({
+    description: 'Profil artiste mis à jour avec succès',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        artist: { type: 'object' }
+      }
+    }
+  })
+  @ApiBadRequestResponse({ description: 'Données invalides ou utilisateur non artiste' })
+  @ApiUnauthorizedResponse({ description: 'Token JWT manquant ou invalide' })
+  async updateArtistProfile(
+    @GetUser() user: AuthenticatedUser,
+    @Body() updateArtistProfileDto: UpdateArtistProfileDto,
+  ) {
+    try {
+      const updatedProfile = await this.authService.updateArtistProfile(
+        user.userId,
+        updateArtistProfileDto,
+      );
+
+      return {
+        message: 'Profil artiste mis à jour avec succès',
+        artist: updatedProfile,
+      };
+    } catch (error) {
+      throw new BadRequestException({
+        message: 'Erreur lors de la mise à jour du profil artiste',
+        error: error.message || 'Erreur inconnue',
+      });
+    }
+  }
+
+  @Post('artist/generate-slug')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Générer un slug unique pour l\'URL publique',
+    description: 'Génère un slug URL friendly basé sur le nom d\'artiste'
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string', example: 'Jean Dupont Music' }
+      },
+      required: ['name']
+    }
+  })
+  @ApiOkResponse({
+    description: 'Slug généré avec succès',
+    schema: {
+      type: 'object',
+      properties: {
+        slug: { type: 'string', example: 'jean-dupont-music' }
+      }
+    }
+  })
+  async generateSlug(@Body('name') name: string) {
+    const slug = await this.authService.generateUniqueSlug(name);
+    return { slug };
   }
 }
