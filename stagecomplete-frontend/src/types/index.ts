@@ -56,6 +56,7 @@ export interface ChildrenProps {
 
 export type Experience = 'BEGINNER' | 'INTERMEDIATE' | 'PROFESSIONAL';
 export type ArtistSpecialty = 'CONCERT' | 'STUDIO' | 'TEACHING' | 'WEDDING' | 'CORPORATE' | 'PRIVATE';
+export type ArtistType = 'SOLO' | 'BAND' | 'THEATER_GROUP' | 'COMEDY_GROUP' | 'ORCHESTRA' | 'CHOIR' | 'OTHER';
 
 export interface PriceDetails {
   concert?: number;
@@ -95,6 +96,10 @@ export interface ArtistProfile {
   equipment?: string[];
   requirements?: string[];
   
+  // Member management
+  artistType?: ArtistType;
+  memberCount?: number;
+  
   // Pricing & Conditions
   priceDetails?: PriceDetails;
   travelRadius?: number;
@@ -129,6 +134,8 @@ export interface UpdateArtistProfileData {
   specialties?: ArtistSpecialty[];
   equipment?: string[];
   requirements?: string[];
+  artistType?: ArtistType;
+  memberCount?: number;
   priceDetails?: PriceDetails;
   travelRadius?: number;
   socialLinks?: SocialLinks;

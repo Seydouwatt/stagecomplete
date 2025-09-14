@@ -18,8 +18,8 @@ import {
   type ArtistMembersResponse,
 } from "../../services/memberService";
 import { useToastStore, type ToastType } from "../../stores/useToastStore";
-import { LoadingButton } from "../ui/LoadingButton";
 import { MemberForm } from "./MemberForm";
+import LoadingButton from "../ui/LoadingButton";
 
 interface MemberManagementProps {
   className?: string;
@@ -69,11 +69,7 @@ export const MemberManagement: React.FC<MemberManagementProps> = ({
       await loadMembers(); // Recharger la liste
     } catch (error: any) {
       console.error("Erreur lors de la suppression:", error);
-      addToast({
-        type: "error",
-        title: "Erreur",
-        message: "Impossible de supprimer ce membre",
-      });
+      addToast("Impossible de supprimer ce membre", "error" as ToastType);
     } finally {
       setDeletingMemberId(null);
     }
@@ -188,10 +184,9 @@ export const MemberManagement: React.FC<MemberManagementProps> = ({
                           {member.name}
                         </h3>
                         {member.isFounder && (
-                          <Crown
-                            className="w-4 h-4 text-warning"
-                            title="Membre fondateur"
-                          />
+                          <Crown className="w-4 h-4 text-warning">
+                            Membre fondateur
+                          </Crown>
                         )}
                       </div>
                       {member.role && (
@@ -287,7 +282,7 @@ export const MemberManagement: React.FC<MemberManagementProps> = ({
                       <LoadingButton
                         className="btn btn-ghost btn-sm text-error hover:bg-error/10"
                         onClick={() => handleDeleteMember(member.id)}
-                        loading={deletingMemberId === member.id}
+                        loadingText="Suppression en cours..."
                         disabled={deletingMemberId !== null}
                       >
                         <Trash2 className="w-4 h-4" />

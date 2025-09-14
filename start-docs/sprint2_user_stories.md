@@ -14,27 +14,60 @@
 
 **Critères d'acceptation :**
 
-- [ ] Page "Mon Profil Artiste" accessible depuis dashboard
-- [ ] Formulaire étendu avec sections : Info générale, Artistique, Portfolio, Contact
-- [ ] Champs spécifiques : genres musicaux, instruments, années d'expérience
-- [ ] Section tarifs (fourchette de prix, conditions)
-- [ ] Section équipements (matériel possédé/requis)
-- [ ] Bio artistique rich text avec formatage
-- [ ] Upload avatar + photos portfolio
-- [ ] Liens sociaux et plateformes (Spotify, YouTube, SoundCloud)
-- [ ] Prévisualisation de la fiche publique
-- [ ] Validation côté client et serveur
+- [x] Page "Mon Profil Artiste" accessible depuis dashboard
+- [x] Formulaire étendu avec sections : Info générale, Artistique, Portfolio, Contact
+- [x] Champs spécifiques : genres musicaux, instruments, années d'expérience
+- [x] Section tarifs (fourchette de prix, conditions)
+- [x] Section équipements (matériel possédé/requis)
+- [x] Bio artistique rich text avec formatage
+- [x] Upload avatar + photos portfolio
+- [x] Liens sociaux et plateformes (Spotify, YouTube, SoundCloud)
+- [x] Prévisualisation de la fiche publique
+- [x] Validation côté client et serveur
+- [x] Gestion des membres (artistes solo et groupes) ✅ FAIT
 - [ ] Sauvegarde progressive (draft)
 
 **Issues techniques :**
 
-- [ ] **ARTIST-001**: Extend Artist model avec nouveaux champs
-- [ ] **ARTIST-002**: API endpoints CRUD profil artiste étendu
-- [ ] **ARTIST-003**: Upload avatar + portfolio images
-- [ ] **ARTIST-004**: Page formulaire profil artiste React
-- [ ] **ARTIST-005**: Validation DTOs profil étendu
+- [x] **ARTIST-001**: Extend Artist model avec nouveaux champs ✅ FAIT
+- [x] **ARTIST-002**: API endpoints CRUD profil artiste étendu ✅ FAIT
+- [x] **ARTIST-003**: Upload avatar + portfolio images ✅ FAIT
+- [x] **ARTIST-004**: Page formulaire profil artiste React ✅ FAIT
+- [x] **ARTIST-005**: Validation DTOs profil étendu ✅ FAIT
 - [ ] **ARTIST-006**: Rich text editor pour bio
 - [ ] **ARTIST-007**: Système de sauvegarde progressive
+
+---
+
+### **US-017B: Artist Member Management (Groups)**
+
+**En tant qu'** artiste en groupe (band, théâtre, orchestre)  
+**Je veux** gérer les informations de chaque membre de mon groupe  
+**Afin de** présenter une fiche complète avec tous les membres
+
+**Critères d'acceptation :**
+
+- [x] Distinction entre artiste SOLO et GROUPE (band, théâtre, orchestre, etc.)
+- [x] Possibilité d'ajouter/modifier/supprimer des membres
+- [x] Informations par membre : nom, rôle, bio, photo, instruments
+- [x] Contact individuel par membre (email, téléphone, réseaux sociaux)
+- [x] Années d'expérience et niveau par membre
+- [x] Statut membre fondateur et date d'adhésion
+- [x] Gestion du nombre maximum de membres par groupe
+- [x] Artistes solo = 1 membre automatique
+- [x] Interface frontend de gestion des membres ✅ FAIT
+- [ ] Affichage des membres sur fiche publique
+
+**Issues techniques :**
+
+- [x] **MEMBER-001**: ArtistType enum et champs artistType/memberCount
+- [x] **MEMBER-002**: Model ArtistMember avec champs complets
+- [x] **MEMBER-003**: API endpoints CRUD membres (/artist/members) ✅ FAIT
+- [x] **MEMBER-004**: DTOs validation pour membres ✅ FAIT
+- [x] **MEMBER-005**: Migration base de données ✅ FAIT
+- [x] **MEMBER-006**: Composant MemberManagement React ✅ FAIT
+- [x] **MEMBER-007**: Interface ajout/édition membre ✅ FAIT
+- [ ] **MEMBER-008**: Affichage membres sur profil public
 
 ---
 
@@ -304,7 +337,8 @@
 
 ### **MUST HAVE (Critique) :**
 
-- US-017: Extended Artist Profile (12h)
+- US-017: Extended Artist Profile (12h) ✅ FAIT
+- US-017B: Artist Member Management (8h) ✅ FAIT
 - US-018: Public Artist Profile (10h)
 - US-020: Artist Search for Venues (8h)
 - US-022: Frontend-Backend Integration (6h)
@@ -321,6 +355,7 @@
 - US-025: Data Seeding (4h)
 
 ### **TOTAL ESTIMATION: ~68h = 8-9 jours** _(réalisable en 7 jours avec focus)_
+**PROGRESSION: 20h complétées (US-017 + US-017B)** ✅
 
 ---
 
