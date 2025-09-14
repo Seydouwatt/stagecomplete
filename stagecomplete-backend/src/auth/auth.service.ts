@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto, AuthResponseDto, JwtPayload, LoginDto, UpdateProfileDto, UpdateArtistProfileDto } from './dto';
+import { CreateArtistMemberDto, UpdateArtistMemberDto } from './dto/artist-member.dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 // Interface pour le payload JWT
@@ -693,5 +694,209 @@ export class AuthService {
     }
 
     return uniqueSlug;
+  }
+
+  // ===============================
+  // ARTIST MEMBER MANAGEMENT
+  // ===============================
+
+  /**
+   * Créer un nouveau membre pour un artiste
+   */
+  async createArtistMember(artistId: string, memberData: CreateArtistMemberDto) {
+    try {
+      // Vérifier que l'artiste existe
+      const artist = await this.prisma.artist.findUnique({
+        where: { id: artistId },
+        include: { members: true }
+      });
+
+      if (!artist) {
+        throw new NotFoundException('Artiste non trouvé');
+      }
+
+      // Vérifier que le nombre de membres ne dépasse pas la limite
+      if (artist.members.length >= artist.memberCount) {
+        throw new BadRequestException(`Le nombre maximum de membres (${artist.memberCount}) est atteint`);
+      }
+
+      // Créer le membre
+      const newMember = await this.prisma.artistMember.create({
+        data: {
+          artistId,
+          ...memberData
+        }
+      });
+
+      return newMember;
+    } catch (error) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Erreur lors de la création du membre');
+    }
+  }
+
+  /**
+   * Récupérer tous les membres d'un artiste
+   */
+  async getArtistMembers(artistId: string) {
+    try {
+      const artist = await this.prisma.artist.findUnique({
+        where: { id: artistId },
+        include: { 
+          members: {
+            where: { isActive: true },
+            orderBy: [
+              { isFounder: 'desc' },
+              { joinDate: 'asc' }
+            ]
+          }
+        }
+      });
+
+      if (!artist) {
+        throw new NotFoundException('Artiste non trouvé');
+      }
+
+      return {
+        artist: {
+          id: artist.id,
+          artistType: artist.artistType,
+          memberCount: artist.memberCount
+        },
+        members: artist.members
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Erreur lors de la récupération des membres');
+    }
+  }
+
+  /**
+   * Mettre à jour un membre
+   */
+  async updateArtistMember(artistId: string, memberId: string, updateData: UpdateArtistMemberDto) {
+    try {
+      // Vérifier que le membre appartient bien à cet artiste
+      const member = await this.prisma.artistMember.findFirst({
+        where: { 
+          id: memberId,
+          artistId: artistId 
+        }
+      });
+
+      if (!member) {
+        throw new NotFoundException('Membre non trouvé');
+      }
+
+      // Mettre à jour le membre
+      const updatedMember = await this.prisma.artistMember.update({
+        where: { id: memberId },
+        data: updateData
+      });
+
+      return updatedMember;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Erreur lors de la mise à jour du membre');
+    }
+  }
+
+  /**
+   * Supprimer un membre (soft delete en désactivant)
+   */
+  async deleteArtistMember(artistId: string, memberId: string) {
+    try {
+      // Vérifier que le membre appartient bien à cet artiste
+      const member = await this.prisma.artistMember.findFirst({
+        where: { 
+          id: memberId,
+          artistId: artistId 
+        }
+      });
+
+      if (!member) {
+        throw new NotFoundException('Membre non trouvé');
+      }
+
+      // Soft delete : désactiver le membre au lieu de le supprimer
+      await this.prisma.artistMember.update({
+        where: { id: memberId },
+        data: { isActive: false }
+      });
+
+      return { message: 'Membre supprimé avec succès' };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Erreur lors de la suppression du membre');
+    }
+  }
+
+  /**
+   * Récupérer un membre spécifique
+   */
+  async getArtistMember(artistId: string, memberId: string) {
+    try {
+      const member = await this.prisma.artistMember.findFirst({
+        where: { 
+          id: memberId,
+          artistId: artistId,
+          isActive: true
+        }
+      });
+
+      if (!member) {
+        throw new NotFoundException('Membre non trouvé');
+      }
+
+      return member;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Erreur lors de la récupération du membre');
+    }
+  }
+
+  /**
+   * Initialiser automatiquement le premier membre pour un artiste solo
+   */
+  async initializeSoloArtistMember(artistId: string, userProfile: any) {
+    try {
+      // Vérifier si l'artiste a déjà des membres
+      const existingMembers = await this.prisma.artistMember.count({
+        where: { artistId, isActive: true }
+      });
+
+      if (existingMembers > 0) {
+        return; // Déjà initialisé
+      }
+
+      // Créer le membre principal pour l'artiste solo
+      await this.prisma.artistMember.create({
+        data: {
+          artistId,
+          name: userProfile.name,
+          email: userProfile.user?.email,
+          avatar: userProfile.avatar,
+          phone: userProfile.phone,
+          bio: userProfile.bio,
+          isFounder: true,
+          isActive: true,
+          instruments: [], // À remplir manuellement par l'utilisateur
+          role: 'Artiste principal'
+        }
+      });
+    } catch (error) {
+      console.error('Erreur lors de l\'initialisation du membre solo:', error);
+      // Ne pas lancer d'erreur pour ne pas bloquer la création du profil
+    }
   }
 }

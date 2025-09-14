@@ -4,6 +4,8 @@ import {
   Get, 
   Post, 
   Put, 
+  Delete,
+  Param,
   UseGuards,
   BadRequestException,
   HttpStatus,
@@ -27,6 +29,7 @@ import {
   UpdateProfileDto,
   UpdateArtistProfileDto,
 } from './dto';
+import { CreateArtistMemberDto, UpdateArtistMemberDto } from './dto/artist-member.dto';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthenticatedUser, GetUser } from './decorators';
@@ -424,5 +427,136 @@ export class AuthController {
   async generateSlug(@Body('name') name: string) {
     const slug = await this.authService.generateUniqueSlug(name);
     return { slug };
+  }
+
+  // ===============================
+  // ARTIST MEMBER MANAGEMENT ENDPOINTS
+  // ===============================
+
+  @Get('artist/members')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ 
+    summary: 'Récupérer les membres de l\'artiste',
+    description: 'Récupère tous les membres actifs de l\'artiste connecté'
+  })
+  @ApiOkResponse({ 
+    description: 'Membres récupérés avec succès',
+    schema: {
+      type: 'object',
+      properties: {
+        artist: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+            artistType: { type: 'string', enum: ['SOLO', 'BAND', 'THEATER_GROUP', 'COMEDY_GROUP', 'ORCHESTRA', 'CHOIR', 'OTHER'] },
+            memberCount: { type: 'number' }
+          }
+        },
+        members: {
+          type: 'array',
+          items: { type: 'object' }
+        }
+      }
+    }
+  })
+  async getArtistMembers(@GetUser() user: AuthenticatedUser) {
+    // Récupérer l'artiste lié à l'utilisateur
+    const artist = await this.authService.getArtistProfile(user.userId);
+    if (!artist) {
+      throw new BadRequestException('Profil artiste non trouvé');
+    }
+    
+    return this.authService.getArtistMembers(artist.id);
+  }
+
+  @Post('artist/members')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ 
+    summary: 'Ajouter un nouveau membre',
+    description: 'Ajoute un nouveau membre au groupe de l\'artiste connecté'
+  })
+  @ApiBody({ type: CreateArtistMemberDto })
+  @ApiOkResponse({ description: 'Membre créé avec succès' })
+  @ApiBadRequestResponse({ description: 'Données invalides ou limite de membres atteinte' })
+  async createArtistMember(@GetUser() user: AuthenticatedUser, @Body() memberData: CreateArtistMemberDto) {
+    // Récupérer l'artiste lié à l'utilisateur
+    const artist = await this.authService.getArtistProfile(user.userId);
+    if (!artist) {
+      throw new BadRequestException('Profil artiste non trouvé');
+    }
+    
+    return this.authService.createArtistMember(artist.id, memberData);
+  }
+
+  @Put('artist/members/:memberId')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ 
+    summary: 'Mettre à jour un membre',
+    description: 'Met à jour les informations d\'un membre du groupe'
+  })
+  @ApiBody({ type: UpdateArtistMemberDto })
+  @ApiOkResponse({ description: 'Membre mis à jour avec succès' })
+  @ApiBadRequestResponse({ description: 'Membre non trouvé ou données invalides' })
+  async updateArtistMember(
+    @GetUser() user: AuthenticatedUser, 
+    @Param('memberId') memberId: string,
+    @Body() updateData: UpdateArtistMemberDto
+  ) {
+    // Récupérer l'artiste lié à l'utilisateur
+    const artist = await this.authService.getArtistProfile(user.userId);
+    if (!artist) {
+      throw new BadRequestException('Profil artiste non trouvé');
+    }
+    
+    return this.authService.updateArtistMember(artist.id, memberId, updateData);
+  }
+
+  @Get('artist/members/:memberId')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ 
+    summary: 'Récupérer un membre spécifique',
+    description: 'Récupère les informations détaillées d\'un membre du groupe'
+  })
+  @ApiOkResponse({ description: 'Membre récupéré avec succès' })
+  @ApiBadRequestResponse({ description: 'Membre non trouvé' })
+  async getArtistMember(@GetUser() user: AuthenticatedUser, @Param('memberId') memberId: string) {
+    // Récupérer l'artiste lié à l'utilisateur
+    const artist = await this.authService.getArtistProfile(user.userId);
+    if (!artist) {
+      throw new BadRequestException('Profil artiste non trouvé');
+    }
+    
+    return this.authService.getArtistMember(artist.id, memberId);
+  }
+
+  @Delete('artist/members/:memberId')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({ 
+    summary: 'Supprimer un membre',
+    description: 'Désactive un membre du groupe (soft delete)'
+  })
+  @ApiOkResponse({ 
+    description: 'Membre supprimé avec succès',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Membre supprimé avec succès' }
+      }
+    }
+  })
+  @ApiBadRequestResponse({ description: 'Membre non trouvé' })
+  async deleteArtistMember(@GetUser() user: AuthenticatedUser, @Param('memberId') memberId: string) {
+    // Récupérer l'artiste lié à l'utilisateur
+    const artist = await this.authService.getArtistProfile(user.userId);
+    if (!artist) {
+      throw new BadRequestException('Profil artiste non trouvé');
+    }
+    
+    return this.authService.deleteArtistMember(artist.id, memberId);
   }
 }

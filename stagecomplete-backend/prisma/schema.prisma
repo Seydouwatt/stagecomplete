@@ -77,14 +77,53 @@ model Artist {
   isPublic        Boolean     @default(false)  // Profil public visible
   publicSlug      String?     // Pour URL publique /p/slug
   
+  // Group/Solo Management
+  artistType      ArtistType  @default(SOLO)  // Type d'artiste (solo, groupe, etc)
+  memberCount     Int         @default(1)     // Nombre de membres
+  
   // Relations
   profile         Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
   events          Event[]
+  members         ArtistMember[]
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@map("artists")
+}
+
+model ArtistMember {
+  id          String   @id @default(cuid())
+  artistId    String   
+  
+  // Personal Info
+  name        String                      // Nom du membre
+  role        String?                     // Rôle dans le groupe (chanteur, guitariste, etc)
+  bio         String?                     // Bio personnelle du membre
+  avatar      String?                     // Photo du membre (base64)
+  
+  // Contact & Social
+  email       String?                     // Email personnel du membre
+  phone       String?                     // Téléphone personnel
+  socialLinks Json?                       // {instagram: "", facebook: "", twitter: ""}
+  
+  // Musical Info
+  instruments String[]                    // Instruments joués par ce membre
+  experience  String?                     // Niveau d'expérience du membre
+  yearsActive Int?                        // Années d'expérience du membre
+  
+  // Member Status
+  isFounder   Boolean  @default(false)    // Membre fondateur
+  joinDate    DateTime @default(now())    // Date d'adhésion au groupe
+  isActive    Boolean  @default(true)     // Membre actif ou non
+  
+  // Relations
+  artist      Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("artist_members")
 }
 
 model Venue {
@@ -135,6 +174,16 @@ model Message {
   createdAt DateTime @default(now())
 
   @@map("messages")
+}
+
+enum ArtistType {
+  SOLO
+  BAND
+  THEATER_GROUP
+  COMEDY_GROUP
+  ORCHESTRA
+  CHOIR
+  OTHER
 }
 
 enum Role {

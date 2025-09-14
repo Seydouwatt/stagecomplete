@@ -31,6 +31,16 @@ export enum ArtistSpecialty {
   PRIVATE = 'PRIVATE'
 }
 
+export enum ArtistType {
+  SOLO = 'SOLO',
+  BAND = 'BAND',
+  THEATER_GROUP = 'THEATER_GROUP',
+  COMEDY_GROUP = 'COMEDY_GROUP',
+  ORCHESTRA = 'ORCHESTRA',
+  CHOIR = 'CHOIR',
+  OTHER = 'OTHER'
+}
+
 class PriceDetailsDto {
   @ApiPropertyOptional({ description: 'Prix pour concerts', example: 500 })
   @IsOptional()
@@ -252,4 +262,26 @@ export class UpdateArtistProfileDto {
   @IsString()
   @MaxLength(50)
   publicSlug?: string;
+
+  // Group/Solo Management
+  @ApiPropertyOptional({ 
+    description: 'Type d\'artiste (solo, groupe, etc)', 
+    example: 'BAND',
+    enum: ArtistType
+  })
+  @IsOptional()
+  @IsEnum(ArtistType)
+  artistType?: ArtistType;
+
+  @ApiPropertyOptional({ 
+    description: 'Nombre de membres dans le groupe', 
+    example: 4,
+    minimum: 1,
+    maximum: 50
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(50)
+  memberCount?: number;
 }
