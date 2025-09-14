@@ -33,8 +33,18 @@ async function bootstrap() {
   );
 
   // CORS configuration
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174', 
+    'https://stagecomplete.netlify.app'
+  ];
+  
+  if (process.env.FRONTEND_URL) {
+    allowedOrigins.push(process.env.FRONTEND_URL);
+  }
+
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: allowedOrigins,
     credentials: true,
   });
 
