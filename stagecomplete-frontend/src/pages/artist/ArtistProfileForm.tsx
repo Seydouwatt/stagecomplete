@@ -485,6 +485,7 @@ const GeneralInfoTab: React.FC<{
             <span className="label-text font-medium">Années d'activité</span>
           </label>
           <input
+            name="yearsActive"
             type="number"
             className="input input-bordered"
             placeholder="Ex: 5"
