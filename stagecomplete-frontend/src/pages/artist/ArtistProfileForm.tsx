@@ -124,7 +124,13 @@ const PRICE_RANGE_OPTIONS = [
   "2000+",
 ];
 
-type TabType = "general" | "artistic" | "members" | "pricing" | "portfolio" | "public";
+type TabType =
+  | "general"
+  | "artistic"
+  | "members"
+  | "pricing"
+  | "portfolio"
+  | "public";
 
 export const ArtistProfileForm: React.FC = () => {
   const { user } = useAuthStore();
@@ -242,7 +248,10 @@ export const ArtistProfileForm: React.FC = () => {
     setFormData((prev) => ({
       ...prev,
       [field]: {
-        ...(prev[field as keyof UpdateArtistProfileData] as Record<string, any> ?? {}),
+        ...((prev[field as keyof UpdateArtistProfileData] as Record<
+          string,
+          any
+        >) ?? {}),
         [subField]: value,
       },
     }));
@@ -390,10 +399,7 @@ export const ArtistProfileForm: React.FC = () => {
           )}
 
           {activeTab === "members" && (
-            <MembersTab
-              formData={formData}
-              updateFormData={updateFormData}
-            />
+            <MembersTab formData={formData} updateFormData={updateFormData} />
           )}
 
           {activeTab === "pricing" && (
@@ -583,13 +589,13 @@ const ArtisticProfileTab: React.FC<{
 };
 
 const ARTIST_TYPE_OPTIONS: { value: ArtistType; label: string }[] = [
-  { value: 'SOLO', label: 'Artiste solo' },
-  { value: 'BAND', label: 'Groupe / Band' },
-  { value: 'THEATER_GROUP', label: 'Troupe de théâtre' },
-  { value: 'COMEDY_GROUP', label: 'Groupe humoristique' },
-  { value: 'ORCHESTRA', label: 'Orchestre' },
-  { value: 'CHOIR', label: 'Chorale' },
-  { value: 'OTHER', label: 'Autre' },
+  { value: "SOLO", label: "Artiste solo" },
+  { value: "BAND", label: "Groupe / Band" },
+  { value: "THEATER_GROUP", label: "Troupe de théâtre" },
+  { value: "COMEDY_GROUP", label: "Groupe humoristique" },
+  { value: "ORCHESTRA", label: "Orchestre" },
+  { value: "CHOIR", label: "Chorale" },
+  { value: "OTHER", label: "Autre" },
 ];
 
 const MembersTab: React.FC<{
@@ -597,10 +603,10 @@ const MembersTab: React.FC<{
   updateFormData: (field: keyof UpdateArtistProfileData, value: any) => void;
 }> = ({ formData, updateFormData }) => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-testid="members-tab">
       <div>
         <h3 className="text-xl font-semibold mb-6">Configuration du groupe</h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="form-control">
             <label className="label">
@@ -608,9 +614,13 @@ const MembersTab: React.FC<{
               <span className="label-text-alt">Solo ou groupe</span>
             </label>
             <select
+              name="artistType"
+              data-testid="artist-type-select"
               className="select select-bordered"
               value={formData.artistType || "SOLO"}
-              onChange={(e) => updateFormData("artistType", e.target.value as ArtistType)}
+              onChange={(e) =>
+                updateFormData("artistType", e.target.value as ArtistType)
+              }
             >
               {ARTIST_TYPE_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -624,7 +634,9 @@ const MembersTab: React.FC<{
             <label className="label">
               <span className="label-text font-medium">Nombre de membres</span>
               <span className="label-text-alt">
-                {formData.artistType === 'SOLO' ? 'Toujours 1 pour un solo' : 'Maximum autorisé'}
+                {formData.artistType === "SOLO"
+                  ? "Toujours 1 pour un solo"
+                  : "Maximum autorisé"}
               </span>
             </label>
             <input
@@ -633,9 +645,14 @@ const MembersTab: React.FC<{
               placeholder="Ex: 4"
               min="1"
               max="20"
-              value={formData.memberCount || (formData.artistType === 'SOLO' ? 1 : '')}
-              onChange={(e) => updateFormData("memberCount", parseInt(e.target.value) || 1)}
-              disabled={formData.artistType === 'SOLO'}
+              value={
+                formData.memberCount ||
+                (formData.artistType === "SOLO" ? 1 : "")
+              }
+              onChange={(e) =>
+                updateFormData("memberCount", parseInt(e.target.value) || 1)
+              }
+              disabled={formData.artistType === "SOLO"}
             />
           </div>
         </div>
@@ -645,10 +662,13 @@ const MembersTab: React.FC<{
             <div>
               <h4 className="font-medium">Configuration du groupe</h4>
               <p className="text-sm">
-                {formData.artistType === 'SOLO' 
+                {formData.artistType === "SOLO"
                   ? "En tant qu'artiste solo, vous aurez un profil personnel dans la section membres."
-                  : `Votre ${ARTIST_TYPE_OPTIONS.find(opt => opt.value === formData.artistType)?.label.toLowerCase()} peut avoir jusqu'à ${formData.memberCount} membres.`
-                }
+                  : `Votre ${ARTIST_TYPE_OPTIONS.find(
+                      (opt) => opt.value === formData.artistType
+                    )?.label.toLowerCase()} peut avoir jusqu'à ${
+                      formData.memberCount
+                    } membres.`}
               </p>
             </div>
           </div>
@@ -660,10 +680,12 @@ const MembersTab: React.FC<{
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-lg font-medium">Gestion des membres</h4>
           <span className="badge badge-primary">
-            {formData.artistType === 'SOLO' ? 'Profil personnel' : 'Profils du groupe'}
+            {formData.artistType === "SOLO"
+              ? "Profil personnel"
+              : "Profils du groupe"}
           </span>
         </div>
-        
+
         <div className="bg-base-50 rounded-lg p-6">
           <MemberManagement className="bg-transparent shadow-none p-0" />
         </div>
@@ -879,7 +901,12 @@ const PublicProfileTab: React.FC<{
   updateFormData: (field: keyof UpdateArtistProfileData, value: any) => void;
   onGenerateSlug: () => void;
   artistData: ExtendedUser | null;
-}> = ({ formData, updateFormData, onGenerateSlug, artistData: _artistData }) => {
+}> = ({
+  formData,
+  updateFormData,
+  onGenerateSlug,
+  artistData: _artistData,
+}) => {
   return (
     <div className="space-y-6">
       <h3 className="text-xl font-semibold">Profil public</h3>

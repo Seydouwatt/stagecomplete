@@ -59,3 +59,13 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Cypress screenshots and videos
+*.cypress/screenshots/
+*.cypress/videos/
+/stagecomplete-frontend/cypress/screenshots
+/stagecomplete-frontend/cypress/videos
+/stagecomplete-frontend/cypress/report
+
+# .vite 
+.vite/

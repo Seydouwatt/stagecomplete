@@ -1,0 +1,73 @@
+{
+  "testArtist": {
+    "name": "Test Artist Band",
+    "email": "test-artist@stagecomplete.fr",
+    "password": "TestPass123!",
+    "accountType": "ARTIST"
+  },
+  "testVenue": {
+    "name": "Test Venue",
+    "email": "test-venue@stagecomplete.fr", 
+    "password": "TestPass123!",
+    "accountType": "VENUE"
+  },
+  "artistProfiles": {
+    "soloArtist": {
+      "stageName": "Solo Artist Pro",
+      "bio": "Artiste professionnel depuis 10 ans avec une expérience internationale",
+      "location": "Paris, France",
+      "website": "https://soloartist.com",
+      "artistType": "SOLO",
+      "genres": ["Pop", "Rock"],
+      "yearsActive": 10,
+      "pricing": {
+        "priceMin": 500,
+        "priceMax": 2000,
+        "conditions": "Frais de déplacement en sus"
+      }
+    },
+    "bandArtist": {
+      "stageName": "The Test Band",
+      "bio": "Groupe de rock alternatif formé en 2020",
+      "location": "Lyon, France", 
+      "website": "https://thetestband.com",
+      "artistType": "BAND",
+      "genres": ["Rock", "Alternative"],
+      "yearsActive": 4,
+      "pricing": {
+        "priceMin": 1000,
+        "priceMax": 5000,
+        "conditions": "Matériel de sonorisation requis"
+      }
+    }
+  },
+  "testMembers": [
+    {
+      "name": "Marie Dupont",
+      "role": "Chanteuse principale",
+      "email": "marie@thetestband.com",
+      "instruments": ["Chant", "Piano"],
+      "experience": "PROFESSIONAL",
+      "isFounder": true,
+      "bio": "Chanteuse expérimentée avec formation classique"
+    },
+    {
+      "name": "Paul Martin",
+      "role": "Guitariste",
+      "email": "paul@thetestband.com", 
+      "instruments": ["Guitare électrique", "Basse"],
+      "experience": "EXPERT",
+      "isFounder": false,
+      "bio": "Guitariste virtuose avec 15 ans d'expérience"
+    },
+    {
+      "name": "Lucas Bernard",
+      "role": "Batteur",
+      "email": "lucas@thetestband.com",
+      "instruments": ["Batterie", "Percussions"],
+      "experience": "INTERMEDIATE",
+      "isFounder": false,
+      "bio": "Batteur énergique spécialisé en rock"
+    }
+  ]
+}
