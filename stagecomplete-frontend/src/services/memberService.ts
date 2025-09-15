@@ -93,7 +93,7 @@ export interface ArtistMembersResponse {
 }
 
 class MemberService {
-  private readonly baseUrl = "/auth/artist/members";
+  private readonly baseUrl = "/artist/members";
 
   /**
    * Récupère tous les membres de l'artiste connecté
@@ -107,9 +107,7 @@ class MemberService {
    * Récupère un membre spécifique
    */
   async getMember(memberId: string): Promise<ArtistMember> {
-    const response = await api.get<ArtistMember>(
-      `${this.baseUrl}/${memberId}`
-    );
+    const response = await api.get<ArtistMember>(`${this.baseUrl}/${memberId}`);
     return response.data;
   }
 
@@ -117,10 +115,7 @@ class MemberService {
    * Crée un nouveau membre
    */
   async createMember(memberData: CreateArtistMemberDto): Promise<ArtistMember> {
-    const response = await api.post<ArtistMember>(
-      this.baseUrl,
-      memberData
-    );
+    const response = await api.post<ArtistMember>(this.baseUrl, memberData);
     return response.data;
   }
 

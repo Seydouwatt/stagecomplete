@@ -20,7 +20,6 @@ import {
 import { useToastStore, type ToastType } from "../../stores/useToastStore";
 import { MemberForm } from "./MemberForm";
 import LoadingButton from "../ui/LoadingButton";
-import { ca } from "date-fns/locale";
 
 interface MemberManagementProps {
   className?: string;

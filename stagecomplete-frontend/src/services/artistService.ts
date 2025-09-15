@@ -1,10 +1,10 @@
 import axios from "axios";
-import type { 
-  ExtendedUser, 
-  UpdateArtistProfileData, 
-  PublicArtistProfile, 
-  ArtistSearchFilters, 
-  ArtistSearchResponse 
+import type {
+  ExtendedUser,
+  UpdateArtistProfileData,
+  PublicArtistProfile,
+  ArtistSearchFilters,
+  ArtistSearchResponse,
 } from "../types";
 import { API_URL } from "../constants";
 import { toast } from "../stores/useToastStore";
@@ -38,7 +38,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const message = error.response?.data?.message || "Une erreur est survenue";
-    
+
     if (error.response?.status === 401) {
       toast.error("Session expirée, veuillez vous reconnecter");
       // Redirection vers login pourrait être gérée ici
@@ -49,7 +49,7 @@ api.interceptors.response.use(
     } else {
       toast.error(Array.isArray(message) ? message[0] : message);
     }
-    
+
     return Promise.reject(error);
   }
 );
@@ -62,7 +62,7 @@ export const artistService = {
    */
   async getMyArtistProfile(): Promise<ExtendedUser> {
     try {
-      const response = await api.get("/auth/artist/profile");
+      const response = await api.get("/artist/profile");
       return response.data.artist;
     } catch (error) {
       console.error("Error fetching artist profile:", error);
@@ -73,9 +73,11 @@ export const artistService = {
   /**
    * Met à jour le profil artiste de l'utilisateur connecté
    */
-  async updateArtistProfile(data: UpdateArtistProfileData): Promise<ExtendedUser> {
+  async updateArtistProfile(
+    data: UpdateArtistProfileData
+  ): Promise<ExtendedUser> {
     try {
-      const response = await api.put("/auth/artist/profile", data);
+      const response = await api.put("/artist/profile", data);
       toast.success("Profil artiste mis à jour avec succès !");
       return response.data.artist;
     } catch (error) {
@@ -89,7 +91,7 @@ export const artistService = {
    */
   async generateSlug(name: string): Promise<string> {
     try {
-      const response = await api.post("/auth/artist/generate-slug", { name });
+      const response = await api.post("/artist/generate-slug", { name });
       return response.data.slug;
     } catch (error) {
       console.error("Error generating slug:", error);
@@ -102,7 +104,9 @@ export const artistService = {
   /**
    * Récupère un profil artiste public par ID ou slug
    */
-  async getPublicArtistProfile(identifier: string): Promise<PublicArtistProfile> {
+  async getPublicArtistProfile(
+    identifier: string
+  ): Promise<PublicArtistProfile> {
     try {
       // Utiliser axios sans intercepteur d'auth pour les endpoints publics
       const publicApi = axios.create({ baseURL: API_URL });
@@ -117,36 +121,40 @@ export const artistService = {
   /**
    * Recherche d'artistes publics avec filtres
    */
-  async searchArtists(filters: ArtistSearchFilters): Promise<ArtistSearchResponse> {
+  async searchArtists(
+    filters: ArtistSearchFilters
+  ): Promise<ArtistSearchResponse> {
     try {
       const publicApi = axios.create({ baseURL: API_URL });
-      
+
       // Construire les paramètres de requête
       const params = new URLSearchParams();
-      
+
       if (filters.genres?.length) {
-        params.append('genres', filters.genres.join(','));
+        params.append("genres", filters.genres.join(","));
       }
       if (filters.experience) {
-        params.append('experience', filters.experience);
+        params.append("experience", filters.experience);
       }
       if (filters.priceRange) {
-        params.append('priceRange', filters.priceRange);
+        params.append("priceRange", filters.priceRange);
       }
       if (filters.location) {
-        params.append('location', filters.location);
+        params.append("location", filters.location);
       }
       if (filters.instruments?.length) {
-        params.append('instruments', filters.instruments.join(','));
+        params.append("instruments", filters.instruments.join(","));
       }
       if (filters.limit) {
-        params.append('limit', filters.limit.toString());
+        params.append("limit", filters.limit.toString());
       }
       if (filters.offset) {
-        params.append('offset', filters.offset.toString());
+        params.append("offset", filters.offset.toString());
       }
 
-      const response = await publicApi.get(`/public/search/artists?${params.toString()}`);
+      const response = await publicApi.get(
+        `/public/search/artists?${params.toString()}`
+      );
       return response.data.results;
     } catch (error) {
       console.error("Error searching artists:", error);
@@ -196,7 +204,7 @@ export const artistService = {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result as string);
-      reader.onerror = error => reject(error);
+      reader.onerror = (error) => reject(error);
     });
   },
 
@@ -204,7 +212,7 @@ export const artistService = {
    * Valide les formats de fichiers autorisés
    */
   validateImageFile(file: File): boolean {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
     const maxSize = 5 * 1024 * 1024; // 5MB
 
     if (!allowedTypes.includes(file.type)) {
@@ -224,7 +232,7 @@ export const artistService = {
    * Valide les formats audio autorisés
    */
   validateAudioFile(file: File): boolean {
-    const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3'];
+    const allowedTypes = ["audio/mpeg", "audio/wav", "audio/mp3"];
     const maxSize = 10 * 1024 * 1024; // 10MB
 
     if (!allowedTypes.includes(file.type)) {
@@ -245,8 +253,8 @@ export const artistService = {
    */
   async resizeImage(file: File, maxWidth: number = 800): Promise<string> {
     return new Promise((resolve) => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
       const img = new Image();
 
       img.onload = () => {
@@ -255,12 +263,12 @@ export const artistService = {
         canvas.height = img.height * ratio;
 
         ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL('image/jpeg', 0.85));
+        resolve(canvas.toDataURL("image/jpeg", 0.85));
       };
 
       img.src = URL.createObjectURL(file);
     });
-  }
+  },
 };
 
 export default artistService;
