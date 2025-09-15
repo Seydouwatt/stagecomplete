@@ -1,99 +1,96 @@
-# language: fr
+Feature: Artist Profile Management
+  As a logged-in artist
+  I want to be able to create and manage my complete artistic profile
+  So that I can present my work to venues
 
-Fonctionnalité: Gestion du Profil Artiste
-  En tant qu'artiste connecté
-  Je veux pouvoir créer et gérer mon profil artistique complet
-  Afin de présenter mon travail aux venues
+  Background:
+    Given I am logged in as an artist
 
-  Contexte:
-    Étant donné que je suis connecté en tant qu'artiste
-
-  Scénario: Création d'un profil artiste solo complet
-    Quand je vais sur la page de profil artiste
-    Et que je remplis les informations générales avec:
-      | nom_de_scene | Solo Artist Pro        |
-      | bio          | Artiste professionnel depuis 10 ans |
-      | localisation | Paris, France          |
-      | site_web     | https://soloartist.com |
-    Et que je passe à l'onglet "Artistique"
-    Et que je sélectionne le type d'artiste "SOLO"
-    Et que je sélectionne les genres musicaux:
+  Scenario: Create a complete solo artist profile
+    When I go to the artist profile page
+    And I fill the general information with:
+      | stage_name   | Solo Artist Pro                      |
+      | bio          | Professional artist for 10 years    |
+      | location     | Paris, France                        |
+      | website      | https://soloartist.com              |
+    And I switch to the "Artistique" tab
+    And I select artist type "SOLO"
+    And I select the musical genres:
       | Pop  |
       | Rock |
-    Et que je saisis "10" comme années d'expérience
-    Et que je passe à l'onglet "Membres"
-    Alors je devrais voir qu'un membre par défaut est créé
-    Et que je clique sur "Sauvegarder"
-    Alors je devrais voir "Profil sauvegardé avec succès"
+    And I enter "10" as years of experience
+    And I switch to the "Membres" tab
+    Then I should see that a default member is created
+    And I click on "Sauvegarder"
+    Then I should see "Profil sauvegardé avec succès"
 
-  Scénario: Création d'un profil artiste groupe avec plusieurs membres
-    Quand je vais sur la page de profil artiste
-    Et que je passe à l'onglet "Artistique"
-    Et que je sélectionne le type d'artiste "BAND"
-    Et que je passe à l'onglet "Membres"
-    Et que j'ajoute un membre avec:
-      | nom         | Marie Dupont      |
-      | role        | Chanteuse         |
-      | email       | marie@band.com    |
-      | instruments | Chant             |
-      | experience  | PROFESSIONAL      |
-      | fondateur   | true              |
-    Et que j'ajoute un membre avec:
-      | nom         | Paul Martin       |
-      | role        | Guitariste        |
-      | email       | paul@band.com     |
-      | instruments | Guitare, Basse    |
-      | experience  | EXPERT            |
-      | fondateur   | false             |
-    Et que je clique sur "Sauvegarder"
-    Alors je devrais voir "Profil sauvegardé avec succès"
-    Et je devrais voir 2 membres dans la liste
+  Scenario: Create a band profile with multiple members
+    When I go to the artist profile page
+    And I switch to the "Membres" tab
+    And I select artist type "BAND"
+    And I add a member with:
+      | name         | Marie Dupont      |
+      | role         | Singer            |
+      | email        | marie@band.com    |
+      | instruments  | Vocals            |
+      | experience   | PROFESSIONAL      |
+      | founder      | true              |
+    And I add a member with:
+      | name         | Paul Martin       |
+      | role         | Guitarist         |
+      | email        | paul@band.com     |
+      | instruments  | Guitar, Bass      |
+      | experience   | EXPERT            |
+      | founder      | false             |
+    And I click on "Sauvegarder"
+    Then I should see "Profil sauvegardé avec succès"
+    And I should see 2 members in the list
 
-  Scénario: Modification d'un membre existant
-    Étant donné que j'ai un profil groupe avec 2 membres
-    Quand je vais sur la page de profil artiste
-    Et que je passe à l'onglet "Membres"
-    Et que je clique sur "Modifier" pour le premier membre
-    Et que je modifie le rôle en "Lead Singer"
-    Et que j'ajoute l'instrument "Piano"
-    Et que je clique sur "Sauvegarder les modifications"
-    Alors je devrais voir "Membre modifié avec succès"
-    Et le membre devrait afficher "Lead Singer" comme rôle
+  Scenario: Edit an existing member
+    Given I have a band profile with 2 members
+    When I go to the artist profile page
+    And I switch to the "Membres" tab
+    And I click on "Modifier" for the first member
+    And I change the role to "Lead Singer"
+    And I add the instrument "Piano"
+    And I click on "Sauvegarder les modifications"
+    Then I should see "Membre modifié avec succès"
+    And the member should display "Lead Singer" as role
 
-  Scénario: Suppression d'un membre
-    Étant donné que j'ai un profil groupe avec 2 membres
-    Quand je vais sur la page de profil artiste
-    Et que je passe à l'onglet "Membres"
-    Et que je clique sur "Supprimer" pour le deuxième membre
-    Et que je confirme la suppression
-    Alors je devrais voir "Membre supprimé avec succès"
-    Et je devrais voir 1 membre dans la liste
+  Scenario: Delete a member
+    Given I have a band profile with 2 members
+    When I go to the artist profile page
+    And I switch to the "Membres" tab
+    And I click on "Supprimer" for the second member
+    And I confirm the deletion
+    Then I should see "Membre supprimé avec succès"
+    And I should see 1 member in the list
 
-  Scénario: Validation des données membre
-    Quand je vais sur la page de profil artiste
-    Et que je passe à l'onglet "Membres"
-    Et que je clique sur "Ajouter un membre"
-    Et que je laisse le nom vide
-    Et que je saisis un email invalide "email-invalide"
-    Et que je clique sur "Sauvegarder"
-    Alors je devrais voir les erreurs de validation:
-      | Le nom du membre est obligatoire        |
-      | L'adresse email n'est pas valide        |
+  Scenario: Member data validation
+    When I go to the artist profile page
+    And I switch to the "Membres" tab
+    And I click on "Ajouter un membre"
+    And I leave the name empty
+    And I enter an invalid email "invalid-email"
+    And I click on "Sauvegarder"
+    Then I should see the validation errors:
+      | Member name is required         |
+      | Email address is not valid      |
 
-  Scénario: Configuration des tarifs artiste
-    Quand je vais sur la page de profil artiste
-    Et que je passe à l'onglet "Tarifs"
-    Et que je remplis les tarifs avec:
-      | tarif_minimum | 500  |
-      | tarif_maximum | 2000 |
-      | conditions    | Frais de déplacement en sus |
-    Et que je clique sur "Sauvegarder"
-    Alors je devrais voir "Tarifs sauvegardés avec succès"
+  Scenario: Configure artist pricing
+    When I go to the artist profile page
+    And I switch to the "Tarifs" tab
+    And I fill the pricing with:
+      | minimum_rate | 500                           |
+      | maximum_rate | 2000                          |
+      | conditions   | Travel expenses not included  |
+    And I click on "Sauvegarder"
+    Then I should see "Tarifs sauvegardés avec succès"
 
-  Scénario: Prévisualisation du profil public
-    Étant donné que j'ai complété mon profil artiste
-    Quand je vais sur la page de profil artiste
-    Et que je passe à l'onglet "Public"
-    Alors je devrais voir un aperçu de ma fiche publique
-    Et je devrais voir toutes mes informations affichées correctement
-    Et je devrais voir tous mes membres listés
+  Scenario: Preview public profile
+    Given I have completed my artist profile
+    When I go to the artist profile page
+    And I switch to the "Public" tab
+    Then I should see a preview of my public profile
+    And I should see all my information displayed correctly
+    And I should see all my members listed

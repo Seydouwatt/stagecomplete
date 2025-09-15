@@ -5,10 +5,10 @@
  */
 Cypress.Commands.add('loginAsArtist', (email = 'test-artist@stagecomplete.fr', password = 'TestPass123!') => {
   cy.visit('/login');
-  cy.get('input[type="email"]').type(email);
-  cy.get('input[type="password"]').type(password);
+  cy.wait(500); // Wait for re-render
+  cy.get('input[name="email"]').type(email);
+  cy.get('input[name="password"]').type(password);
   cy.get('button[type="submit"]').click();
-  cy.wait('@login');
   cy.url().should('include', '/dashboard');
 });
 
@@ -140,4 +140,63 @@ Cypress.Commands.add('shouldShowToast', (type, message) => {
 Cypress.Commands.add('cleanupTestData', () => {
   cy.clearLocalStorage();
   cy.clearCookies();
+});
+
+/**
+ * Create a test artist with specific credentials
+ */
+Cypress.Commands.add('createTestArtist', (email, password) => {
+  // Register the user through the UI
+  cy.visit('/register');
+  cy.get('input[name="name"]').type('Test Artist Band');
+  cy.get('input[name="email"]').type(email);
+  cy.get('input[name="password"]').type(password);
+  cy.get('input[value="ARTIST"]').check({ force: true });
+  cy.get('button[type="submit"]').click();
+
+  // Should be redirected to dashboard after successful registration
+  cy.url().should('include', '/dashboard', { timeout: 10000 });
+});
+
+/**
+ * Set incomplete profile state
+ */
+Cypress.Commands.add('setIncompleteProfile', () => {
+  cy.window().then((win) => {
+    win.localStorage.setItem('profileIncomplete', 'true');
+  });
+});
+
+/**
+ * Create a complete artist profile for testing
+ */
+Cypress.Commands.add('createCompleteArtistProfile', () => {
+  cy.visit('/artist/profile');
+  cy.fillArtistGeneralInfo({
+    stageName: 'Solo Artist Pro',
+    bio: 'Professional artist for 10 years',
+    location: 'Paris, France',
+    website: 'https://soloartist.com'
+  });
+  cy.switchToTab('artistic');
+  cy.selectArtistType('SOLO');
+  cy.get('input[name="yearsOfExperience"]').type('10');
+  cy.get('button[type="submit"]').click();
+});
+
+/**
+ * Create band profile with specified number of members
+ */
+Cypress.Commands.add('createBandProfileWithMembers', (memberCount) => {
+  cy.visit('/artist/profile');
+  cy.switchToTab('members');
+  cy.selectArtistType('BAND');
+
+  for (let i = 0; i < memberCount; i++) {
+    cy.addMember({
+      name: `Member ${i + 1}`,
+      role: `Role ${i + 1}`,
+      email: `member${i + 1}@test.com`
+    });
+  }
 });

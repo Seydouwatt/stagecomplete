@@ -16,6 +16,7 @@ import { ROUTES } from "./constants";
 import ToastContainer from "./components/ui/Toast";
 import ErrorHandlingDemo from "./pages/ErrorHandlingDemo";
 import { Browse } from "./pages/Browse";
+import Home from "./pages/Home";
 
 // Page temporaire pour les routes non implémentées
 const ComingSoon: React.FC<{ title: string }> = ({ title }) => (
@@ -53,6 +54,7 @@ function App() {
       <Router>
         <Routes>
           {/* Routes publiques */}
+          <Route path="/home" element={<Home />} />
           <Route path={ROUTES.LOGIN} element={<Login />} />
           <Route path={ROUTES.REGISTER} element={<Register />} />
 
@@ -193,13 +195,13 @@ function App() {
           {/* Redirect par défaut */}
           <Route
             path="/"
-            element={<Navigate to={ROUTES.DASHBOARD} replace />}
+            element={<Home />}
           />
 
           {/* 404 */}
           <Route
             path="*"
-            element={<Navigate to={ROUTES.DASHBOARD} replace />}
+            element={<Navigate to="/home" replace />}
           />
         </Routes>
         <ToastContainer />

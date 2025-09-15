@@ -1,52 +1,46 @@
-      # language: fr
+Feature: Artist Authentication
+  As an artist
+  I want to be able to create an account and log in
+  So that I can access my personalized space on StageComplete
 
-      Fonctionnalité: Authentification Artiste
-      En tant qu'artiste
-      Je veux pouvoir créer un compte et me connecter
-      Afin d'accéder à mon espace personnalisé sur StageComplete
+  Background:
+    Given the application is accessible
+    And the backend services are running
 
-      Contexte:
-      Étant donné que l'application est accessible
-      Et que les services backend sont démarrés
+  Scenario: Registration of a new artist
+    Given I am on the homepage
+    When I click on "Créer mon compte"
+    And I fill the registration form with valid data
+    And I submit the form
+    Then I should be redirected to the artist dashboard
+    And I should see the artist name displayed
 
-      Scénario: Inscription d'un nouvel artiste
-      Étant donné que je suis sur la page d'accueil
-      Quand je clique sur "Créer mon compte"
-      Et que je remplis le formulaire d'inscription avec:
-      | nom          | Test Artist Band          |
-      | email        | testband@stagecomplete.fr |
-      | mot_de_passe | TestPass123!              |
-      | type_compte  | ARTIST                    |
-Et que je soumets le formulaire
-Alors je devrais être redirigé vers le dashboard artiste
-Et je devrais voir "Bienvenue Test Artist Band"
+  Scenario: Login with valid credentials
+    Given an artist exists with email "existing@stagecomplete.fr" and password "TestPass123!"
+    When I go to the login page
+    And I enter "existing@stagecomplete.fr" as email
+    And I enter "TestPass123!" as password
+    And I click on "Se connecter"
+    Then I should be redirected to the artist dashboard
+    And my session should be saved
 
-Scénario: Connexion avec des identifiants valides
-Étant donné qu'un artiste existe avec l'email "existing@stagecomplete.fr" et le mot de passe "TestPass123!"
-Quand je vais sur la page de connexion
-Et que je saisis "existing@stagecomplete.fr" comme email
-Et que je saisis "TestPass123!" comme mot de passe
-Et que je clique sur "Se connecter"
-Alors je devrais être redirigé vers le dashboard artiste
-Et ma session devrait être sauvegardée
+  Scenario: Login with invalid credentials
+    When I go to the login page
+    And I enter "invalid@email.com" as email
+    And I enter "wrongpassword" as password
+    And I click on "Se connecter"
+    Then I should see an error "Identifiants invalides"
+    And I should remain on the login page
 
-Scénario: Connexion avec des identifiants invalides
-Quand je vais sur la page de connexion
-Et que je saisis "invalid@email.com" comme email
-Et que je saisis "wrongpassword" comme mot de passe
-Et que je clique sur "Se connecter"
-Alors je devrais voir une erreur "Identifiants invalides"
-Et je devrais rester sur la page de connexion
+  Scenario: Session persistence after page refresh
+    Given I am logged in as an artist
+    When I refresh the page
+    Then I should still be logged in
+    And I should see my artist dashboard
 
-Scénario: Persistance de session après rafraîchissement
-Étant donné que je suis connecté en tant qu'artiste
-Quand je rafraîchis la page
-Alors je devrais toujours être connecté
-Et je devrais voir mon dashboard artiste
-
-Scénario: Déconnexion
-Étant donné que je suis connecté en tant qu'artiste
-Quand je clique sur mon profil dans l'en-tête
-Et que je clique sur "Se déconnecter"
-Alors je devrais être redirigé vers la page d'accueil
-Et ma session devrait être effacée
+  Scenario: Logout
+    Given I am logged in as an artist
+    # When I click on my profile in the header
+    When I click on "Se déconnecter"
+    Then I should be redirected to the homepage
+    And my session should be cleared

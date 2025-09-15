@@ -1,59 +1,57 @@
-# language: fr
+Feature: Artist Dashboard
+  As a logged-in artist
+  I want to access a complete dashboard
+  So that I can manage my activity on the platform
 
-Fonctionnalité: Dashboard Artiste
-  En tant qu'artiste connecté
-  Je veux accéder à un dashboard complet
-  Afin de gérer mon activité sur la plateforme
+  Background:
+    Given I am logged in as an artist
 
-  Contexte:
-    Étant donné que je suis connecté en tant qu'artiste
+  Scenario: Display artist dashboard
+    When I go to the dashboard
+    Then I should see my artist name displayed
+    And I should see the following sections:
+      | Statistics      |
+      | Quick actions   |
+      | Artist profile  |
+      | Charts          |
 
-  Scénario: Affichage du dashboard artiste
-    Quand je vais sur le dashboard
-    Alors je devrais voir mon nom d'artiste affiché
-    Et je devrais voir les sections suivantes:
-      | Statistiques      |
-      | Actions rapides   |
-      | Profil artiste    |
-      | Graphiques        |
+  Scenario: Navigate to artist profile
+    When I am on the dashboard
+    And I click on "Gérer mon profil"
+    Then I should be redirected to the artist profile page
 
-  Scénario: Navigation vers le profil artiste
-    Quand je suis sur le dashboard
-    Et que je clique sur "Gérer mon profil"
-    Alors je devrais être redirigé vers la page de profil artiste
+  Scenario: Display statistics
+    When I am on the dashboard
+    Then I should see the following statistics:
+      | Profile views    |
+      | Requests received |
+      | Response rate    |
+      | Events           |
 
-  Scénario: Affichage des statistiques
-    Quand je suis sur le dashboard
-    Alors je devrais voir les statistiques suivantes:
-      | Vues du profil    |
-      | Demandes reçues   |
-      | Taux de réponse   |
-      | Événements        |
+  Scenario: Display charts
+    When I am on the dashboard
+    Then I should see the following charts:
+      | Monthly views bar chart       |
+      | Genres pie chart             |
+      | Performance line chart       |
 
-  Scénario: Affichage des graphiques
-    Quand je suis sur le dashboard
-    Alors je devrais voir les graphiques suivants:
-      | Graphique en barres des vues mensuelles |
-      | Graphique circulaire des genres         |
-      | Graphique linéaire des performances     |
+  Scenario: Mobile responsiveness of dashboard
+    When I resize the window to mobile mode
+    Then the dashboard should adapt to mobile
+    And the charts should be displayed in carousel
+    And the navigation should be optimized for mobile
 
-  Scénario: Responsivité mobile du dashboard
-    Quand je redimensionne la fenêtre en mode mobile
-    Alors le dashboard devrait s'adapter au mobile
-    Et les graphiques devraient être affichés en carousel
-    Et la navigation devrait être optimisée pour mobile
-
-  Scénario: Actions rapides disponibles
-    Quand je suis sur le dashboard
-    Alors je devrais voir les actions rapides:
+  Scenario: Available quick actions
+    When I am on the dashboard
+    Then I should see the following quick actions:
       | Modifier mon profil     |
       | Voir ma fiche publique  |
       | Gérer mes membres       |
       | Paramètres du compte    |
 
-  Scénario: Indicateur de complétion du profil
-    Étant donné que mon profil n'est pas complet
-    Quand je vais sur le dashboard
-    Alors je devrais voir un indicateur de complétion
-    Et je devrais voir "Profil incomplet"
-    Et je devrais voir un lien "Compléter mon profil"
+  Scenario: Profile completion indicator
+    Given my profile is not complete
+    When I go to the dashboard
+    Then I should see a completion indicator
+    And I should see "Profil incomplet"
+    And I should see a "Compléter mon profil" link

@@ -129,6 +129,7 @@ export const Register: React.FC = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <label className="cursor-pointer">
                     <input
+                      data-cy="register-role-artist"
                       type="radio"
                       value="ARTIST"
                       className="radio radio-primary hidden"
@@ -153,6 +154,7 @@ export const Register: React.FC = () => {
 
                   <label className="cursor-pointer">
                     <input
+                      data-cy="register-role-venue"
                       type="radio"
                       value="VENUE"
                       className="radio radio-secondary hidden"
@@ -186,6 +188,7 @@ export const Register: React.FC = () => {
 
               {/* Name */}
               <Input
+                data-cy="register-name"
                 label="Nom complet"
                 type="text"
                 placeholder="Votre nom ou nom de venue"
@@ -197,6 +200,7 @@ export const Register: React.FC = () => {
 
               {/* Email */}
               <Input
+                data-cy="register-email"
                 label="Email"
                 type="email"
                 placeholder="votre@email.com"
@@ -208,6 +212,7 @@ export const Register: React.FC = () => {
 
               {/* Password */}
               <Input
+                data-cy="register-password"
                 label="Mot de passe"
                 isPassword
                 placeholder="••••••••"
@@ -219,6 +224,7 @@ export const Register: React.FC = () => {
 
               {/* Submit Button */}
               <Button
+                data-cy="register-submit"
                 type="submit"
                 variant="primary"
                 size="lg"
