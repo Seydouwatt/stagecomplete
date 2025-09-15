@@ -4,11 +4,11 @@ import { Settings, Edit, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { useAuthStore } from "../../stores/authStore";
-import { ProfileCard } from "../../components/profile";
+import { ProfileCard, ProfileEditModal } from "../../components/profile";
 
 export const Profile: React.FC = () => {
   const { user } = useAuthStore();
-  const [, setIsEditing] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   if (!user) {
     return (
@@ -24,9 +24,11 @@ export const Profile: React.FC = () => {
   }
 
   const handleEditProfile = () => {
-    setIsEditing(true);
-    // TODO: Implémenter la modal/page d'édition du profil
-    console.log("Édition du profil - À implémenter");
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
   };
 
   return (
@@ -210,6 +212,13 @@ export const Profile: React.FC = () => {
           </div>
         </div>
       </motion.div>
+
+      {/* Modal d'édition du profil */}
+      <ProfileEditModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        profile={user.profile}
+      />
     </div>
   );
 };

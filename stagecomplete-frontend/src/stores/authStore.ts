@@ -5,8 +5,10 @@ import type {
   LoginCredentials,
   RegisterData,
   AuthResponse,
+  UpdateProfileData,
 } from "../types";
 import { authService } from "../services/authService";
+import { profileService } from "../services/profileService";
 
 interface AuthState {
   // State
@@ -22,6 +24,8 @@ interface AuthState {
   logout: () => void;
   clearError: () => void;
   setLoading: (loading: boolean) => void;
+  updateProfile: (data: UpdateProfileData) => Promise<void>;
+  refreshUser: () => Promise<void>;
 
   // Utils
   getAuthHeader: () => string | null;
@@ -110,6 +114,63 @@ export const useAuthStore = create<AuthState>()(
 
       // Set loading
       setLoading: (loading: boolean) => set({ isLoading: loading }),
+
+      // Update profile action
+      updateProfile: async (data: UpdateProfileData) => {
+        try {
+          set({ isLoading: true, error: null });
+
+          const response = await profileService.updateProfile(data);
+
+          // Mettre à jour l'utilisateur dans le store avec le nouveau profil
+          const currentState = get();
+          if (currentState.user) {
+            const updatedUser = {
+              ...currentState.user,
+              profile: response.profile
+            };
+
+            set({
+              user: updatedUser,
+              isLoading: false,
+              error: null,
+            });
+          }
+        } catch (error: any) {
+          const errorMessage =
+            error.response?.data?.message ||
+            "Une erreur est survenue lors de la mise à jour du profil";
+          set({
+            error: Array.isArray(errorMessage) ? errorMessage[0] : errorMessage,
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      // Refresh user data
+      refreshUser: async () => {
+        try {
+          set({ isLoading: true, error: null });
+
+          const response = await authService.getMe();
+
+          set({
+            user: response.user,
+            isLoading: false,
+            error: null,
+          });
+        } catch (error: any) {
+          const errorMessage =
+            error.response?.data?.message ||
+            "Une erreur est survenue lors du rafraîchissement des données";
+          set({
+            error: Array.isArray(errorMessage) ? errorMessage[0] : errorMessage,
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
 
       // Get auth header for API calls
       getAuthHeader: () => {

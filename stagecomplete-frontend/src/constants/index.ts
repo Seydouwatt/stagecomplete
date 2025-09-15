@@ -30,6 +30,11 @@ export const API_ENDPOINTS = {
     VERIFY_TOKEN: "/auth/verify-token",
     CHECK_EMAIL: "/auth/check-email",
   },
+  PROFILE: {
+    GET: "/profile",
+    UPDATE: "/profile",
+    COMPLETION: "/profile/completion",
+  },
   USERS: {
     PROFILE: "/users/profile",
   },

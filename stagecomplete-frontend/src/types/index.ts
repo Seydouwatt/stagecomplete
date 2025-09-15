@@ -13,9 +13,17 @@ export interface Profile {
   name: string;
   bio?: string;
   avatar?: string;
+  phone?: string;
   location?: string;
   website?: string;
-  socialLinks?: Record<string, string>;
+  socialLinks?: {
+    instagram?: string;
+    facebook?: string;
+    twitter?: string;
+    linkedin?: string;
+    youtube?: string;
+    tiktok?: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -36,6 +44,35 @@ export interface RegisterData {
   password: string;
   name: string;
   role: "ARTIST" | "VENUE";
+}
+
+export interface UpdateProfileData {
+  name?: string;
+  bio?: string;
+  avatar?: string;
+  phone?: string;
+  location?: string;
+  website?: string;
+  socialLinks?: {
+    instagram?: string;
+    facebook?: string;
+    twitter?: string;
+    linkedin?: string;
+    youtube?: string;
+    tiktok?: string;
+  };
+}
+
+export interface ProfileResponse {
+  message: string;
+  profile: Profile;
+}
+
+export interface ProfileCompletionResponse {
+  completion: number;
+  missingFields: string[];
+  totalFields: number;
+  filledFields: number;
 }
 
 // API Response types
