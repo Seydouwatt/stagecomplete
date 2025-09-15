@@ -28,6 +28,7 @@ import {
   VerifyTokenResponseDto,
   UpdateProfileDto,
   UpdateArtistProfileDto,
+  ArtistType,
 } from './dto';
 import { CreateArtistMemberDto, UpdateArtistMemberDto } from './dto/artist-member.dto';
 import { AuthService } from './auth.service';
@@ -44,11 +45,126 @@ export class AuthController {
   ) {}
 
   @Post('register')
+  @ApiOperation({
+    summary: 'Inscription d\'un nouvel utilisateur',
+    description: 'Crée un nouveau compte utilisateur avec les informations fournies'
+  })
+  @ApiBody({
+    type: RegisterDto,
+    description: 'Données d\'inscription',
+    examples: {
+      artist: {
+        summary: 'Inscription artiste',
+        description: 'Exemple d\'inscription pour un artiste',
+        value: {
+          email: 'artiste@example.com',
+          password: 'MonMotDePasse123!',
+          name: 'Jean Dupont',
+          role: 'ARTIST'
+        }
+      },
+      venue: {
+        summary: 'Inscription lieu',
+        description: 'Exemple d\'inscription pour un lieu de spectacle',
+        value: {
+          email: 'venue@example.com',
+          password: 'MonMotDePasse123!',
+          name: 'Salle de Concert Olympia',
+          role: 'VENUE'
+        }
+      }
+    }
+  })
+  @ApiOkResponse({
+    description: 'Inscription réussie',
+    type: AuthResponseDto
+  })
+  @ApiBadRequestResponse({
+    description: 'Données d\'inscription invalides',
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: { type: 'number', example: 400 },
+        message: { type: 'string', example: 'Données de validation invalides' },
+        errors: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              field: { type: 'string', example: 'email' },
+              errors: {
+                type: 'array',
+                items: { type: 'string' },
+                example: ['Email invalide']
+              }
+            }
+          }
+        }
+      }
+    }
+  })
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
     return await this.authService.register(registerDto);
   }
 
   @Post('login')
+  @ApiOperation({
+    summary: 'Connexion utilisateur',
+    description: 'Authentifie un utilisateur et retourne un token JWT'
+  })
+  @ApiBody({
+    type: LoginDto,
+    description: 'Identifiants de connexion',
+    examples: {
+      example1: {
+        summary: 'Connexion standard',
+        description: 'Exemple de connexion avec email et mot de passe',
+        value: {
+          email: 'user@example.com',
+          password: 'MonMotDePasse123!'
+        }
+      }
+    }
+  })
+  @ApiOkResponse({
+    description: 'Connexion réussie',
+    type: AuthResponseDto
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Identifiants incorrects',
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: { type: 'number', example: 401 },
+        message: { type: 'string', example: 'Email ou mot de passe incorrect' },
+        error: { type: 'string', example: 'Unauthorized' }
+      }
+    }
+  })
+  @ApiBadRequestResponse({
+    description: 'Données de connexion invalides',
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: { type: 'number', example: 400 },
+        message: { type: 'string', example: 'Données de validation invalides' },
+        errors: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              field: { type: 'string', example: 'email' },
+              errors: {
+                type: 'array',
+                items: { type: 'string' },
+                example: ['Email requis']
+              }
+            }
+          }
+        }
+      }
+    }
+  })
   async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
     return await this.authService.login(loginDto);
   }
@@ -243,6 +359,52 @@ export class AuthController {
   }
 
   @Post('verify-token')
+  @ApiOperation({
+    summary: 'Vérifier la validité d\'un token JWT',
+    description: 'Vérifie si un token JWT est valide et non expiré'
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        token: {
+          type: 'string',
+          description: 'Token JWT à vérifier',
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+        }
+      },
+      required: ['token']
+    }
+  })
+  @ApiOkResponse({
+    description: 'Résultat de la vérification du token',
+    schema: {
+      type: 'object',
+      properties: {
+        valid: { type: 'boolean', example: true },
+        payload: {
+          type: 'object',
+          description: 'Payload du token JWT si valide',
+          example: {
+            userId: 'clm123456789',
+            email: 'user@example.com',
+            role: 'ARTIST'
+          }
+        },
+        message: { type: 'string', example: 'Token valide' }
+      }
+    }
+  })
+  @ApiBadRequestResponse({
+    description: 'Token invalide ou expiré',
+    schema: {
+      type: 'object',
+      properties: {
+        valid: { type: 'boolean', example: false },
+        message: { type: 'string', example: 'Token invalide ou expiré' }
+      }
+    }
+  })
   async verifyToken(
     @Body('token') token: string,
   ): Promise<VerifyTokenResponseDto> {
@@ -261,8 +423,35 @@ export class AuthController {
     }
   }
 
-  // Endpoint utilitaire pour vérifier si un email existe
   @Post('check-email')
+  @ApiOperation({
+    summary: 'Vérifier la disponibilité d\'un email',
+    description: 'Vérifie si une adresse email est déjà utilisée sur la plateforme'
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: {
+          type: 'string',
+          format: 'email',
+          description: 'Adresse email à vérifier',
+          example: 'user@example.com'
+        }
+      },
+      required: ['email']
+    }
+  })
+  @ApiOkResponse({
+    description: 'Résultat de la vérification de l\'email',
+    schema: {
+      type: 'object',
+      properties: {
+        exists: { type: 'boolean', example: false },
+        message: { type: 'string', example: 'Email disponible' }
+      }
+    }
+  })
   async checkEmail(@Body('email') email: string) {
     const exists = await this.authService.emailExists(email);
     return {
@@ -272,6 +461,31 @@ export class AuthController {
   }
 
   @Post('test-login')
+  @ApiOperation({
+    summary: 'Test de validation des données de connexion',
+    description: 'Endpoint de test pour valider le format des données de connexion sans authentification'
+  })
+  @ApiBody({
+    type: LoginDto,
+    description: 'Données de connexion à tester'
+  })
+  @ApiOkResponse({
+    description: 'Validation réussie',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Validation réussie !' },
+        data: {
+          type: 'object',
+          description: 'Données validées',
+          properties: {
+            email: { type: 'string', example: 'user@example.com' },
+            password: { type: 'string', example: 'MonMotDePasse123!' }
+          }
+        }
+      }
+    }
+  })
   testLogin(@Body() loginDto: LoginDto) {
     return {
       message: 'Validation réussie !',
@@ -462,11 +676,16 @@ export class AuthController {
   })
   async getArtistMembers(@GetUser() user: AuthenticatedUser) {
     // Récupérer l'artiste lié à l'utilisateur
-    const artist = await this.authService.getArtistProfile(user.userId);
+    let artist = await this.authService.getArtistProfile(user.userId);
     if (!artist) {
-      throw new BadRequestException('Profil artiste non trouvé');
+      // Si le profil artiste n'existe pas, en créer un par défaut pour un groupe
+      const defaultArtistProfile: UpdateArtistProfileDto = {
+        artistType: ArtistType.BAND,
+        memberCount: 5
+      };
+      artist = await this.authService.updateArtistProfile(user.userId, defaultArtistProfile) as any;
     }
-    
+
     return this.authService.getArtistMembers(artist.id);
   }
 
@@ -482,11 +701,16 @@ export class AuthController {
   @ApiBadRequestResponse({ description: 'Données invalides ou limite de membres atteinte' })
   async createArtistMember(@GetUser() user: AuthenticatedUser, @Body() memberData: CreateArtistMemberDto) {
     // Récupérer l'artiste lié à l'utilisateur
-    const artist = await this.authService.getArtistProfile(user.userId);
+    let artist = await this.authService.getArtistProfile(user.userId);
     if (!artist) {
-      throw new BadRequestException('Profil artiste non trouvé');
+      // Si le profil artiste n'existe pas, en créer un par défaut
+      const defaultArtistProfile: UpdateArtistProfileDto = {
+        artistType: ArtistType.BAND,
+        memberCount: 5
+      };
+      artist = await this.authService.updateArtistProfile(user.userId, defaultArtistProfile) as any;
     }
-    
+
     return this.authService.createArtistMember(artist.id, memberData);
   }
 

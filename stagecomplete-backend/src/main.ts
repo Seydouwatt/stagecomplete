@@ -61,6 +61,8 @@ async function bootstrap() {
     )
     .setVersion('1.0')
     .addTag('auth', 'Authentification et gestion des utilisateurs')
+    .addTag('public', 'Endpoints publics accessibles sans authentification')
+    .addTag('health', 'État de santé du serveur')
     .addTag('profile', 'Gestion des profils utilisateur')
     .addBearerAuth(
       {

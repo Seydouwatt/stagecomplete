@@ -688,7 +688,10 @@ const MembersTab: React.FC<{
         </div>
 
         <div className="bg-base-50 rounded-lg p-6">
-          <MemberManagement className="bg-transparent shadow-none p-0" />
+          <MemberManagement
+            className="bg-transparent shadow-none p-0"
+            artistType={formData.artistType}
+          />
         </div>
       </div>
     </div>
