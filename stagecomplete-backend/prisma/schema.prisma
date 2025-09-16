@@ -18,6 +18,10 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   password  String
+  firstName String?  // Prénom
+  lastName  String?  // Nom
+  phone     String?  // Téléphone personnel
+  isFounder Boolean  @default(false) // Membre fondateur?
   role      Role     @default(ARTIST)
   profile   Profile?
   sentMessages     Message[] @relation("MessageSender")
@@ -30,10 +34,9 @@ model User {
 model Profile {
   id          String   @id @default(cuid())
   userId      String   @unique
-  name        String
+  displayName String?  // Nom d'affichage professionnel (optionnel)
   bio         String?
   avatar      String?  // Base64 pour le début
-  phone       String?
   location    String?
   website     String?
   socialLinks Json?    // {instagram: "", facebook: "", etc}
@@ -189,6 +192,7 @@ enum ArtistType {
 enum Role {
   ARTIST
   VENUE
+  MEMBER
   ADMIN
 }
 

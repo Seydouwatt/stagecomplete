@@ -95,10 +95,10 @@ export class ProfileService {
 
     const profile = user.profile;
     const fields = {
-      name: profile.name,
+      name: profile.displayName,
       bio: profile.bio,
       avatar: profile.avatar,
-      phone: profile.phone,
+      phone: null, // phone sera dans User.phone
       location: profile.location,
       website: profile.website,
       socialLinks: profile.socialLinks

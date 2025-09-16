@@ -9,7 +9,7 @@ export const ROUTES = {
   LOGIN: "/login",
   REGISTER: "/register",
   DASHBOARD: "/dashboard",
-  PROFILE: "/profile",
+  USER: "/user",
   BROWSE: "/browse",
   MESSAGES: "/messages",
 } as const;
@@ -29,6 +29,8 @@ export const API_ENDPOINTS = {
     ME: "/auth/me",
     VERIFY_TOKEN: "/auth/verify-token",
     CHECK_EMAIL: "/auth/check-email",
+    USER: "/auth/user",
+    USER_PASSWORD: "/auth/user/password",
   },
   PROFILE: {
     GET: "/profile",

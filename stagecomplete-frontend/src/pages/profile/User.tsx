@@ -4,11 +4,12 @@ import { Settings, Edit, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { useAuthStore } from "../../stores/authStore";
-import { ProfileCard, ProfileEditModal } from "../../components/profile";
+import { UserCard, UserEditModal } from "../../components/profile";
 
-export const Profile: React.FC = () => {
+export const User: React.FC = () => {
   const { user } = useAuthStore();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  console.log(user);
 
   if (!user) {
     return (
@@ -48,19 +49,13 @@ export const Profile: React.FC = () => {
 
         <div className="flex gap-3">
           {/* Bouton retour dashboard */}
-          <Link
-            to="/dashboard"
-            className="btn btn-outline btn-sm gap-2"
-          >
+          <Link to="/dashboard" className="btn btn-outline btn-sm gap-2">
             <ArrowLeft className="w-4 h-4" />
             Dashboard
           </Link>
 
           {/* Bouton paramètres */}
-          <Link
-            to="/settings"
-            className="btn btn-outline btn-sm gap-2"
-          >
+          <Link to="/settings" className="btn btn-outline btn-sm gap-2">
             <Settings className="w-4 h-4" />
             Paramètres
           </Link>
@@ -69,9 +64,9 @@ export const Profile: React.FC = () => {
 
       {/* Contenu principal */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Profil principal */}
+        {/* Informations utilisateur */}
         <div className="lg:col-span-2">
-          <ProfileCard
+          <UserCard
             user={user}
             onEdit={handleEditProfile}
             showEditButton={true}
@@ -89,14 +84,14 @@ export const Profile: React.FC = () => {
           >
             <div className="card-body p-6">
               <h3 className="text-lg font-semibold mb-4">Actions rapides</h3>
-              
+
               <div className="space-y-3">
                 <button
                   onClick={handleEditProfile}
                   className="btn btn-primary btn-sm w-full gap-2"
                 >
                   <Edit className="w-4 h-4" />
-                  Éditer le profil
+                  Éditer mes infos
                 </button>
 
                 {user.role === "ARTIST" && (
@@ -117,10 +112,7 @@ export const Profile: React.FC = () => {
                   </Link>
                 )}
 
-                <Link
-                  to="/settings"
-                  className="btn btn-ghost btn-sm w-full"
-                >
+                <Link to="/settings" className="btn btn-ghost btn-sm w-full">
                   Paramètres
                 </Link>
               </div>
@@ -136,18 +128,22 @@ export const Profile: React.FC = () => {
           >
             <div className="card-body p-6">
               <h3 className="text-lg font-semibold mb-4">Statistiques</h3>
-              
+
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-base-content/70">Vues du profil</span>
+                  <span className="text-sm text-base-content/70">
+                    Vues du profil
+                  </span>
                   <span className="font-semibold">-</span>
                 </div>
-                
+
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-base-content/70">Messages reçus</span>
+                  <span className="text-sm text-base-content/70">
+                    Messages reçus
+                  </span>
                   <span className="font-semibold">-</span>
                 </div>
-                
+
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-base-content/70">
                     {user.role === "ARTIST" ? "Bookings" : "Événements"}
@@ -192,32 +188,50 @@ export const Profile: React.FC = () => {
         transition={{ delay: 0.5 }}
         className="mt-8 p-6 bg-base-200 rounded-lg"
       >
-        <h3 className="text-lg font-semibold mb-2">💡 Conseils pour optimiser votre profil</h3>
+        <h3 className="text-lg font-semibold mb-2">
+          💡 Conseils pour optimiser votre profil
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-base-content/70">
           <div>
-            <h4 className="font-medium text-base-content mb-1">Photo de profil</h4>
-            <p>Utilisez une photo professionnelle et récente pour augmenter votre crédibilité.</p>
+            <h4 className="font-medium text-base-content mb-1">
+              Photo de profil
+            </h4>
+            <p>
+              Utilisez une photo professionnelle et récente pour augmenter votre
+              crédibilité.
+            </p>
           </div>
           <div>
             <h4 className="font-medium text-base-content mb-1">Biographie</h4>
-            <p>Rédigez une bio engageante qui met en valeur votre expérience et votre style.</p>
+            <p>
+              Rédigez une bio engageante qui met en valeur votre expérience et
+              votre style.
+            </p>
           </div>
           <div>
-            <h4 className="font-medium text-base-content mb-1">Informations de contact</h4>
-            <p>Assurez-vous que vos informations de contact sont à jour et accessibles.</p>
+            <h4 className="font-medium text-base-content mb-1">
+              Informations de contact
+            </h4>
+            <p>
+              Assurez-vous que vos informations de contact sont à jour et
+              accessibles.
+            </p>
           </div>
           <div>
             <h4 className="font-medium text-base-content mb-1">Complétion</h4>
-            <p>Un profil complété à 100% améliore considérablement votre visibilité.</p>
+            <p>
+              Un profil complété à 100% améliore considérablement votre
+              visibilité.
+            </p>
           </div>
         </div>
       </motion.div>
 
-      {/* Modal d'édition du profil */}
-      <ProfileEditModal
+      {/* Modal d'édition utilisateur */}
+      <UserEditModal
         isOpen={isEditModalOpen}
         onClose={handleCloseEditModal}
-        profile={user.profile}
+        user={user}
       />
     </div>
   );

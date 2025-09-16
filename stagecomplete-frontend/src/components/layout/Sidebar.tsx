@@ -210,11 +210,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
           <ul className="menu menu-vertical w-full">
             <li>
               <Link
-                to="/profile"
+                to="/user"
                 className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-base-300"
               >
                 <User className="w-5 h-5" />
-                <span>Profil</span>
+                <span>Mes Infos</span>
               </Link>
             </li>
             <li>

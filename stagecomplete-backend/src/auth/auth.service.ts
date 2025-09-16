@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { RegisterDto, AuthResponseDto, JwtPayload, LoginDto, UpdateProfileDto } from './dto';
+import { RegisterDto, AuthResponseDto, JwtPayload, LoginDto, UpdateProfileDto, UpdateUserDto, ChangePasswordDto } from './dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 // Interface pour le payload JWT
@@ -56,7 +56,7 @@ export class AuthService {
         const newProfile = await prisma.profile.create({
           data: {
             userId: newUser.id,
-            name,
+            displayName: name,
             // Initialiser selon le rôle
             bio:
               role === 'ARTIST'
@@ -128,7 +128,7 @@ export class AuthService {
           role: completeUser.role,
           profile: {
             id: completeUser.profile.id,
-            name: completeUser.profile.name,
+            name: completeUser.profile.displayName || "Utilisateur",
             bio: completeUser.profile.bio ?? undefined,
             avatar: completeUser.profile.avatar ?? undefined,
             location: completeUser.profile.location ?? undefined,
@@ -218,7 +218,7 @@ export class AuthService {
           role: user.role,
           profile: {
             id: user.profile.id,
-            name: user.profile.name,
+            name: user.profile.displayName || "Utilisateur",
             bio: user.profile.bio ?? undefined,
             avatar: user.profile.avatar ?? undefined,
             location: user.profile.location ?? undefined,
@@ -230,7 +230,7 @@ export class AuthService {
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         },
-        message: `Bienvenue ${user.profile.name} ! Connexion réussie.`,
+        message: `Bienvenue ${user.profile.displayName} ! Connexion réussie.`,
       };
     } catch (error) {
       // Gestion des erreurs spécifiques
@@ -556,6 +556,181 @@ export class AuthService {
       total,
       hasMore: offset + limit < total
     };
+  }
+
+  // ==========  MÉTHODES USER MANAGEMENT ==========
+
+  /**
+   * Récupérer les informations personnelles de l'utilisateur connecté
+   */
+  async getUserInfo(userId: string) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          phone: true,
+          isFounder: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
+          profile: {
+            select: {
+              id: true,
+              displayName: true,
+              avatar: true,
+              createdAt: true,
+              updatedAt: true,
+            }
+          }
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException('Utilisateur non trouvé');
+      }
+
+      return user;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+
+      console.error('Erreur lors de la récupération des informations utilisateur:', error);
+      throw new InternalServerErrorException(
+        'Erreur lors de la récupération des informations utilisateur',
+      );
+    }
+  }
+
+  /**
+   * Mettre à jour les informations personnelles de l'utilisateur
+   */
+  async updateUser(userId: string, updateUserDto: UpdateUserDto) {
+    try {
+      // Vérifier que l'utilisateur existe
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        throw new NotFoundException('Utilisateur non trouvé');
+      }
+
+      // Vérifier l'unicité de l'email si modifié
+      if (updateUserDto.email && updateUserDto.email !== user.email) {
+        const existingUser = await this.prisma.user.findUnique({
+          where: { email: updateUserDto.email },
+        });
+
+        if (existingUser) {
+          throw new ConflictException('Un compte avec cet email existe déjà');
+        }
+      }
+
+      // Préparer les données de mise à jour
+      const updateFields: any = {
+        updatedAt: new Date(),
+      };
+
+      if (updateUserDto.firstName !== undefined) updateFields.firstName = updateUserDto.firstName;
+      if (updateUserDto.lastName !== undefined) updateFields.lastName = updateUserDto.lastName;
+      if (updateUserDto.email !== undefined) updateFields.email = updateUserDto.email;
+      if (updateUserDto.phone !== undefined) updateFields.phone = updateUserDto.phone;
+      if (updateUserDto.isFounder !== undefined) updateFields.isFounder = updateUserDto.isFounder;
+
+      // Mettre à jour l'utilisateur
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: updateFields,
+      });
+
+      // Retourner les informations mises à jour
+      return await this.getUserInfo(userId);
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ConflictException
+      ) {
+        throw error;
+      }
+
+      console.error('Erreur lors de la mise à jour de l\'utilisateur:', error);
+      throw new BadRequestException(
+        'Erreur lors de la mise à jour des informations utilisateur',
+      );
+    }
+  }
+
+  /**
+   * Changer le mot de passe de l'utilisateur
+   */
+  async changePassword(userId: string, changePasswordDto: ChangePasswordDto) {
+    try {
+      // Récupérer l'utilisateur avec le mot de passe
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { id: true, password: true },
+      });
+
+      if (!user) {
+        throw new NotFoundException('Utilisateur non trouvé');
+      }
+
+      // Vérifier l'ancien mot de passe
+      const isCurrentPasswordValid = await this.verifyPassword(
+        changePasswordDto.currentPassword,
+        user.password,
+      );
+
+      if (!isCurrentPasswordValid) {
+        throw new UnauthorizedException('Mot de passe actuel incorrect');
+      }
+
+      // Vérifier que le nouveau mot de passe est différent
+      const isSamePassword = await this.verifyPassword(
+        changePasswordDto.newPassword,
+        user.password,
+      );
+
+      if (isSamePassword) {
+        throw new BadRequestException(
+          'Le nouveau mot de passe doit être différent de l\'actuel',
+        );
+      }
+
+      // Hasher le nouveau mot de passe
+      const hashedNewPassword = await this.hashPassword(changePasswordDto.newPassword);
+
+      // Mettre à jour le mot de passe
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          password: hashedNewPassword,
+          updatedAt: new Date(),
+        },
+      });
+
+      return {
+        message: 'Mot de passe modifié avec succès',
+      };
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof UnauthorizedException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+
+      console.error('Erreur lors du changement de mot de passe:', error);
+      throw new InternalServerErrorException(
+        'Erreur lors du changement de mot de passe',
+      );
+    }
   }
 
 }

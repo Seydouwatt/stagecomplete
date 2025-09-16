@@ -177,9 +177,9 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
 
                 {/* Menu items */}
                 <li>
-                  <Link to="/profile" className="flex items-center gap-2">
+                  <Link to="/user" className="flex items-center gap-2">
                     <User className="w-4 h-4" />
-                    Mon Profil
+                    Mes Informations
                   </Link>
                 </li>
                 <li>

@@ -2,7 +2,11 @@
 export interface User {
   id: string;
   email: string;
-  role: "ARTIST" | "VENUE" | "ADMIN";
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  isFounder: boolean;
+  role: "ARTIST" | "VENUE" | "MEMBER" | "ADMIN";
   profile: Profile;
   createdAt: string;
   updatedAt: string;
@@ -10,10 +14,9 @@ export interface User {
 
 export interface Profile {
   id: string;
-  name: string;
+  displayName?: string;
   bio?: string;
   avatar?: string;
-  phone?: string;
   location?: string;
   website?: string;
   socialLinks?: {
@@ -47,10 +50,9 @@ export interface RegisterData {
 }
 
 export interface UpdateProfileData {
-  name?: string;
+  displayName?: string;
   bio?: string;
   avatar?: string;
-  phone?: string;
   location?: string;
   website?: string;
   socialLinks?: {
@@ -73,6 +75,25 @@ export interface ProfileCompletionResponse {
   missingFields: string[];
   totalFields: number;
   filledFields: number;
+}
+
+// User management types
+export interface UpdateUserData {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  isFounder?: boolean;
+}
+
+export interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface UserResponse {
+  message: string;
+  user: User;
 }
 
 // API Response types

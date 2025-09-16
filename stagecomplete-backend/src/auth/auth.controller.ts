@@ -24,6 +24,8 @@ import {
   RegisterDto,
   VerifyTokenResponseDto,
   UpdateProfileDto,
+  UpdateUserDto,
+  ChangePasswordDto,
 } from './dto';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -484,6 +486,119 @@ export class AuthController {
       message: 'Validation réussie !',
       data: loginDto,
     };
+  }
+
+  // ==========  ENDPOINTS USER MANAGEMENT ==========
+
+  @Get('user')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Récupérer les informations personnelles de l\'utilisateur',
+    description: 'Retourne les données personnelles (prénom, nom, email, etc.) de l\'utilisateur connecté'
+  })
+  @ApiOkResponse({
+    description: 'Informations utilisateur récupérées avec succès',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', example: 'clm123456789' },
+        email: { type: 'string', example: 'jean.dupont@example.com' },
+        firstName: { type: 'string', example: 'Jean' },
+        lastName: { type: 'string', example: 'Dupont' },
+        phone: { type: 'string', example: '+33 6 12 34 56 78' },
+        isFounder: { type: 'boolean', example: true },
+        role: { type: 'string', enum: ['ARTIST', 'VENUE', 'MEMBER', 'ADMIN'], example: 'ARTIST' },
+        createdAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' },
+        updatedAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' },
+        profile: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', example: 'clm987654321' },
+            displayName: { type: 'string', example: 'Jean Dupont Music' },
+            avatar: { type: 'string', example: 'data:image/jpeg;base64,...' },
+            createdAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' },
+            updatedAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' }
+          }
+        }
+      }
+    }
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token manquant ou invalide'
+  })
+  async getUserInfo(@GetUser() user: AuthenticatedUser) {
+    return await this.authService.getUserInfo(user.userId);
+  }
+
+  @Put('user')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT-auth')
+  @ApiOperation({
+    summary: 'Mettre à jour les informations personnelles de l\'utilisateur',
+    description: 'Permet de modifier les données personnelles de l\'utilisateur connecté'
+  })
+  @ApiBody({ type: UpdateUserDto })
+  @ApiOkResponse({
+    description: 'Informations utilisateur mises à jour avec succès',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        email: { type: 'string' },
+        firstName: { type: 'string' },
+        lastName: { type: 'string' },
+        phone: { type: 'string' },
+        isFounder: { type: 'boolean' },
+        role: { type: 'string' },
+        createdAt: { type: 'string' },
+        updatedAt: { type: 'string' },
+        profile: { type: 'object' }
+      }
+    }
+  })
+  @ApiBadRequestResponse({
+    description: 'Données de mise à jour invalides'
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token manquant ou invalide'
+  })
+  async updateUser(
+    @GetUser() user: AuthenticatedUser,
+    @Body() updateUserDto: UpdateUserDto
+  ) {
+    return await this.authService.updateUser(user.userId, updateUserDto);
+  }
+
+  @Put('user/password')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT-auth')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Changer le mot de passe de l\'utilisateur',
+    description: 'Permet à l\'utilisateur de changer son mot de passe en fournissant l\'ancien et le nouveau'
+  })
+  @ApiBody({ type: ChangePasswordDto })
+  @ApiOkResponse({
+    description: 'Mot de passe modifié avec succès',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Mot de passe modifié avec succès' }
+      }
+    }
+  })
+  @ApiBadRequestResponse({
+    description: 'Données invalides ou nouveau mot de passe identique à l\'ancien'
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token manquant ou invalide, ou mot de passe actuel incorrect'
+  })
+  async changePassword(
+    @GetUser() user: AuthenticatedUser,
+    @Body() changePasswordDto: ChangePasswordDto
+  ) {
+    return await this.authService.changePassword(user.userId, changePasswordDto);
   }
 
 }

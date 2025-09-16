@@ -220,13 +220,15 @@ export const ArtistProfileForm: React.FC = () => {
 
   // Générer un slug
   const handleGenerateSlug = async () => {
-    if (!_artistData?.profile.name) {
+    if (!_artistData?.profile.displayName) {
       toast.error("Veuillez renseigner votre nom dans le profil");
       return;
     }
 
     try {
-      const slug = await artistService.generateSlug(_artistData.profile.name);
+      const slug = await artistService.generateSlug(
+        _artistData.profile.displayName
+      );
       setGeneratedSlug(slug);
       setFormData((prev) => ({ ...prev, publicSlug: slug }));
       toast.success("Slug généré !");
@@ -332,7 +334,7 @@ export const ArtistProfileForm: React.FC = () => {
 
           {formData.isPublic && formData.publicSlug && (
             <Link
-              to={`/p/${formData.publicSlug}`}
+              to={`/artist/${formData.publicSlug}`}
               className="btn btn-outline btn-sm gap-2"
               target="_blank"
             >
@@ -944,7 +946,7 @@ const PublicProfileTab: React.FC<{
             <div className="flex gap-2">
               <div className="flex-1 flex">
                 <span className="bg-base-200 border border-r-0 border-base-300 rounded-l-lg px-3 py-2 text-sm">
-                  stagecomplete.com/p/
+                  stagecomplete.com/artist/
                 </span>
                 <input
                   type="text"
@@ -965,7 +967,7 @@ const PublicProfileTab: React.FC<{
             {formData.publicSlug && (
               <label className="label">
                 <span className="label-text-alt text-success">
-                  ✓ Votre profil sera accessible sur: stagecomplete.com/p/
+                  ✓ Votre profil sera accessible sur: stagecomplete.com/artist/
                   {formData.publicSlug}
                 </span>
               </label>
