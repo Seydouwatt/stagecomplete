@@ -1,10 +1,13 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   UpdateArtistProfileDto,
   CreateArtistMemberDto,
   UpdateArtistMemberDto,
-  ArtistType
 } from '../common/dto';
 import { generateUniqueSlug } from '../common/utils';
 
@@ -22,13 +25,13 @@ export class ArtistService {
               include: {
                 members: {
                   where: { isActive: true },
-                  orderBy: { createdAt: 'asc' }
-                }
-              }
-            }
-          }
-        }
-      }
+                  orderBy: { createdAt: 'asc' },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!user || user.role !== 'ARTIST') {
@@ -38,14 +41,17 @@ export class ArtistService {
     return user.profile?.artist;
   }
 
-  async updateArtistProfile(userId: string, updateArtistProfileDto: UpdateArtistProfileDto) {
+  async updateArtistProfile(
+    userId: string,
+    updateArtistProfileDto: UpdateArtistProfileDto,
+  ) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
         profile: {
-          include: { artist: true }
-        }
-      }
+          include: { artist: true },
+        },
+      },
     });
 
     if (!user || user.role !== 'ARTIST') {
@@ -57,12 +63,8 @@ export class ArtistService {
     }
 
     // Préparation des données avec conversion des types JSON
-    const {
-      priceDetails,
-      socialLinks,
-      portfolio,
-      ...restData
-    } = updateArtistProfileDto;
+    const { priceDetails, socialLinks, portfolio, ...restData } =
+      updateArtistProfileDto;
 
     const artistData = {
       ...restData,
@@ -79,13 +81,13 @@ export class ArtistService {
         data: artistData as any,
         include: {
           profile: {
-            include: { user: true }
+            include: { user: true },
           },
           members: {
             where: { isActive: true },
-            orderBy: { createdAt: 'asc' }
-          }
-        }
+            orderBy: { createdAt: 'asc' },
+          },
+        },
       });
     } else {
       // Création d'un nouveau profil artiste
@@ -96,13 +98,13 @@ export class ArtistService {
         } as any,
         include: {
           profile: {
-            include: { user: true }
+            include: { user: true },
           },
           members: {
             where: { isActive: true },
-            orderBy: { createdAt: 'asc' }
-          }
-        }
+            orderBy: { createdAt: 'asc' },
+          },
+        },
       });
     }
   }
@@ -121,9 +123,9 @@ export class ArtistService {
       include: {
         members: {
           where: { isActive: true },
-          orderBy: { createdAt: 'asc' }
-        }
-      }
+          orderBy: { createdAt: 'asc' },
+        },
+      },
     });
 
     if (!artist) {
@@ -134,18 +136,21 @@ export class ArtistService {
       artist: {
         id: artist.id,
         artistType: artist.artistType,
-        memberCount: artist.memberCount
+        memberCount: artist.memberCount,
       },
-      members: artist.members
+      members: artist.members,
     };
   }
 
-  async createArtistMember(artistId: string, memberData: CreateArtistMemberDto) {
+  async createArtistMember(
+    artistId: string,
+    memberData: CreateArtistMemberDto,
+  ) {
     const artist = await this.prisma.artist.findUnique({
       where: { id: artistId },
       include: {
-        members: { where: { isActive: true } }
-      }
+        members: { where: { isActive: true } },
+      },
     });
 
     if (!artist) {
@@ -162,25 +167,32 @@ export class ArtistService {
       data: {
         ...memberData,
         artistId: artistId,
-        isActive: memberData.isActive !== undefined ? memberData.isActive : true,
-        joinDate: memberData.joinDate ? new Date(memberData.joinDate) : new Date()
-      } as any
+        isActive:
+          memberData.isActive !== undefined ? memberData.isActive : true,
+        joinDate: memberData.joinDate
+          ? new Date(memberData.joinDate)
+          : new Date(),
+      } as any,
     });
 
     return {
       message: 'Membre créé avec succès',
-      member: newMember
+      member: newMember,
     };
   }
 
-  async updateArtistMember(artistId: string, memberId: string, updateData: UpdateArtistMemberDto) {
+  async updateArtistMember(
+    artistId: string,
+    memberId: string,
+    updateData: UpdateArtistMemberDto,
+  ) {
     // Vérifier que le membre appartient bien à cet artiste
     const member = await this.prisma.artistMember.findFirst({
       where: {
         id: memberId,
         artistId: artistId,
-        isActive: true
-      }
+        isActive: true,
+      },
     });
 
     if (!member) {
@@ -191,13 +203,15 @@ export class ArtistService {
       where: { id: memberId },
       data: {
         ...updateData,
-        joinDate: updateData.joinDate ? new Date(updateData.joinDate) : member.joinDate
-      } as any
+        joinDate: updateData.joinDate
+          ? new Date(updateData.joinDate)
+          : member.joinDate,
+      } as any,
     });
 
     return {
       message: 'Membre mis à jour avec succès',
-      member: updatedMember
+      member: updatedMember,
     };
   }
 
@@ -206,8 +220,8 @@ export class ArtistService {
       where: {
         id: memberId,
         artistId: artistId,
-        isActive: true
-      }
+        isActive: true,
+      },
     });
 
     if (!member) {
@@ -216,7 +230,7 @@ export class ArtistService {
 
     return {
       message: 'Membre récupéré avec succès',
-      member
+      member,
     };
   }
 
@@ -226,8 +240,8 @@ export class ArtistService {
       where: {
         id: memberId,
         artistId: artistId,
-        isActive: true
-      }
+        isActive: true,
+      },
     });
 
     if (!member) {
@@ -237,11 +251,11 @@ export class ArtistService {
     // Soft delete - marquer comme inactif
     await this.prisma.artistMember.update({
       where: { id: memberId },
-      data: { isActive: false }
+      data: { isActive: false },
     });
 
     return {
-      message: 'Membre supprimé avec succès'
+      message: 'Membre supprimé avec succès',
     };
   }
 }

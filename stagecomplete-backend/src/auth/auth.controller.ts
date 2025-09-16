@@ -16,7 +16,7 @@ import {
   ApiBody,
   ApiOkResponse,
   ApiBadRequestResponse,
-  ApiUnauthorizedResponse
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import {
   AuthResponseDto,
@@ -41,41 +41,42 @@ export class AuthController {
 
   @Post('register')
   @ApiOperation({
-    summary: 'Inscription d\'un nouvel utilisateur',
-    description: 'Crée un nouveau compte utilisateur avec les informations fournies'
+    summary: "Inscription d'un nouvel utilisateur",
+    description:
+      'Crée un nouveau compte utilisateur avec les informations fournies',
   })
   @ApiBody({
     type: RegisterDto,
-    description: 'Données d\'inscription',
+    description: "Données d'inscription",
     examples: {
       artist: {
         summary: 'Inscription artiste',
-        description: 'Exemple d\'inscription pour un artiste',
+        description: "Exemple d'inscription pour un artiste",
         value: {
           email: 'artiste@example.com',
           password: 'MonMotDePasse123!',
           name: 'Jean Dupont',
-          role: 'ARTIST'
-        }
+          role: 'ARTIST',
+        },
       },
       venue: {
         summary: 'Inscription lieu',
-        description: 'Exemple d\'inscription pour un lieu de spectacle',
+        description: "Exemple d'inscription pour un lieu de spectacle",
         value: {
           email: 'venue@example.com',
           password: 'MonMotDePasse123!',
           name: 'Salle de Concert Olympia',
-          role: 'VENUE'
-        }
-      }
-    }
+          role: 'VENUE',
+        },
+      },
+    },
   })
   @ApiOkResponse({
     description: 'Inscription réussie',
-    type: AuthResponseDto
+    type: AuthResponseDto,
   })
   @ApiBadRequestResponse({
-    description: 'Données d\'inscription invalides',
+    description: "Données d'inscription invalides",
     schema: {
       type: 'object',
       properties: {
@@ -90,13 +91,13 @@ export class AuthController {
               errors: {
                 type: 'array',
                 items: { type: 'string' },
-                example: ['Email invalide']
-              }
-            }
-          }
-        }
-      }
-    }
+                example: ['Email invalide'],
+              },
+            },
+          },
+        },
+      },
+    },
   })
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
     return await this.authService.register(registerDto);
@@ -105,7 +106,7 @@ export class AuthController {
   @Post('login')
   @ApiOperation({
     summary: 'Connexion utilisateur',
-    description: 'Authentifie un utilisateur et retourne un token JWT'
+    description: 'Authentifie un utilisateur et retourne un token JWT',
   })
   @ApiBody({
     type: LoginDto,
@@ -116,14 +117,14 @@ export class AuthController {
         description: 'Exemple de connexion avec email et mot de passe',
         value: {
           email: 'user@example.com',
-          password: 'MonMotDePasse123!'
-        }
-      }
-    }
+          password: 'MonMotDePasse123!',
+        },
+      },
+    },
   })
   @ApiOkResponse({
     description: 'Connexion réussie',
-    type: AuthResponseDto
+    type: AuthResponseDto,
   })
   @ApiUnauthorizedResponse({
     description: 'Identifiants incorrects',
@@ -132,9 +133,9 @@ export class AuthController {
       properties: {
         statusCode: { type: 'number', example: 401 },
         message: { type: 'string', example: 'Email ou mot de passe incorrect' },
-        error: { type: 'string', example: 'Unauthorized' }
-      }
-    }
+        error: { type: 'string', example: 'Unauthorized' },
+      },
+    },
   })
   @ApiBadRequestResponse({
     description: 'Données de connexion invalides',
@@ -152,13 +153,13 @@ export class AuthController {
               errors: {
                 type: 'array',
                 items: { type: 'string' },
-                example: ['Email requis']
-              }
-            }
-          }
-        }
-      }
-    }
+                example: ['Email requis'],
+              },
+            },
+          },
+        },
+      },
+    },
   })
   async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
     return await this.authService.login(loginDto);
@@ -167,9 +168,10 @@ export class AuthController {
   @Get('me')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ 
-    summary: 'Récupérer le profil de l\'utilisateur connecté',
-    description: 'Retourne les informations complètes du profil de l\'utilisateur authentifié'
+  @ApiOperation({
+    summary: "Récupérer le profil de l'utilisateur connecté",
+    description:
+      "Retourne les informations complètes du profil de l'utilisateur authentifié",
   })
   @ApiOkResponse({
     description: 'Profil utilisateur récupéré avec succès',
@@ -182,28 +184,38 @@ export class AuthController {
           properties: {
             id: { type: 'string', example: 'clm123456789' },
             email: { type: 'string', example: 'user@example.com' },
-            role: { type: 'string', enum: ['ARTIST', 'VENUE'], example: 'ARTIST' },
+            role: {
+              type: 'string',
+              enum: ['ARTIST', 'VENUE'],
+              example: 'ARTIST',
+            },
             profile: {
               type: 'object',
               properties: {
                 id: { type: 'string', example: 'clm987654321' },
                 name: { type: 'string', example: 'Jean Dupont' },
                 bio: { type: 'string', example: 'Musicien professionnel...' },
-                avatar: { type: 'string', example: 'https://example.com/avatar.jpg' },
+                avatar: {
+                  type: 'string',
+                  example: 'https://example.com/avatar.jpg',
+                },
                 location: { type: 'string', example: 'Paris, France' },
                 phone: { type: 'string', example: '+33123456789' },
                 website: { type: 'string', example: 'https://monsite.com' },
-                socialLinks: { type: 'object', example: { instagram: 'https://instagram.com/user' } },
+                socialLinks: {
+                  type: 'object',
+                  example: { instagram: 'https://instagram.com/user' },
+                },
                 createdAt: { type: 'string', format: 'date-time' },
-                updatedAt: { type: 'string', format: 'date-time' }
-              }
+                updatedAt: { type: 'string', format: 'date-time' },
+              },
             },
             createdAt: { type: 'string', format: 'date-time' },
-            updatedAt: { type: 'string', format: 'date-time' }
-          }
-        }
-      }
-    }
+            updatedAt: { type: 'string', format: 'date-time' },
+          },
+        },
+      },
+    },
   })
   @ApiUnauthorizedResponse({
     description: 'Token JWT manquant ou invalide',
@@ -212,9 +224,9 @@ export class AuthController {
       properties: {
         statusCode: { type: 'number', example: 401 },
         message: { type: 'string', example: 'Unauthorized' },
-        error: { type: 'string', example: 'Unauthorized' }
-      }
-    }
+        error: { type: 'string', example: 'Unauthorized' },
+      },
+    },
   })
   async getProfile(@GetUser() user: AuthenticatedUser) {
     try {
@@ -224,7 +236,7 @@ export class AuthController {
         message: 'Profil récupéré avec succès',
         user: userProfile,
       };
-    } catch (error) {
+    } catch {
       return {
         message: 'Profil récupéré avec succès',
         user: user,
@@ -238,7 +250,8 @@ export class AuthController {
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
     summary: 'Mettre à jour le profil utilisateur',
-    description: 'Met à jour les informations du profil de l\'utilisateur authentifié'
+    description:
+      "Met à jour les informations du profil de l'utilisateur authentifié",
   })
   @ApiBody({
     type: UpdateProfileDto,
@@ -249,26 +262,26 @@ export class AuthController {
         description: 'Exemple de mise à jour avec tous les champs',
         value: {
           name: 'Jean Dupont',
-          bio: 'Musicien professionnel spécialisé dans le jazz moderne avec 15 ans d\'expérience...',
+          bio: "Musicien professionnel spécialisé dans le jazz moderne avec 15 ans d'expérience...",
           location: 'Paris, France',
           phone: '+33123456789',
           website: 'https://jeandupont-music.com',
           socialLinks: {
             instagram: 'https://instagram.com/jeandupont_music',
             facebook: 'https://facebook.com/jeandupont.music',
-            youtube: 'https://youtube.com/c/jeandupont'
-          }
-        }
+            youtube: 'https://youtube.com/c/jeandupont',
+          },
+        },
       },
       example2: {
         summary: 'Mise à jour partielle',
         description: 'Exemple de mise à jour de quelques champs seulement',
         value: {
           bio: 'Nouvelle biographie mise à jour',
-          location: 'Lyon, France'
-        }
-      }
-    }
+          location: 'Lyon, France',
+        },
+      },
+    },
   })
   @ApiOkResponse({
     description: 'Profil mis à jour avec succès',
@@ -281,26 +294,36 @@ export class AuthController {
           properties: {
             id: { type: 'string', example: 'clm123456789' },
             email: { type: 'string', example: 'user@example.com' },
-            role: { type: 'string', enum: ['ARTIST', 'VENUE'], example: 'ARTIST' },
+            role: {
+              type: 'string',
+              enum: ['ARTIST', 'VENUE'],
+              example: 'ARTIST',
+            },
             profile: {
               type: 'object',
               properties: {
                 id: { type: 'string', example: 'clm987654321' },
                 name: { type: 'string', example: 'Jean Dupont' },
                 bio: { type: 'string', example: 'Musicien professionnel...' },
-                avatar: { type: 'string', example: 'https://example.com/avatar.jpg' },
+                avatar: {
+                  type: 'string',
+                  example: 'https://example.com/avatar.jpg',
+                },
                 location: { type: 'string', example: 'Paris, France' },
                 phone: { type: 'string', example: '+33123456789' },
                 website: { type: 'string', example: 'https://monsite.com' },
-                socialLinks: { type: 'object', example: { instagram: 'https://instagram.com/user' } },
+                socialLinks: {
+                  type: 'object',
+                  example: { instagram: 'https://instagram.com/user' },
+                },
                 createdAt: { type: 'string', format: 'date-time' },
-                updatedAt: { type: 'string', format: 'date-time' }
-              }
-            }
-          }
-        }
-      }
-    }
+                updatedAt: { type: 'string', format: 'date-time' },
+              },
+            },
+          },
+        },
+      },
+    },
   })
   @ApiBadRequestResponse({
     description: 'Données de validation invalides',
@@ -308,16 +331,21 @@ export class AuthController {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 400 },
-        message: { type: 'string', example: 'Erreur lors de la mise à jour du profil' },
-        error: { 
+        message: {
+          type: 'string',
+          example: 'Erreur lors de la mise à jour du profil',
+        },
+        error: {
           type: 'object',
           example: {
             field: 'phone',
-            errors: ['Le numéro de téléphone doit contenir au moins 10 chiffres']
-          }
-        }
-      }
-    }
+            errors: [
+              'Le numéro de téléphone doit contenir au moins 10 chiffres',
+            ],
+          },
+        },
+      },
+    },
   })
   @ApiUnauthorizedResponse({
     description: 'Token JWT manquant ou invalide',
@@ -326,9 +354,9 @@ export class AuthController {
       properties: {
         statusCode: { type: 'number', example: 401 },
         message: { type: 'string', example: 'Unauthorized' },
-        error: { type: 'string', example: 'Unauthorized' }
-      }
-    }
+        error: { type: 'string', example: 'Unauthorized' },
+      },
+    },
   })
   async updateProfile(
     @GetUser() user: AuthenticatedUser,
@@ -355,8 +383,8 @@ export class AuthController {
 
   @Post('verify-token')
   @ApiOperation({
-    summary: 'Vérifier la validité d\'un token JWT',
-    description: 'Vérifie si un token JWT est valide et non expiré'
+    summary: "Vérifier la validité d'un token JWT",
+    description: 'Vérifie si un token JWT est valide et non expiré',
   })
   @ApiBody({
     schema: {
@@ -365,11 +393,11 @@ export class AuthController {
         token: {
           type: 'string',
           description: 'Token JWT à vérifier',
-          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
-        }
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+        },
       },
-      required: ['token']
-    }
+      required: ['token'],
+    },
   })
   @ApiOkResponse({
     description: 'Résultat de la vérification du token',
@@ -383,12 +411,12 @@ export class AuthController {
           example: {
             userId: 'clm123456789',
             email: 'user@example.com',
-            role: 'ARTIST'
-          }
+            role: 'ARTIST',
+          },
         },
-        message: { type: 'string', example: 'Token valide' }
-      }
-    }
+        message: { type: 'string', example: 'Token valide' },
+      },
+    },
   })
   @ApiBadRequestResponse({
     description: 'Token invalide ou expiré',
@@ -396,9 +424,9 @@ export class AuthController {
       type: 'object',
       properties: {
         valid: { type: 'boolean', example: false },
-        message: { type: 'string', example: 'Token invalide ou expiré' }
-      }
-    }
+        message: { type: 'string', example: 'Token invalide ou expiré' },
+      },
+    },
   })
   async verifyToken(
     @Body('token') token: string,
@@ -410,7 +438,7 @@ export class AuthController {
         payload: payload,
         message: 'Token valide',
       };
-    } catch (error) {
+    } catch {
       return {
         valid: false,
         message: 'Token invalide ou expiré',
@@ -420,8 +448,9 @@ export class AuthController {
 
   @Post('check-email')
   @ApiOperation({
-    summary: 'Vérifier la disponibilité d\'un email',
-    description: 'Vérifie si une adresse email est déjà utilisée sur la plateforme'
+    summary: "Vérifier la disponibilité d'un email",
+    description:
+      'Vérifie si une adresse email est déjà utilisée sur la plateforme',
   })
   @ApiBody({
     schema: {
@@ -431,21 +460,21 @@ export class AuthController {
           type: 'string',
           format: 'email',
           description: 'Adresse email à vérifier',
-          example: 'user@example.com'
-        }
+          example: 'user@example.com',
+        },
       },
-      required: ['email']
-    }
+      required: ['email'],
+    },
   })
   @ApiOkResponse({
-    description: 'Résultat de la vérification de l\'email',
+    description: "Résultat de la vérification de l'email",
     schema: {
       type: 'object',
       properties: {
         exists: { type: 'boolean', example: false },
-        message: { type: 'string', example: 'Email disponible' }
-      }
-    }
+        message: { type: 'string', example: 'Email disponible' },
+      },
+    },
   })
   async checkEmail(@Body('email') email: string) {
     const exists = await this.authService.emailExists(email);
@@ -458,11 +487,12 @@ export class AuthController {
   @Post('test-login')
   @ApiOperation({
     summary: 'Test de validation des données de connexion',
-    description: 'Endpoint de test pour valider le format des données de connexion sans authentification'
+    description:
+      'Endpoint de test pour valider le format des données de connexion sans authentification',
   })
   @ApiBody({
     type: LoginDto,
-    description: 'Données de connexion à tester'
+    description: 'Données de connexion à tester',
   })
   @ApiOkResponse({
     description: 'Validation réussie',
@@ -475,11 +505,11 @@ export class AuthController {
           description: 'Données validées',
           properties: {
             email: { type: 'string', example: 'user@example.com' },
-            password: { type: 'string', example: 'MonMotDePasse123!' }
-          }
-        }
-      }
-    }
+            password: { type: 'string', example: 'MonMotDePasse123!' },
+          },
+        },
+      },
+    },
   })
   testLogin(@Body() loginDto: LoginDto) {
     return {
@@ -494,8 +524,9 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
-    summary: 'Récupérer les informations personnelles de l\'utilisateur',
-    description: 'Retourne les données personnelles (prénom, nom, email, etc.) de l\'utilisateur connecté'
+    summary: "Récupérer les informations personnelles de l'utilisateur",
+    description:
+      "Retourne les données personnelles (prénom, nom, email, etc.) de l'utilisateur connecté",
   })
   @ApiOkResponse({
     description: 'Informations utilisateur récupérées avec succès',
@@ -508,7 +539,11 @@ export class AuthController {
         lastName: { type: 'string', example: 'Dupont' },
         phone: { type: 'string', example: '+33 6 12 34 56 78' },
         isFounder: { type: 'boolean', example: true },
-        role: { type: 'string', enum: ['ARTIST', 'VENUE', 'MEMBER', 'ADMIN'], example: 'ARTIST' },
+        role: {
+          type: 'string',
+          enum: ['ARTIST', 'VENUE', 'MEMBER', 'ADMIN'],
+          example: 'ARTIST',
+        },
         createdAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' },
         updatedAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' },
         profile: {
@@ -518,14 +553,14 @@ export class AuthController {
             displayName: { type: 'string', example: 'Jean Dupont Music' },
             avatar: { type: 'string', example: 'data:image/jpeg;base64,...' },
             createdAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' },
-            updatedAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' }
-          }
-        }
-      }
-    }
+            updatedAt: { type: 'string', example: '2023-01-01T00:00:00.000Z' },
+          },
+        },
+      },
+    },
   })
   @ApiUnauthorizedResponse({
-    description: 'Token manquant ou invalide'
+    description: 'Token manquant ou invalide',
   })
   async getUserInfo(@GetUser() user: AuthenticatedUser) {
     return await this.authService.getUserInfo(user.userId);
@@ -535,8 +570,9 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({
-    summary: 'Mettre à jour les informations personnelles de l\'utilisateur',
-    description: 'Permet de modifier les données personnelles de l\'utilisateur connecté'
+    summary: "Mettre à jour les informations personnelles de l'utilisateur",
+    description:
+      "Permet de modifier les données personnelles de l'utilisateur connecté",
   })
   @ApiBody({ type: UpdateUserDto })
   @ApiOkResponse({
@@ -553,19 +589,19 @@ export class AuthController {
         role: { type: 'string' },
         createdAt: { type: 'string' },
         updatedAt: { type: 'string' },
-        profile: { type: 'object' }
-      }
-    }
+        profile: { type: 'object' },
+      },
+    },
   })
   @ApiBadRequestResponse({
-    description: 'Données de mise à jour invalides'
+    description: 'Données de mise à jour invalides',
   })
   @ApiUnauthorizedResponse({
-    description: 'Token manquant ou invalide'
+    description: 'Token manquant ou invalide',
   })
   async updateUser(
     @GetUser() user: AuthenticatedUser,
-    @Body() updateUserDto: UpdateUserDto
+    @Body() updateUserDto: UpdateUserDto,
   ) {
     return await this.authService.updateUser(user.userId, updateUserDto);
   }
@@ -575,8 +611,9 @@ export class AuthController {
   @ApiBearerAuth('JWT-auth')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Changer le mot de passe de l\'utilisateur',
-    description: 'Permet à l\'utilisateur de changer son mot de passe en fournissant l\'ancien et le nouveau'
+    summary: "Changer le mot de passe de l'utilisateur",
+    description:
+      "Permet à l'utilisateur de changer son mot de passe en fournissant l'ancien et le nouveau",
   })
   @ApiBody({ type: ChangePasswordDto })
   @ApiOkResponse({
@@ -584,21 +621,27 @@ export class AuthController {
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: 'Mot de passe modifié avec succès' }
-      }
-    }
+        message: {
+          type: 'string',
+          example: 'Mot de passe modifié avec succès',
+        },
+      },
+    },
   })
   @ApiBadRequestResponse({
-    description: 'Données invalides ou nouveau mot de passe identique à l\'ancien'
+    description:
+      "Données invalides ou nouveau mot de passe identique à l'ancien",
   })
   @ApiUnauthorizedResponse({
-    description: 'Token manquant ou invalide, ou mot de passe actuel incorrect'
+    description: 'Token manquant ou invalide, ou mot de passe actuel incorrect',
   })
   async changePassword(
     @GetUser() user: AuthenticatedUser,
-    @Body() changePasswordDto: ChangePasswordDto
+    @Body() changePasswordDto: ChangePasswordDto,
   ) {
-    return await this.authService.changePassword(user.userId, changePasswordDto);
+    return await this.authService.changePassword(
+      user.userId,
+      changePasswordDto,
+    );
   }
-
 }

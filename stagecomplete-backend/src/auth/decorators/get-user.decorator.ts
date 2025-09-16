@@ -1,20 +1,40 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
+export interface AuthenticatedProfile {
+  id: string;
+  displayName: string | null;
+  bio: string | null;
+  avatar: string | null;
+  location: string | null;
+  website: string | null;
+  socialLinks: Record<string, string> | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface AuthenticatedUser {
   userId: string;
   email: string;
   role: string;
-  profile?: any;
+  profile?: AuthenticatedProfile;
 }
 
 export const GetUser = createParamDecorator(
-  (
-    data: keyof AuthenticatedUser | undefined,
+  <T extends keyof AuthenticatedUser | undefined>(
+    data: T,
     ctx: ExecutionContext,
-  ): AuthenticatedUser | any => {
+  ): T extends keyof AuthenticatedUser
+    ? AuthenticatedUser[T]
+    : AuthenticatedUser => {
     const request = ctx.switchToHttp().getRequest();
-    const user = request.user;
+    const user = request.user as AuthenticatedUser;
 
-    return data ? user?.[data] : user;
+    return data
+      ? (user[data] as T extends keyof AuthenticatedUser
+          ? AuthenticatedUser[T]
+          : never)
+      : (user as T extends keyof AuthenticatedUser
+          ? AuthenticatedUser[T]
+          : AuthenticatedUser);
   },
 );

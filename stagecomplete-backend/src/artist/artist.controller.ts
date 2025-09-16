@@ -14,12 +14,11 @@ import {
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
   ApiBadRequestResponse,
-  ApiUnauthorizedResponse
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import {
   UpdateArtistProfileDto,
@@ -43,7 +42,8 @@ export class ArtistController {
   @Get('profile')
   @ApiOperation({
     summary: 'Récupérer le profil artiste étendu',
-    description: 'Retourne le profil artiste complet avec toutes les informations détaillées'
+    description:
+      'Retourne le profil artiste complet avec toutes les informations détaillées',
   })
   @ApiOkResponse({
     description: 'Profil artiste récupéré avec succès',
@@ -65,15 +65,19 @@ export class ArtistController {
             socialLinks: { type: 'object' },
             portfolio: { type: 'object' },
             isPublic: { type: 'boolean' },
-            publicSlug: { type: 'string' }
-          }
-        }
-      }
-    }
+            publicSlug: { type: 'string' },
+          },
+        },
+      },
+    },
   })
-  @ApiUnauthorizedResponse({ description: 'Non autorisé - réservé aux artistes' })
+  @ApiUnauthorizedResponse({
+    description: 'Non autorisé - réservé aux artistes',
+  })
   async getArtistProfile(@GetUser() user: AuthenticatedUser) {
-    const artistProfile = await this.artistService.getArtistProfile(user.userId);
+    const artistProfile = await this.artistService.getArtistProfile(
+      user.userId,
+    );
     return {
       message: 'Profil artiste récupéré avec succès',
       artist: artistProfile,
@@ -84,7 +88,7 @@ export class ArtistController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Mettre à jour le profil artiste étendu',
-    description: 'Met à jour toutes les informations du profil artiste'
+    description: 'Met à jour toutes les informations du profil artiste',
   })
   @ApiBody({
     type: UpdateArtistProfileDto,
@@ -97,7 +101,8 @@ export class ArtistController {
           instruments: ['Guitare', 'Piano', 'Chant'],
           experience: 'PROFESSIONAL',
           yearsActive: 10,
-          artisticBio: 'Musicien professionnel avec 10 ans d\'expérience sur scène...',
+          artisticBio:
+            "Musicien professionnel avec 10 ans d'expérience sur scène...",
           specialties: ['CONCERT', 'WEDDING'],
           equipment: ['Guitare électrique', 'Amplificateur', 'Pédales'],
           requirements: ['Scène', 'Système son', 'Éclairage'],
@@ -106,19 +111,19 @@ export class ArtistController {
             concert: 800,
             wedding: 1200,
             private: 600,
-            conditions: 'Transport inclus dans un rayon de 50km'
+            conditions: 'Transport inclus dans un rayon de 50km',
           },
           travelRadius: 50,
           socialLinks: {
             spotify: 'https://open.spotify.com/artist/123',
             youtube: 'https://youtube.com/@artiste',
-            instagram: 'https://instagram.com/artiste_music'
+            instagram: 'https://instagram.com/artiste_music',
           },
           isPublic: true,
-          publicSlug: 'jean-dupont-music'
-        }
-      }
-    }
+          publicSlug: 'jean-dupont-music',
+        },
+      },
+    },
   })
   @ApiOkResponse({
     description: 'Profil artiste mis à jour avec succès',
@@ -126,11 +131,13 @@ export class ArtistController {
       type: 'object',
       properties: {
         message: { type: 'string' },
-        artist: { type: 'object' }
-      }
-    }
+        artist: { type: 'object' },
+      },
+    },
   })
-  @ApiBadRequestResponse({ description: 'Données invalides ou utilisateur non artiste' })
+  @ApiBadRequestResponse({
+    description: 'Données invalides ou utilisateur non artiste',
+  })
   @ApiUnauthorizedResponse({ description: 'Token JWT manquant ou invalide' })
   async updateArtistProfile(
     @GetUser() user: AuthenticatedUser,
@@ -156,26 +163,26 @@ export class ArtistController {
 
   @Post('generate-slug')
   @ApiOperation({
-    summary: 'Générer un slug unique pour l\'URL publique',
-    description: 'Génère un slug URL friendly basé sur le nom d\'artiste'
+    summary: "Générer un slug unique pour l'URL publique",
+    description: "Génère un slug URL friendly basé sur le nom d'artiste",
   })
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        name: { type: 'string', example: 'Jean Dupont Music' }
+        name: { type: 'string', example: 'Jean Dupont Music' },
       },
-      required: ['name']
-    }
+      required: ['name'],
+    },
   })
   @ApiOkResponse({
     description: 'Slug généré avec succès',
     schema: {
       type: 'object',
       properties: {
-        slug: { type: 'string', example: 'jean-dupont-music' }
-      }
-    }
+        slug: { type: 'string', example: 'jean-dupont-music' },
+      },
+    },
   })
   async generateSlug(@Body('name') name: string) {
     const slug = await this.artistService.generateUniqueSlug(name);
@@ -188,8 +195,8 @@ export class ArtistController {
 
   @Get('members')
   @ApiOperation({
-    summary: 'Récupérer les membres de l\'artiste',
-    description: 'Récupère tous les membres actifs de l\'artiste connecté'
+    summary: "Récupérer les membres de l'artiste",
+    description: "Récupère tous les membres actifs de l'artiste connecté",
   })
   @ApiOkResponse({
     description: 'Membres récupérés avec succès',
@@ -200,16 +207,27 @@ export class ArtistController {
           type: 'object',
           properties: {
             id: { type: 'string' },
-            artistType: { type: 'string', enum: ['SOLO', 'BAND', 'THEATER_GROUP', 'COMEDY_GROUP', 'ORCHESTRA', 'CHOIR', 'OTHER'] },
-            memberCount: { type: 'number' }
-          }
+            artistType: {
+              type: 'string',
+              enum: [
+                'SOLO',
+                'BAND',
+                'THEATER_GROUP',
+                'COMEDY_GROUP',
+                'ORCHESTRA',
+                'CHOIR',
+                'OTHER',
+              ],
+            },
+            memberCount: { type: 'number' },
+          },
         },
         members: {
           type: 'array',
-          items: { type: 'object' }
-        }
-      }
-    }
+          items: { type: 'object' },
+        },
+      },
+    },
   })
   async getArtistMembers(@GetUser() user: AuthenticatedUser) {
     // Récupérer l'artiste lié à l'utilisateur
@@ -218,9 +236,12 @@ export class ArtistController {
       // Si le profil artiste n'existe pas, en créer un par défaut pour un groupe
       const defaultArtistProfile: UpdateArtistProfileDto = {
         artistType: ArtistType.BAND,
-        memberCount: 5
+        memberCount: 5,
       };
-      artist = await this.artistService.updateArtistProfile(user.userId, defaultArtistProfile) as any;
+      artist = (await this.artistService.updateArtistProfile(
+        user.userId,
+        defaultArtistProfile,
+      )) as any;
     }
 
     if (!artist) {
@@ -232,21 +253,29 @@ export class ArtistController {
   @Post('members')
   @ApiOperation({
     summary: 'Ajouter un nouveau membre',
-    description: 'Ajoute un nouveau membre au groupe de l\'artiste connecté'
+    description: "Ajoute un nouveau membre au groupe de l'artiste connecté",
   })
   @ApiBody({ type: CreateArtistMemberDto })
   @ApiOkResponse({ description: 'Membre créé avec succès' })
-  @ApiBadRequestResponse({ description: 'Données invalides ou limite de membres atteinte' })
-  async createArtistMember(@GetUser() user: AuthenticatedUser, @Body() memberData: CreateArtistMemberDto) {
+  @ApiBadRequestResponse({
+    description: 'Données invalides ou limite de membres atteinte',
+  })
+  async createArtistMember(
+    @GetUser() user: AuthenticatedUser,
+    @Body() memberData: CreateArtistMemberDto,
+  ) {
     // Récupérer l'artiste lié à l'utilisateur
     let artist = await this.artistService.getArtistProfile(user.userId);
     if (!artist) {
       // Si le profil artiste n'existe pas, en créer un par défaut
       const defaultArtistProfile: UpdateArtistProfileDto = {
         artistType: ArtistType.BAND,
-        memberCount: 5
+        memberCount: 5,
       };
-      artist = await this.artistService.updateArtistProfile(user.userId, defaultArtistProfile) as any;
+      artist = (await this.artistService.updateArtistProfile(
+        user.userId,
+        defaultArtistProfile,
+      )) as any;
     }
 
     if (!artist) {
@@ -258,15 +287,17 @@ export class ArtistController {
   @Put('members/:memberId')
   @ApiOperation({
     summary: 'Mettre à jour un membre',
-    description: 'Met à jour les informations d\'un membre du groupe'
+    description: "Met à jour les informations d'un membre du groupe",
   })
   @ApiBody({ type: UpdateArtistMemberDto })
   @ApiOkResponse({ description: 'Membre mis à jour avec succès' })
-  @ApiBadRequestResponse({ description: 'Membre non trouvé ou données invalides' })
+  @ApiBadRequestResponse({
+    description: 'Membre non trouvé ou données invalides',
+  })
   async updateArtistMember(
     @GetUser() user: AuthenticatedUser,
     @Param('memberId') memberId: string,
-    @Body() updateData: UpdateArtistMemberDto
+    @Body() updateData: UpdateArtistMemberDto,
   ) {
     // Récupérer l'artiste lié à l'utilisateur
     const artist = await this.artistService.getArtistProfile(user.userId);
@@ -274,17 +305,24 @@ export class ArtistController {
       throw new BadRequestException('Profil artiste non trouvé');
     }
 
-    return this.artistService.updateArtistMember(artist.id, memberId, updateData);
+    return this.artistService.updateArtistMember(
+      artist.id,
+      memberId,
+      updateData,
+    );
   }
 
   @Get('members/:memberId')
   @ApiOperation({
     summary: 'Récupérer un membre spécifique',
-    description: 'Récupère les informations détaillées d\'un membre du groupe'
+    description: "Récupère les informations détaillées d'un membre du groupe",
   })
   @ApiOkResponse({ description: 'Membre récupéré avec succès' })
   @ApiBadRequestResponse({ description: 'Membre non trouvé' })
-  async getArtistMember(@GetUser() user: AuthenticatedUser, @Param('memberId') memberId: string) {
+  async getArtistMember(
+    @GetUser() user: AuthenticatedUser,
+    @Param('memberId') memberId: string,
+  ) {
     // Récupérer l'artiste lié à l'utilisateur
     const artist = await this.artistService.getArtistProfile(user.userId);
     if (!artist) {
@@ -297,19 +335,22 @@ export class ArtistController {
   @Delete('members/:memberId')
   @ApiOperation({
     summary: 'Supprimer un membre',
-    description: 'Désactive un membre du groupe (soft delete)'
+    description: 'Désactive un membre du groupe (soft delete)',
   })
   @ApiOkResponse({
     description: 'Membre supprimé avec succès',
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: 'Membre supprimé avec succès' }
-      }
-    }
+        message: { type: 'string', example: 'Membre supprimé avec succès' },
+      },
+    },
   })
   @ApiBadRequestResponse({ description: 'Membre non trouvé' })
-  async deleteArtistMember(@GetUser() user: AuthenticatedUser, @Param('memberId') memberId: string) {
+  async deleteArtistMember(
+    @GetUser() user: AuthenticatedUser,
+    @Param('memberId') memberId: string,
+  ) {
     // Récupérer l'artiste lié à l'utilisateur
     const artist = await this.artistService.getArtistProfile(user.userId);
     if (!artist) {
