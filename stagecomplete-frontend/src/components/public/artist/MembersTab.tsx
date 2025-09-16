@@ -12,8 +12,7 @@ import {
   Star,
   Award,
 } from "lucide-react";
-import type { PublicArtistProfile } from "../../../types";
-import type { ArtistMember } from "../../../services/memberService";
+import type { PublicArtistProfile, ArtistMember } from "../../../types";
 
 interface MembersTabProps {
   artistProfile: PublicArtistProfile;
@@ -27,91 +26,22 @@ export const MembersTab: React.FC<MembersTabProps> = ({ artistProfile }) => {
     const loadMembers = async () => {
       try {
         setIsLoading(true);
-        // TODO: Remplacer par l'API réelle
-        // const response = await memberService.getPublicMembers(artistProfile.id);
-        // setMembers(response.data);
-
-        // Mock data temporaire
-        const mockMembers: ArtistMember[] = [
-          {
-            id: "1",
-            artistId: artistProfile.id,
-            name: "Alex Martin",
-            role: "Chanteur principal",
-            bio: "Voix puissante et charismatique, Alex est le leader vocal du groupe depuis sa création.",
-            avatar: "https://via.placeholder.com/200x200/3B82F6/white?text=AM",
-            email: "alex@example.com",
-            phone: "+33 6 12 34 56 78",
-            socialLinks: {
-              instagram: "https://instagram.com/alex_martin",
-              facebook: "https://facebook.com/alex.martin",
-            },
-            instruments: ["Voix", "Guitare acoustique"],
-            experience: "PROFESSIONAL",
-            yearsActive: 8,
-            isFounder: true,
-            joinDate: "2016-01-01T00:00:00Z",
-            createdAt: "2023-01-01T00:00:00Z",
-            updatedAt: "2024-01-01T00:00:00Z"
-          },
-          {
-            id: "2",
-            artistId: artistProfile.id,
-            name: "Sophie Dubois",
-            role: "Guitariste lead",
-            bio: "Guitariste virtuose avec 10 ans d'expérience, Sophie apporte la mélodie et les solos emblématiques du groupe.",
-            avatar: "https://via.placeholder.com/200x200/EF4444/white?text=SD",
-            email: "sophie@example.com",
-            instruments: ["Guitare électrique", "Guitare acoustique"],
-            experience: "PROFESSIONAL",
-            yearsActive: 10,
-            isFounder: true,
-            joinDate: "2016-01-01T00:00:00Z",
-            createdAt: "2023-01-01T00:00:00Z",
-            updatedAt: "2024-01-01T00:00:00Z"
-          },
-          {
-            id: "3",
-            artistId: artistProfile.id,
-            name: "Marcus Thompson",
-            role: "Bassiste",
-            bio: "Le groove incarné, Marcus assure les fondations rythmiques avec sa basse et ses harmonies vocales.",
-            avatar: "https://via.placeholder.com/200x200/10B981/white?text=MT",
-            instruments: ["Basse électrique", "Chœurs"],
-            experience: "PROFESSIONAL",
-            yearsActive: 6,
-            isFounder: false,
-            joinDate: "2018-06-01T00:00:00Z",
-            createdAt: "2023-01-01T00:00:00Z",
-            updatedAt: "2024-01-01T00:00:00Z"
-          },
-          {
-            id: "4",
-            artistId: artistProfile.id,
-            name: "Julie Chen",
-            role: "Batteure",
-            bio: "Énergie pure et précision technique, Julie donne le tempo et l'intensité à chaque performance.",
-            avatar: "https://via.placeholder.com/200x200/F59E0B/white?text=JC",
-            instruments: ["Batterie", "Percussions"],
-            experience: "PROFESSIONAL",
-            yearsActive: 7,
-            isFounder: false,
-            joinDate: "2017-03-01T00:00:00Z",
-            createdAt: "2023-01-01T00:00:00Z",
-            updatedAt: "2024-01-01T00:00:00Z"
-          },
-        ];
-
-        setMembers(mockMembers);
+        // Utiliser les membres directement depuis artistProfile (ils sont maintenant inclus dans l'API)
+        if (artistProfile.members && artistProfile.members.length > 0) {
+          setMembers(artistProfile.members);
+        } else {
+          setMembers([]);
+        }
       } catch (error) {
         console.error("Erreur lors du chargement des membres:", error);
+        setMembers([]);
       } finally {
         setIsLoading(false);
       }
     };
 
     loadMembers();
-  }, [artistProfile.id]);
+  }, [artistProfile.id, artistProfile.members]);
 
   const getExperienceLabel = (experience: string) => {
     switch (experience) {

@@ -1,3 +1,30 @@
+// Artist Member types
+export interface ArtistMember {
+  id: string;
+  artistId: string;
+  name: string;
+  role?: string;
+  bio?: string;
+  avatar?: string;
+  email?: string;
+  phone?: string;
+  socialLinks?: {
+    instagram?: string;
+    facebook?: string;
+    twitter?: string;
+    youtube?: string;
+    [key: string]: string | undefined;
+  };
+  instruments?: string[];
+  experience?: "BEGINNER" | "INTERMEDIATE" | "PROFESSIONAL" | "EXPERT";
+  yearsActive?: number;
+  isFounder?: boolean;
+  joinDate?: string;
+  isActive?: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // User & Auth types
 export interface User {
   id: string;
@@ -157,6 +184,7 @@ export interface ArtistProfile {
   // Member management
   artistType?: ArtistType;
   memberCount?: number;
+  members?: ArtistMember[];
   
   // Pricing & Conditions
   priceDetails?: PriceDetails;

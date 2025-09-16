@@ -447,6 +447,12 @@ export class AuthService {
               }
             }
           }
+        },
+        members: {
+          orderBy: [
+            { isFounder: 'desc' },
+            { createdAt: 'asc' }
+          ]
         }
       },
     });
