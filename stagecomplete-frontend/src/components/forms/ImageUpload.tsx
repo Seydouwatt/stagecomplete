@@ -165,11 +165,14 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       />
 
       {/* Instructions */}
+
       <div className="text-sm text-base-content/60 space-y-1">
         <p>• Formats supportés: JPG, PNG, WebP</p>
         <p>• Taille maximum: 5MB par image</p>
-        <p>• Glissez-déposez pour réorganiser</p>
-        <p>• La première image sera votre photo principale</p>
+        {maxImages > 1 && <p>• Glissez-déposez pour réorganiser</p>}
+        {maxImages > 1 && (
+          <p>• La première image sera votre photo principale</p>
+        )}
       </div>
 
       {/* Error message */}

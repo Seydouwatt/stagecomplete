@@ -15,107 +15,16 @@ import { useAuthStore } from "../../stores/authStore";
 import { artistService } from "../../services/artistService";
 import { toast } from "../../stores/useToastStore";
 import type {
-  ExtendedUser,
   UpdateArtistProfileData,
-  Experience,
-  ArtistSpecialty,
   ArtistType,
+  ArtistProfile,
 } from "../../types";
 import { MemberManagement } from "../../components/artist";
-import { MultiSelect } from "../../components/forms/MultiSelect";
 import { ImageUpload } from "../../components/forms/ImageUpload";
 import { LoadingOverlay } from "../../components/ui/LoadingOverlay";
+import ArtisticProfileTab from "../../components/artist/tabs/ArtisticProfileTab";
+import GeneralInfoTab from "../../components/artist/tabs/GeneralInfoTab";
 
-// Options prédéfinies
-const GENRES_OPTIONS = [
-  "Rock",
-  "Pop",
-  "Jazz",
-  "Blues",
-  "Classical",
-  "Folk",
-  "Country",
-  "R&B",
-  "Soul",
-  "Funk",
-  "Electronic",
-  "House",
-  "Techno",
-  "Hip Hop",
-  "Rap",
-  "Reggae",
-  "Ska",
-  "Punk",
-  "Metal",
-  "Alternative",
-  "Indie",
-  "World Music",
-  "Latin",
-  "Bossa Nova",
-  "Chanson Française",
-];
-
-const INSTRUMENTS_OPTIONS = [
-  "Guitare",
-  "Piano",
-  "Chant",
-  "Batterie",
-  "Basse",
-  "Violon",
-  "Violoncelle",
-  "Flûte",
-  "Saxophone",
-  "Trompette",
-  "Trombone",
-  "Accordéon",
-  "Harmonica",
-  "Ukulélé",
-  "Mandoline",
-  "Banjo",
-  "Orgue",
-  "Synthétiseur",
-  "DJ",
-  "Percussions",
-  "Harmonie",
-  "Direction",
-];
-
-const EQUIPMENT_OPTIONS = [
-  "Micro",
-  "Amplificateur",
-  "Guitare électrique",
-  "Clavier",
-  "Batterie électronique",
-  "Pédales d'effet",
-  "Table de mixage",
-  "Enceintes",
-  "Câbles",
-  "Stands",
-  "Éclairage",
-];
-
-const REQUIREMENTS_OPTIONS = [
-  "Scène",
-  "Système son",
-  "Éclairage",
-  "Micro sans fil",
-  "Piano acoustique",
-  "Batterie acoustique",
-  "Loges",
-  "Parking",
-  "Sécurité",
-  "Catering",
-  "Technicien son",
-];
-
-const SPECIALTY_OPTIONS: ArtistSpecialty[] = [
-  "CONCERT",
-  "STUDIO",
-  "TEACHING",
-  "WEDDING",
-  "CORPORATE",
-  "PRIVATE",
-];
 const PRICE_RANGE_OPTIONS = [
   "0-200",
   "200-500",
@@ -137,16 +46,24 @@ export const ArtistProfileForm: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>("general");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [_artistData, setArtistData] = useState<ExtendedUser | null>(null);
+  const [_artistData, setArtistData] = useState<ArtistProfile | null>(null);
   const [, setGeneratedSlug] = useState("");
 
   // Form state
   const [formData, setFormData] = useState<UpdateArtistProfileData>({
+    // General information (identity)
+    artistName: "",
+    coverPhoto: "",
+    logo: "",
+    baseLocation: "",
+    foundedYear: undefined,
+    // Basic info
     genres: [],
     instruments: [],
     specialties: [],
     equipment: [],
     requirements: [],
+    artistDiscipline: undefined,
     socialLinks: {},
     priceDetails: {},
     portfolio: { photos: [], videos: [], audio: [] },
@@ -163,12 +80,22 @@ export const ArtistProfileForm: React.FC = () => {
       try {
         setIsLoading(true);
         const profile = await artistService.getMyArtistProfile();
+        console.log({ profile });
+
         setArtistData(profile);
+        console.log(_artistData);
 
         // Pré-remplir le formulaire avec les données existantes
-        const artist = profile.profile.artist;
+        const artist = profile;
         if (artist) {
           setFormData({
+            // General information (identity)
+            artistName: artist.artistName,
+            coverPhoto: artist.coverPhoto,
+            logo: artist.logo,
+            baseLocation: artist.baseLocation,
+            foundedYear: artist.foundedYear,
+            // Basic info
             genres: artist.genres || [],
             instruments: artist.instruments || [],
             priceRange: artist.priceRange,
@@ -179,6 +106,7 @@ export const ArtistProfileForm: React.FC = () => {
             equipment: artist.equipment || [],
             requirements: artist.requirements || [],
             artistType: artist.artistType,
+            artistDiscipline: artist.artistDiscipline,
             memberCount: artist.memberCount,
             priceDetails: artist.priceDetails || {},
             travelRadius: artist.travelRadius,
@@ -220,14 +148,14 @@ export const ArtistProfileForm: React.FC = () => {
 
   // Générer un slug
   const handleGenerateSlug = async () => {
-    if (!_artistData?.profile.displayName) {
+    if (!_artistData?.artistName) {
       toast.error("Veuillez renseigner votre nom dans le profil");
       return;
     }
 
     try {
       const slug = await artistService.generateSlug(
-        _artistData.profile.displayName
+        _artistData.artistName.replace(/\s+/g, "-").toLowerCase()
       );
       setGeneratedSlug(slug);
       setFormData((prev) => ({ ...prev, publicSlug: slug }));
@@ -435,161 +363,6 @@ export const ArtistProfileForm: React.FC = () => {
 };
 
 // Composants pour chaque onglet (à définir dans la suite...)
-const GeneralInfoTab: React.FC<{
-  formData: UpdateArtistProfileData;
-  updateFormData: (field: keyof UpdateArtistProfileData, value: any) => void;
-}> = ({ formData, updateFormData }) => {
-  return (
-    <div className="space-y-6">
-      <h3 className="text-xl font-semibold">Informations de base</h3>
-
-      <MultiSelect
-        label="Genres musicaux"
-        options={GENRES_OPTIONS}
-        value={formData.genres || []}
-        onChange={(value) => updateFormData("genres", value)}
-        maxSelections={8}
-        allowCustom={true}
-        placeholder="Sélectionnez vos genres..."
-      />
-
-      <MultiSelect
-        label="Instruments / Compétences"
-        options={INSTRUMENTS_OPTIONS}
-        value={formData.instruments || []}
-        onChange={(value) => updateFormData("instruments", value)}
-        maxSelections={10}
-        allowCustom={true}
-        placeholder="Vos instruments et compétences..."
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text font-medium">Niveau d'expérience</span>
-          </label>
-          <select
-            className="select select-bordered"
-            value={formData.experience || ""}
-            onChange={(e) =>
-              updateFormData("experience", e.target.value as Experience)
-            }
-          >
-            <option value="">Sélectionner...</option>
-            <option value="BEGINNER">Débutant</option>
-            <option value="INTERMEDIATE">Intermédiaire</option>
-            <option value="PROFESSIONAL">Professionnel</option>
-          </select>
-        </div>
-
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text font-medium">Années d'activité</span>
-          </label>
-          <input
-            name="yearsActive"
-            type="number"
-            className="input input-bordered"
-            placeholder="Ex: 5"
-            min="0"
-            max="50"
-            value={formData.yearsActive || ""}
-            onChange={(e) =>
-              updateFormData(
-                "yearsActive",
-                parseInt(e.target.value) || undefined
-              )
-            }
-          />
-        </div>
-      </div>
-
-      <div className="form-control">
-        <label className="label">
-          <span className="label-text font-medium">Biographie artistique</span>
-          <span className="label-text-alt">
-            Décrivez votre parcours et votre style
-          </span>
-        </label>
-        <textarea
-          className="textarea textarea-bordered h-32"
-          placeholder="Parlez de votre parcours musical, vos influences, votre style..."
-          value={formData.artisticBio || ""}
-          onChange={(e) => updateFormData("artisticBio", e.target.value)}
-          maxLength={2000}
-        />
-        <label className="label">
-          <span className="label-text-alt">
-            {(formData.artisticBio || "").length}/2000 caractères
-          </span>
-        </label>
-      </div>
-    </div>
-  );
-};
-
-const ArtisticProfileTab: React.FC<{
-  formData: UpdateArtistProfileData;
-  updateFormData: (field: keyof UpdateArtistProfileData, value: any) => void;
-}> = ({ formData, updateFormData }) => {
-  return (
-    <div className="space-y-6">
-      <h3 className="text-xl font-semibold">Profil artistique</h3>
-
-      <MultiSelect
-        label="Spécialités"
-        options={SPECIALTY_OPTIONS}
-        value={formData.specialties || []}
-        onChange={(value) => updateFormData("specialties", value)}
-        maxSelections={6}
-        placeholder="Types de prestations..."
-      />
-
-      <MultiSelect
-        label="Équipements possédés"
-        options={EQUIPMENT_OPTIONS}
-        value={formData.equipment || []}
-        onChange={(value) => updateFormData("equipment", value)}
-        allowCustom={true}
-        placeholder="Votre matériel..."
-      />
-
-      <MultiSelect
-        label="Équipements requis de la venue"
-        options={REQUIREMENTS_OPTIONS}
-        value={formData.requirements || []}
-        onChange={(value) => updateFormData("requirements", value)}
-        allowCustom={true}
-        placeholder="Ce dont vous avez besoin..."
-      />
-
-      <div className="form-control">
-        <label className="label">
-          <span className="label-text font-medium">
-            Rayon de déplacement (km)
-          </span>
-          <span className="label-text-alt">
-            Distance maximale depuis votre base
-          </span>
-        </label>
-        <input
-          type="number"
-          className="input input-bordered"
-          placeholder="Ex: 50"
-          min="0"
-          max="500"
-          value={formData.travelRadius || ""}
-          onChange={(e) =>
-            updateFormData(
-              "travelRadius",
-              parseInt(e.target.value) || undefined
-            )
-          }
-        />
-      </div>
-    </div>
-  );
-};
 
 const ARTIST_TYPE_OPTIONS: { value: ArtistType; label: string }[] = [
   { value: "SOLO", label: "Artiste solo" },
@@ -644,7 +417,7 @@ const MembersTab: React.FC<{
             </label>
             <input
               type="number"
-              className="input input-bordered"
+              className="input input-bordered w-full"
               placeholder="Ex: 4"
               min="1"
               max="20"
@@ -736,7 +509,7 @@ const PricingTab: React.FC<{
           </label>
           <input
             type="number"
-            className="input input-bordered"
+            className="input input-bordered w-full"
             placeholder="500"
             min="0"
             value={formData.priceDetails?.concert || ""}
@@ -756,7 +529,7 @@ const PricingTab: React.FC<{
           </label>
           <input
             type="number"
-            className="input input-bordered"
+            className="input input-bordered w-full"
             placeholder="800"
             min="0"
             value={formData.priceDetails?.wedding || ""}
@@ -776,7 +549,7 @@ const PricingTab: React.FC<{
           </label>
           <input
             type="number"
-            className="input input-bordered"
+            className="input input-bordered w-full"
             placeholder="600"
             min="0"
             value={formData.priceDetails?.private || ""}
@@ -839,7 +612,7 @@ const PortfolioTab: React.FC<{
             </label>
             <input
               type="url"
-              className="input input-bordered"
+              className="input input-bordered w-full"
               placeholder="https://open.spotify.com/artist/..."
               value={formData.socialLinks?.spotify || ""}
               onChange={(e) =>
@@ -854,7 +627,7 @@ const PortfolioTab: React.FC<{
             </label>
             <input
               type="url"
-              className="input input-bordered"
+              className="input input-bordered w-full"
               placeholder="https://youtube.com/@..."
               value={formData.socialLinks?.youtube || ""}
               onChange={(e) =>
@@ -869,7 +642,7 @@ const PortfolioTab: React.FC<{
             </label>
             <input
               type="url"
-              className="input input-bordered"
+              className="input input-bordered w-full"
               placeholder="https://soundcloud.com/..."
               value={formData.socialLinks?.soundcloud || ""}
               onChange={(e) =>
@@ -888,7 +661,7 @@ const PortfolioTab: React.FC<{
             </label>
             <input
               type="url"
-              className="input input-bordered"
+              className="input input-bordered w-full"
               placeholder="https://instagram.com/..."
               value={formData.socialLinks?.instagram || ""}
               onChange={(e) =>
@@ -906,7 +679,7 @@ const PublicProfileTab: React.FC<{
   formData: UpdateArtistProfileData;
   updateFormData: (field: keyof UpdateArtistProfileData, value: any) => void;
   onGenerateSlug: () => void;
-  artistData: ExtendedUser | null;
+  artistData: ArtistProfile | null;
 }> = ({
   formData,
   updateFormData,
@@ -922,7 +695,7 @@ const PublicProfileTab: React.FC<{
           <input
             type="checkbox"
             className="checkbox checkbox-primary"
-            checked={formData.isPublic || false}
+            checked={_artistData?.isPublic || false}
             onChange={(e) => updateFormData("isPublic", e.target.checked)}
           />
           <div>
@@ -936,7 +709,7 @@ const PublicProfileTab: React.FC<{
         </label>
       </div>
 
-      {formData.isPublic && (
+      {_artistData?.isPublic && (
         <>
           <div className="form-control">
             <label className="label">
@@ -952,7 +725,7 @@ const PublicProfileTab: React.FC<{
                   type="text"
                   className="input input-bordered rounded-l-none flex-1"
                   placeholder="votre-nom-artiste"
-                  value={formData.publicSlug || ""}
+                  value={_artistData?.publicSlug || ""}
                   onChange={(e) => updateFormData("publicSlug", e.target.value)}
                 />
               </div>

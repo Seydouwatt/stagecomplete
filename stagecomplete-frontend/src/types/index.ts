@@ -139,9 +139,33 @@ export interface ChildrenProps {
 
 // ========== ARTIST PROFILE TYPES ==========
 
-export type Experience = 'BEGINNER' | 'INTERMEDIATE' | 'PROFESSIONAL';
-export type ArtistSpecialty = 'CONCERT' | 'STUDIO' | 'TEACHING' | 'WEDDING' | 'CORPORATE' | 'PRIVATE';
-export type ArtistType = 'SOLO' | 'BAND' | 'THEATER_GROUP' | 'COMEDY_GROUP' | 'ORCHESTRA' | 'CHOIR' | 'OTHER';
+export type Experience = "BEGINNER" | "INTERMEDIATE" | "PROFESSIONAL";
+export type ArtistSpecialty =
+  | "CONCERT"
+  | "STUDIO"
+  | "TEACHING"
+  | "WEDDING"
+  | "CORPORATE"
+  | "PRIVATE";
+export type ArtistType =
+  | "SOLO"
+  | "BAND"
+  | "THEATER_GROUP"
+  | "COMEDY_GROUP"
+  | "ORCHESTRA"
+  | "CHOIR"
+  | "OTHER";
+
+export type ArtistDiscipline =
+  | "MUSIC"
+  | "THEATER"
+  | "ACTOR"
+  | "COMEDIENNE"
+  | "COMEDIE"
+  | "DANCE"
+  | "CIRCUS"
+  | "MAGIE"
+  | "OTHER";
 
 export interface PriceDetails {
   concert?: number;
@@ -167,38 +191,46 @@ export interface Portfolio {
 export interface ArtistProfile {
   id: string;
   profileId: string;
-  
+
+  // General information (identity)
+  artistName?: string;
+  coverPhoto?: string;
+  logo?: string;
+  baseLocation?: string;
+  foundedYear?: number;
+
   // Basic info
   genres: string[];
   instruments: string[];
   priceRange?: string;
   experience?: Experience;
   yearsActive?: number;
-  
+
   // Extended profile fields
   artisticBio?: string;
   specialties?: ArtistSpecialty[];
   equipment?: string[];
   requirements?: string[];
-  
+
   // Member management
   artistType?: ArtistType;
+  artistDiscipline?: ArtistDiscipline;
   memberCount?: number;
   members?: ArtistMember[];
-  
+
   // Pricing & Conditions
   priceDetails?: PriceDetails;
   travelRadius?: number;
-  
+
   // Media & Portfolio
   portfolio?: Portfolio;
   socialLinks?: SocialLinks;
-  
+
   // Availability & Settings
   availability?: any; // JSON data
   isPublic: boolean;
   publicSlug?: string;
-  
+
   createdAt: string;
   updatedAt: string;
 }
@@ -211,6 +243,14 @@ export interface ExtendedUser extends User {
 }
 
 export interface UpdateArtistProfileData {
+  // General information (identity)
+  artistName?: string;
+  coverPhoto?: string;
+  logo?: string;
+  baseLocation?: string;
+  foundedYear?: number;
+
+  // Basic info
   genres?: string[];
   instruments?: string[];
   priceRange?: string;
@@ -221,6 +261,7 @@ export interface UpdateArtistProfileData {
   equipment?: string[];
   requirements?: string[];
   artistType?: ArtistType;
+  artistDiscipline?: ArtistDiscipline;
   memberCount?: number;
   priceDetails?: PriceDetails;
   travelRadius?: number;

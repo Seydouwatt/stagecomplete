@@ -1,5 +1,5 @@
 import React from "react";
-import { Edit, MapPin, Mail, Phone, Globe, Calendar, User } from "lucide-react";
+import { Edit, Mail, Phone, Calendar, User } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ProfileData {

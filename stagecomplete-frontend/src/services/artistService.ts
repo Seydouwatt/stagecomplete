@@ -5,6 +5,9 @@ import type {
   PublicArtistProfile,
   ArtistSearchFilters,
   ArtistSearchResponse,
+  Profile,
+  ProfileResponse,
+  ArtistProfile,
 } from "../types";
 import { API_URL } from "../constants";
 import { toast } from "../stores/useToastStore";
@@ -60,7 +63,7 @@ export const artistService = {
   /**
    * Récupère le profil artiste de l'utilisateur connecté
    */
-  async getMyArtistProfile(): Promise<ExtendedUser> {
+  async getMyArtistProfile(): Promise<ArtistProfile> {
     try {
       const response = await api.get("/artist/profile");
       return response.data.artist;
@@ -75,7 +78,7 @@ export const artistService = {
    */
   async updateArtistProfile(
     data: UpdateArtistProfileData
-  ): Promise<ExtendedUser> {
+  ): Promise<ArtistProfile> {
     try {
       const response = await api.put("/artist/profile", data);
       toast.success("Profil artiste mis à jour avec succès !");
