@@ -52,14 +52,21 @@ model Profile {
 model Artist {
   id              String   @id @default(cuid())
   profileId       String   @unique
-  
+
+  // General information (identity)
+  artistName      String?     // Nom de l'artiste/groupe (différent du displayName)
+  coverPhoto      String?     // Photo de couverture/bannière (base64)
+  logo            String?     // Logo/image d'identité (base64)
+  baseLocation    String?     // Ville/Pays de base (différent du location du profil)
+  foundedYear     Int?        // Année de création/début de carrière
+
   // Basic info
-  genres          String[] 
+  genres          String[]
   instruments     String[]
   priceRange      String?     // "100-500", "500-1000", etc
   experience      String?     // "BEGINNER", "INTERMEDIATE", "PROFESSIONAL"
   yearsActive     Int?        // Années d'expérience
-  
+
   // Extended profile fields
   artisticBio     String?     // Bio artistique détaillée
   specialties     String[]    // Spécialités (concert, studio, teaching, etc)
@@ -81,8 +88,9 @@ model Artist {
   publicSlug      String?     // Pour URL publique /p/slug
   
   // Group/Solo Management
-  artistType      ArtistType  @default(SOLO)  // Type d'artiste (solo, groupe, etc)
-  memberCount     Int         @default(1)     // Nombre de membres
+  artistType      ArtistType       @default(SOLO)  // Type d'artiste (solo, groupe, etc)
+  artistDiscipline ArtistDiscipline?               // Discipline artistique
+  memberCount     Int              @default(1)     // Nombre de membres
   
   // Relations
   profile         Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
@@ -186,6 +194,18 @@ enum ArtistType {
   COMEDY_GROUP
   ORCHESTRA
   CHOIR
+  OTHER
+}
+
+enum ArtistDiscipline {
+  MUSIC
+  THEATER
+  ACTOR
+  COMEDIENNE
+  COMEDIE
+  DANCE
+  CIRCUS
+  MAGIE
   OTHER
 }
 

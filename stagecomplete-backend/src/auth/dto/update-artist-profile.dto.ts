@@ -98,7 +98,60 @@ class SocialLinksDto {
 }
 
 export class UpdateArtistProfileDto {
-  // Basic Info
+  // ===== GENERAL INFORMATION (IDENTITY) =====
+  @ApiPropertyOptional({
+    description: "Nom de l'artiste ou du groupe",
+    example: 'Les Étoiles Filantes',
+    maxLength: 100,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  artistName?: string;
+
+  @ApiPropertyOptional({
+    description: 'Photo de couverture/bannière (base64)',
+    example: 'data:image/jpeg;base64,/9j/4AAQSkZJ...',
+    maxLength: 200000,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(200000)
+  coverPhoto?: string;
+
+  @ApiPropertyOptional({
+    description: "Logo/image d'identité (base64)",
+    example: 'data:image/png;base64,iVBORw0KGgoAAA...',
+    maxLength: 200000,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(200000)
+  logo?: string;
+
+  @ApiPropertyOptional({
+    description: 'Ville/Pays de base',
+    example: 'Lyon, France',
+    maxLength: 100,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  baseLocation?: string;
+
+  @ApiPropertyOptional({
+    description: 'Année de création/début de carrière',
+    example: 2018,
+    minimum: 1900,
+    maximum: 2030,
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(1900)
+  @Max(2030)
+  foundedYear?: number;
+
+  // ===== BASIC INFO =====
   @ApiPropertyOptional({
     description: 'Genres musicaux',
     example: ['Rock', 'Blues', 'Jazz'],
