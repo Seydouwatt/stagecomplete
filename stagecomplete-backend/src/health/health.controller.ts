@@ -6,8 +6,8 @@ import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 export class HealthController {
   @Get()
   @ApiOperation({
-    summary: 'Vérification de l\'état du serveur',
-    description: 'Endpoint de santé pour vérifier que l\'API est opérationnelle'
+    summary: "Vérification de l'état du serveur",
+    description: "Endpoint de santé pour vérifier que l'API est opérationnelle",
   })
   @ApiOkResponse({
     description: 'Serveur opérationnel',
@@ -15,9 +15,13 @@ export class HealthController {
       type: 'object',
       properties: {
         status: { type: 'string', example: 'ok' },
-        timestamp: { type: 'string', format: 'date-time', example: '2024-01-15T10:30:00.000Z' }
-      }
-    }
+        timestamp: {
+          type: 'string',
+          format: 'date-time',
+          example: '2024-01-15T10:30:00.000Z',
+        },
+      },
+    },
   })
   check() {
     return {

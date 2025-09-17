@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateProfileDto } from '../auth/dto/update-profile.dto';
 
@@ -10,8 +14,8 @@ export class ProfileService {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
-        profile: true
-      }
+        profile: true,
+      },
     });
 
     if (!user) {
@@ -24,7 +28,7 @@ export class ProfileService {
 
     return {
       message: 'Profil récupéré avec succès',
-      profile: user.profile
+      profile: user.profile,
     };
   }
 
@@ -32,8 +36,8 @@ export class ProfileService {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
-        profile: true
-      }
+        profile: true,
+      },
     });
 
     if (!user) {
@@ -45,10 +49,7 @@ export class ProfileService {
     }
 
     // Préparation des données avec conversion des types JSON
-    const {
-      socialLinks,
-      ...restData
-    } = updateProfileDto;
+    const { socialLinks, ...restData } = updateProfileDto;
 
     const profileData = {
       ...restData,
@@ -65,15 +66,15 @@ export class ProfileService {
             select: {
               id: true,
               email: true,
-              role: true
-            }
-          }
-        }
+              role: true,
+            },
+          },
+        },
       });
 
       return {
         message: 'Profil mis à jour avec succès',
-        profile: updatedProfile
+        profile: updatedProfile,
       };
     } catch (error) {
       console.error('Erreur lors de la mise à jour du profil:', error);
@@ -85,8 +86,8 @@ export class ProfileService {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
-        profile: true
-      }
+        profile: true,
+      },
     });
 
     if (!user || !user.profile) {
@@ -101,21 +102,29 @@ export class ProfileService {
       phone: null, // phone sera dans User.phone
       location: profile.location,
       website: profile.website,
-      socialLinks: profile.socialLinks
+      socialLinks: profile.socialLinks,
     };
 
     const filledFields = Object.entries(fields).filter(([key, value]) => {
       if (key === 'socialLinks') {
-        return value && typeof value === 'object' && Object.keys(value).length > 0;
+        return (
+          value && typeof value === 'object' && Object.keys(value).length > 0
+        );
       }
       return value && String(value).trim() !== '';
     });
 
-    const completion = Math.round((filledFields.length / Object.keys(fields).length) * 100);
+    const completion = Math.round(
+      (filledFields.length / Object.keys(fields).length) * 100,
+    );
     const missingFields = Object.entries(fields)
       .filter(([key, value]) => {
         if (key === 'socialLinks') {
-          return !value || typeof value !== 'object' || Object.keys(value).length === 0;
+          return (
+            !value ||
+            typeof value !== 'object' ||
+            Object.keys(value).length === 0
+          );
         }
         return !value || String(value).trim() === '';
       })
@@ -125,7 +134,7 @@ export class ProfileService {
       completion,
       missingFields,
       totalFields: Object.keys(fields).length,
-      filledFields: filledFields.length
+      filledFields: filledFields.length,
     };
   }
 }

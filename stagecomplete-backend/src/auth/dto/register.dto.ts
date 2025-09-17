@@ -11,19 +11,20 @@ import { Role } from '@prisma/client';
 
 export class RegisterDto {
   @ApiProperty({
-    description: 'Adresse email de l\'utilisateur',
+    description: "Adresse email de l'utilisateur",
     example: 'user@example.com',
-    format: 'email'
+    format: 'email',
   })
   @IsEmail({}, { message: 'Email invalide' })
   @IsNotEmpty({ message: 'Email requis' })
   email: string;
 
   @ApiProperty({
-    description: 'Mot de passe sécurisé avec au moins une majuscule, une minuscule et un chiffre ou caractère spécial',
+    description:
+      'Mot de passe sécurisé avec au moins une majuscule, une minuscule et un chiffre ou caractère spécial',
     example: 'MonMotDePasse123!',
     minLength: 6,
-    pattern: '/((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$/'
+    pattern: '/((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$/',
   })
   @IsString({ message: 'Le mot de passe doit être une chaîne de caractères' })
   @MinLength(6, {
@@ -36,9 +37,9 @@ export class RegisterDto {
   password: string;
 
   @ApiProperty({
-    description: 'Nom complet de l\'utilisateur',
+    description: "Nom complet de l'utilisateur",
     example: 'Jean Dupont',
-    minLength: 2
+    minLength: 2,
   })
   @IsString({ message: 'Le nom doit être une chaîne de caractères' })
   @IsNotEmpty({ message: 'Le nom est requis' })
@@ -46,10 +47,10 @@ export class RegisterDto {
   name: string;
 
   @ApiProperty({
-    description: 'Rôle de l\'utilisateur sur la plateforme',
+    description: "Rôle de l'utilisateur sur la plateforme",
     enum: Role,
     example: Role.ARTIST,
-    enumName: 'Role'
+    enumName: 'Role',
   })
   @IsEnum(Role, { message: 'Le rôle doit être ARTIST ou VENUE' })
   role: Role;

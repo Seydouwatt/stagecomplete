@@ -1,12 +1,17 @@
-import { Controller, Get, Param, Query, NotFoundException } from '@nestjs/common';
-import { 
-  ApiTags, 
-  ApiOperation, 
-  ApiResponse, 
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
   ApiParam,
   ApiQuery,
   ApiOkResponse,
-  ApiNotFoundResponse
+  ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { AuthService } from '../auth/auth.service';
 
@@ -18,12 +23,12 @@ export class PublicController {
   @Get('artist/:identifier')
   @ApiOperation({
     summary: 'Récupérer un profil artiste public',
-    description: 'Accède à la fiche publique d\'un artiste via son slug ou ID'
+    description: "Accède à la fiche publique d'un artiste via son slug ou ID",
   })
   @ApiParam({
     name: 'identifier',
-    description: 'Slug personnalisé ou ID de l\'artiste',
-    example: 'jean-dupont-music'
+    description: "Slug personnalisé ou ID de l'artiste",
+    example: 'jean-dupont-music',
   })
   @ApiOkResponse({
     description: 'Profil artiste public récupéré avec succès',
@@ -51,13 +56,13 @@ export class PublicController {
                 bio: { type: 'string' },
                 avatar: { type: 'string' },
                 location: { type: 'string' },
-                website: { type: 'string' }
-              }
-            }
-          }
-        }
-      }
-    }
+                website: { type: 'string' },
+              },
+            },
+          },
+        },
+      },
+    },
   })
   @ApiNotFoundResponse({
     description: 'Profil artiste non trouvé ou non public',
@@ -65,9 +70,12 @@ export class PublicController {
       type: 'object',
       properties: {
         statusCode: { type: 'number', example: 404 },
-        message: { type: 'string', example: 'Profil artiste public non trouvé ou non visible' }
-      }
-    }
+        message: {
+          type: 'string',
+          example: 'Profil artiste public non trouvé ou non visible',
+        },
+      },
+    },
   })
   async getPublicArtistProfile(@Param('identifier') identifier: string) {
     try {
@@ -77,56 +85,58 @@ export class PublicController {
         artist,
       };
     } catch (error) {
-      throw new NotFoundException('Profil artiste public non trouvé ou non visible');
+      throw new NotFoundException(
+        'Profil artiste public non trouvé ou non visible',
+      );
     }
   }
 
   @Get('search/artists')
   @ApiOperation({
     summary: 'Rechercher des artistes publics',
-    description: 'Recherche d\'artistes avec filtres pour les venues'
+    description: "Recherche d'artistes avec filtres pour les venues",
   })
   @ApiQuery({
     name: 'genres',
     required: false,
     description: 'Genres musicaux (séparés par des virgules)',
-    example: 'Rock,Blues,Jazz'
+    example: 'Rock,Blues,Jazz',
   })
   @ApiQuery({
     name: 'experience',
     required: false,
-    description: 'Niveau d\'expérience',
-    enum: ['BEGINNER', 'INTERMEDIATE', 'PROFESSIONAL']
+    description: "Niveau d'expérience",
+    enum: ['BEGINNER', 'INTERMEDIATE', 'PROFESSIONAL'],
   })
   @ApiQuery({
     name: 'priceRange',
     required: false,
     description: 'Fourchette de prix',
-    enum: ['0-200', '200-500', '500-1000', '1000-2000', '2000+']
+    enum: ['0-200', '200-500', '500-1000', '1000-2000', '2000+'],
   })
   @ApiQuery({
     name: 'location',
     required: false,
     description: 'Localisation (ville ou région)',
-    example: 'Paris'
+    example: 'Paris',
   })
   @ApiQuery({
     name: 'instruments',
     required: false,
     description: 'Instruments (séparés par des virgules)',
-    example: 'Guitare,Piano,Chant'
+    example: 'Guitare,Piano,Chant',
   })
   @ApiQuery({
     name: 'limit',
     required: false,
     description: 'Nombre de résultats par page',
-    example: 20
+    example: 20,
   })
   @ApiQuery({
     name: 'offset',
     required: false,
     description: 'Décalage pour la pagination',
-    example: 0
+    example: 0,
   })
   @ApiOkResponse({
     description: 'Résultats de recherche',
@@ -139,7 +149,7 @@ export class PublicController {
           properties: {
             artists: {
               type: 'array',
-              items: { type: 'object' }
+              items: { type: 'object' },
             },
             total: { type: 'number' },
             hasMore: { type: 'boolean' },
@@ -148,13 +158,13 @@ export class PublicController {
               properties: {
                 limit: { type: 'number' },
                 offset: { type: 'number' },
-                total: { type: 'number' }
-              }
-            }
-          }
-        }
-      }
-    }
+                total: { type: 'number' },
+              },
+            },
+          },
+        },
+      },
+    },
   })
   async searchArtists(
     @Query('genres') genres?: string,
@@ -167,11 +177,13 @@ export class PublicController {
   ) {
     // Convertir les paramètres de query
     const filters = {
-      genres: genres ? genres.split(',').map(g => g.trim()) : undefined,
+      genres: genres ? genres.split(',').map((g) => g.trim()) : undefined,
       experience,
       priceRange,
       location,
-      instruments: instruments ? instruments.split(',').map(i => i.trim()) : undefined,
+      instruments: instruments
+        ? instruments.split(',').map((i) => i.trim())
+        : undefined,
       isPublic: true, // Toujours true pour la recherche publique
       limit: limit ? parseInt(limit, 10) : 20,
       offset: offset ? parseInt(offset, 10) : 0,
@@ -195,7 +207,7 @@ export class PublicController {
   @Get('artists/featured')
   @ApiOperation({
     summary: 'Récupérer les artistes mis en avant',
-    description: 'Retourne une sélection d\'artistes publics mis en avant'
+    description: "Retourne une sélection d'artistes publics mis en avant",
   })
   @ApiOkResponse({
     description: 'Artistes mis en avant récupérés avec succès',
@@ -205,10 +217,10 @@ export class PublicController {
         message: { type: 'string' },
         artists: {
           type: 'array',
-          items: { type: 'object' }
-        }
-      }
-    }
+          items: { type: 'object' },
+        },
+      },
+    },
   })
   async getFeaturedArtists() {
     // Pour l'instant, on retourne les 6 artistes les plus récents
@@ -227,7 +239,7 @@ export class PublicController {
   @Get('stats')
   @ApiOperation({
     summary: 'Statistiques publiques de la plateforme',
-    description: 'Retourne les statistiques générales publiques'
+    description: 'Retourne les statistiques générales publiques',
   })
   @ApiOkResponse({
     description: 'Statistiques récupérées avec succès',
@@ -240,11 +252,11 @@ export class PublicController {
           properties: {
             totalArtists: { type: 'number' },
             totalVenues: { type: 'number' },
-            publicProfiles: { type: 'number' }
-          }
-        }
-      }
-    }
+            publicProfiles: { type: 'number' },
+          },
+        },
+      },
+    },
   })
   async getPublicStats() {
     // Note: Ces statistiques pourraient être mises en cache pour de meilleures performances
@@ -259,7 +271,7 @@ export class PublicController {
       const artistCount = await this.authService['prisma'].artist.count();
       const venueCount = await this.authService['prisma'].venue.count();
       const publicArtistCount = await this.authService['prisma'].artist.count({
-        where: { isPublic: true }
+        where: { isPublic: true },
       });
 
       stats.totalArtists = artistCount;

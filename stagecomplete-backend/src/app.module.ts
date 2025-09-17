@@ -9,7 +9,14 @@ import { HealthModule } from './health/health.module';
 import { PublicModule } from './public/public.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ArtistModule, ProfileModule, HealthModule, PublicModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    ArtistModule,
+    ProfileModule,
+    HealthModule,
+    PublicModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

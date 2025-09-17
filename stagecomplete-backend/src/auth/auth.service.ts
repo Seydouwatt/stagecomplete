@@ -7,7 +7,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { RegisterDto, AuthResponseDto, JwtPayload, LoginDto, UpdateProfileDto, UpdateUserDto, ChangePasswordDto } from './dto';
+import {
+  RegisterDto,
+  AuthResponseDto,
+  JwtPayload,
+  LoginDto,
+  UpdateProfileDto,
+  UpdateUserDto,
+  ChangePasswordDto,
+} from './dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 // Interface pour le payload JWT
@@ -128,7 +136,7 @@ export class AuthService {
           role: completeUser.role,
           profile: {
             id: completeUser.profile.id,
-            name: completeUser.profile.displayName || "Utilisateur",
+            name: completeUser.profile.displayName || 'Utilisateur',
             bio: completeUser.profile.bio ?? undefined,
             avatar: completeUser.profile.avatar ?? undefined,
             location: completeUser.profile.location ?? undefined,
@@ -218,7 +226,7 @@ export class AuthService {
           role: user.role,
           profile: {
             id: user.profile.id,
-            name: user.profile.displayName || "Utilisateur",
+            name: user.profile.displayName || 'Utilisateur',
             bio: user.profile.bio ?? undefined,
             avatar: user.profile.avatar ?? undefined,
             location: user.profile.location ?? undefined,
@@ -370,11 +378,14 @@ export class AuthService {
       // Copier les champs simples
       if (updateData.name !== undefined) updateFields.name = updateData.name;
       if (updateData.bio !== undefined) updateFields.bio = updateData.bio;
-      if (updateData.avatar !== undefined) updateFields.avatar = updateData.avatar;
-      if (updateData.location !== undefined) updateFields.location = updateData.location;
+      if (updateData.avatar !== undefined)
+        updateFields.avatar = updateData.avatar;
+      if (updateData.location !== undefined)
+        updateFields.location = updateData.location;
       if (updateData.phone !== undefined) updateFields.phone = updateData.phone;
-      if (updateData.website !== undefined) updateFields.website = updateData.website;
-      
+      if (updateData.website !== undefined)
+        updateFields.website = updateData.website;
+
       // Gérer socialLinks (conversion JSON)
       if (updateData.socialLinks !== undefined) {
         updateFields.socialLinks = updateData.socialLinks;
@@ -409,31 +420,25 @@ export class AuthService {
       }
 
       console.error('Erreur lors de la mise à jour du profil:', error);
-      throw new BadRequestException(
-        'Erreur lors de la mise à jour du profil',
-      );
+      throw new BadRequestException('Erreur lors de la mise à jour du profil');
     }
   }
 
   // ==========  MÉTHODES PROFIL ARTISTE ÉTENDU ==========
-
 
   /**
    * Récupère un profil artiste public par slug ou ID
    */
   async getPublicArtistProfile(identifier: string) {
     // Essayer d'abord par slug, puis par ID
-    let artist = await this.prisma.artist.findFirst({
+    const artist = await this.prisma.artist.findFirst({
       where: {
         AND: [
           { isPublic: true },
           {
-            OR: [
-              { publicSlug: identifier },
-              { id: identifier }
-            ]
-          }
-        ]
+            OR: [{ publicSlug: identifier }, { id: identifier }],
+          },
+        ],
       },
       include: {
         profile: {
@@ -444,21 +449,20 @@ export class AuthService {
                 email: false, // Ne pas exposer l'email
                 role: true,
                 createdAt: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         members: {
-          orderBy: [
-            { isFounder: 'desc' },
-            { createdAt: 'asc' }
-          ]
-        }
+          orderBy: [{ isFounder: 'desc' }, { createdAt: 'asc' }],
+        },
       },
     });
 
     if (!artist) {
-      throw new NotFoundException('Profil artiste public non trouvé ou non visible');
+      throw new NotFoundException(
+        'Profil artiste public non trouvé ou non visible',
+      );
     }
 
     return artist;
@@ -485,7 +489,7 @@ export class AuthService {
       instruments,
       isPublic = true,
       limit = 20,
-      offset = 0
+      offset = 0,
     } = filters;
 
     const whereConditions: any = {
@@ -495,7 +499,7 @@ export class AuthService {
     // Filtres par genres
     if (genres && genres.length > 0) {
       whereConditions.genres = {
-        hasSome: genres
+        hasSome: genres,
       };
     }
 
@@ -512,7 +516,7 @@ export class AuthService {
     // Filtre par instruments
     if (instruments && instruments.length > 0) {
       whereConditions.instruments = {
-        hasSome: instruments
+        hasSome: instruments,
       };
     }
 
@@ -521,7 +525,7 @@ export class AuthService {
     if (location) {
       profileFilter.location = {
         contains: location,
-        mode: 'insensitive'
+        mode: 'insensitive',
       };
     }
 
@@ -540,16 +544,16 @@ export class AuthService {
                 id: true,
                 role: true,
                 createdAt: true,
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        },
       },
       take: limit,
       skip: offset,
       orderBy: {
-        updatedAt: 'desc'
-      }
+        updatedAt: 'desc',
+      },
     });
 
     // Compter le total pour la pagination
@@ -560,7 +564,7 @@ export class AuthService {
     return {
       artists,
       total,
-      hasMore: offset + limit < total
+      hasMore: offset + limit < total,
     };
   }
 
@@ -590,8 +594,8 @@ export class AuthService {
               avatar: true,
               createdAt: true,
               updatedAt: true,
-            }
-          }
+            },
+          },
         },
       });
 
@@ -605,7 +609,10 @@ export class AuthService {
         throw error;
       }
 
-      console.error('Erreur lors de la récupération des informations utilisateur:', error);
+      console.error(
+        'Erreur lors de la récupération des informations utilisateur:',
+        error,
+      );
       throw new InternalServerErrorException(
         'Erreur lors de la récupération des informations utilisateur',
       );
@@ -642,11 +649,16 @@ export class AuthService {
         updatedAt: new Date(),
       };
 
-      if (updateUserDto.firstName !== undefined) updateFields.firstName = updateUserDto.firstName;
-      if (updateUserDto.lastName !== undefined) updateFields.lastName = updateUserDto.lastName;
-      if (updateUserDto.email !== undefined) updateFields.email = updateUserDto.email;
-      if (updateUserDto.phone !== undefined) updateFields.phone = updateUserDto.phone;
-      if (updateUserDto.isFounder !== undefined) updateFields.isFounder = updateUserDto.isFounder;
+      if (updateUserDto.firstName !== undefined)
+        updateFields.firstName = updateUserDto.firstName;
+      if (updateUserDto.lastName !== undefined)
+        updateFields.lastName = updateUserDto.lastName;
+      if (updateUserDto.email !== undefined)
+        updateFields.email = updateUserDto.email;
+      if (updateUserDto.phone !== undefined)
+        updateFields.phone = updateUserDto.phone;
+      if (updateUserDto.isFounder !== undefined)
+        updateFields.isFounder = updateUserDto.isFounder;
 
       // Mettre à jour l'utilisateur
       await this.prisma.user.update({
@@ -664,7 +676,7 @@ export class AuthService {
         throw error;
       }
 
-      console.error('Erreur lors de la mise à jour de l\'utilisateur:', error);
+      console.error("Erreur lors de la mise à jour de l'utilisateur:", error);
       throw new BadRequestException(
         'Erreur lors de la mise à jour des informations utilisateur',
       );
@@ -704,12 +716,14 @@ export class AuthService {
 
       if (isSamePassword) {
         throw new BadRequestException(
-          'Le nouveau mot de passe doit être différent de l\'actuel',
+          "Le nouveau mot de passe doit être différent de l'actuel",
         );
       }
 
       // Hasher le nouveau mot de passe
-      const hashedNewPassword = await this.hashPassword(changePasswordDto.newPassword);
+      const hashedNewPassword = await this.hashPassword(
+        changePasswordDto.newPassword,
+      );
 
       // Mettre à jour le mot de passe
       await this.prisma.user.update({
@@ -738,5 +752,4 @@ export class AuthService {
       );
     }
   }
-
 }

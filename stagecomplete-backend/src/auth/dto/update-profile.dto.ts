@@ -68,7 +68,7 @@ export class SocialLinksDto {
 
 export class UpdateProfileDto {
   @ApiProperty({
-    description: 'Nom complet de l\'utilisateur',
+    description: "Nom complet de l'utilisateur",
     example: 'Jean Dupont',
     minLength: 2,
     maxLength: 50,
@@ -94,7 +94,7 @@ export class UpdateProfileDto {
   bio?: string;
 
   @ApiProperty({
-    description: 'URL ou données base64 de l\'avatar',
+    description: "URL ou données base64 de l'avatar",
     example: 'https://example.com/avatar.jpg',
     required: false,
   })
@@ -149,8 +149,8 @@ export class UpdateProfileDto {
       instagram: 'https://instagram.com/artistname',
       facebook: 'https://facebook.com/artistname',
       twitter: 'https://twitter.com/artistname',
-      youtube: 'https://youtube.com/c/artistname'
-    }
+      youtube: 'https://youtube.com/c/artistname',
+    },
   })
   @IsOptional()
   @IsObject({ message: 'Les liens sociaux doivent être un objet valide' })

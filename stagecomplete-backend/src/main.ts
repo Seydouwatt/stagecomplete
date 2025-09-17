@@ -3,9 +3,15 @@ import { AppModule } from './app.module';
 import { RequestMethod, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filters';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as express from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bodyParser: false,
+  });
+
+  app.use(express.json({ limit: '10mb' }));
+  app.use(express.urlencoded({ limit: '10mb', extended: true }));
   // Global exception filter pour gérer les exceptions HTTP
   app.useGlobalFilters(new HttpExceptionFilter());
   // Global validation pipe avec messages en français
@@ -35,10 +41,10 @@ async function bootstrap() {
   // CORS configuration
   const allowedOrigins = [
     'http://localhost:5173',
-    'http://localhost:5174', 
-    'https://stagecomplete.netlify.app'
+    'http://localhost:5174',
+    'https://stagecomplete.netlify.app',
   ];
-  
+
   if (process.env.FRONTEND_URL) {
     allowedOrigins.push(process.env.FRONTEND_URL);
   }
@@ -92,4 +98,4 @@ async function bootstrap() {
   console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
   console.log(`📊 Prisma Studio: npx prisma studio`);
 }
-bootstrap();
+void bootstrap();

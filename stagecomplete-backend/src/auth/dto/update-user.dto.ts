@@ -1,47 +1,54 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsEmail, IsPhoneNumber, IsBoolean, MinLength } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsEmail,
+  IsPhoneNumber,
+  IsBoolean,
+  MinLength,
+} from 'class-validator';
 
 export class UpdateUserDto {
   @ApiProperty({
-    description: 'Prénom de l\'utilisateur',
+    description: "Prénom de l'utilisateur",
     example: 'Jean',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
   firstName?: string;
 
   @ApiProperty({
-    description: 'Nom de famille de l\'utilisateur',
+    description: "Nom de famille de l'utilisateur",
     example: 'Dupont',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
   lastName?: string;
 
   @ApiProperty({
-    description: 'Adresse email de l\'utilisateur',
+    description: "Adresse email de l'utilisateur",
     example: 'jean.dupont@example.com',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsEmail()
   email?: string;
 
   @ApiProperty({
-    description: 'Numéro de téléphone de l\'utilisateur',
+    description: "Numéro de téléphone de l'utilisateur",
     example: '+33 6 12 34 56 78',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
   phone?: string;
 
   @ApiProperty({
-    description: 'Indique si l\'utilisateur est membre fondateur',
+    description: "Indique si l'utilisateur est membre fondateur",
     example: true,
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsBoolean()
@@ -51,16 +58,18 @@ export class UpdateUserDto {
 export class ChangePasswordDto {
   @ApiProperty({
     description: 'Mot de passe actuel',
-    example: 'ancien_mot_de_passe'
+    example: 'ancien_mot_de_passe',
   })
   @IsString()
   currentPassword: string;
 
   @ApiProperty({
     description: 'Nouveau mot de passe (minimum 6 caractères)',
-    example: 'nouveau_mot_de_passe_sécurisé'
+    example: 'nouveau_mot_de_passe_sécurisé',
   })
   @IsString()
-  @MinLength(6, { message: 'Le mot de passe doit contenir au moins 6 caractères' })
+  @MinLength(6, {
+    message: 'Le mot de passe doit contenir au moins 6 caractères',
+  })
   newPassword: string;
 }

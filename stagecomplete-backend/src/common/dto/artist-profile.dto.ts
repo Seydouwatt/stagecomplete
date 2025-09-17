@@ -11,7 +11,7 @@ import {
   IsEnum,
   ArrayMaxSize,
   ValidateNested,
-  IsUrl
+  IsUrl,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -19,7 +19,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 export enum Experience {
   BEGINNER = 'BEGINNER',
   INTERMEDIATE = 'INTERMEDIATE',
-  PROFESSIONAL = 'PROFESSIONAL'
+  PROFESSIONAL = 'PROFESSIONAL',
 }
 
 export enum ArtistSpecialty {
@@ -28,7 +28,7 @@ export enum ArtistSpecialty {
   TEACHING = 'TEACHING',
   WEDDING = 'WEDDING',
   CORPORATE = 'CORPORATE',
-  PRIVATE = 'PRIVATE'
+  PRIVATE = 'PRIVATE',
 }
 
 export enum ArtistType {
@@ -38,7 +38,7 @@ export enum ArtistType {
   COMEDY_GROUP = 'COMEDY_GROUP',
   ORCHESTRA = 'ORCHESTRA',
   CHOIR = 'CHOIR',
-  OTHER = 'OTHER'
+  OTHER = 'OTHER',
 }
 
 class PriceDetailsDto {
@@ -48,7 +48,10 @@ class PriceDetailsDto {
   @Min(0)
   concert?: number;
 
-  @ApiPropertyOptional({ description: 'Prix pour événements privés', example: 800 })
+  @ApiPropertyOptional({
+    description: 'Prix pour événements privés',
+    example: 800,
+  })
   @IsOptional()
   @IsInt()
   @Min(0)
@@ -105,7 +108,7 @@ export class UpdateArtistProfileDto {
   @ApiPropertyOptional({
     description: 'Genres musicaux',
     example: ['Rock', 'Blues', 'Jazz'],
-    type: [String]
+    type: [String],
   })
   @IsOptional()
   @IsArray()
@@ -116,7 +119,7 @@ export class UpdateArtistProfileDto {
   @ApiPropertyOptional({
     description: 'Instruments pratiqués',
     example: ['Guitare', 'Piano', 'Chant'],
-    type: [String]
+    type: [String],
   })
   @IsOptional()
   @IsArray()
@@ -127,25 +130,27 @@ export class UpdateArtistProfileDto {
   @ApiPropertyOptional({
     description: 'Fourchette de prix',
     example: '500-1000',
-    enum: ['0-200', '200-500', '500-1000', '1000-2000', '2000+']
+    enum: ['0-200', '200-500', '500-1000', '1000-2000', '2000+'],
   })
   @IsOptional()
   @IsString()
   priceRange?: string;
 
   @ApiPropertyOptional({
-    description: 'Niveau d\'expérience',
-    enum: Experience
+    description: "Niveau d'expérience",
+    enum: Experience,
   })
   @IsOptional()
-  @IsEnum(Experience, { message: 'Experience must be BEGINNER, INTERMEDIATE, or PROFESSIONAL' })
+  @IsEnum(Experience, {
+    message: 'Experience must be BEGINNER, INTERMEDIATE, or PROFESSIONAL',
+  })
   experience?: Experience;
 
   @ApiPropertyOptional({
-    description: 'Années d\'activité musicale',
+    description: "Années d'activité musicale",
     example: 5,
     minimum: 0,
-    maximum: 50
+    maximum: 50,
   })
   @IsOptional()
   @IsInt()
@@ -156,25 +161,27 @@ export class UpdateArtistProfileDto {
   // Extended Profile
   @ApiPropertyOptional({
     description: 'Biographie artistique détaillée',
-    example: 'Musicien professionnel avec 10 ans d\'expérience...',
-    maxLength: 2000
+    example: "Musicien professionnel avec 10 ans d'expérience...",
+    maxLength: 2000,
   })
   @IsOptional()
   @IsString()
-  @MaxLength(2000, { message: 'La biographie artistique ne peut pas dépasser 2000 caractères' })
+  @MaxLength(2000, {
+    message: 'La biographie artistique ne peut pas dépasser 2000 caractères',
+  })
   artisticBio?: string;
 
   @ApiPropertyOptional({
     description: 'Spécialités artistiques',
     example: ['CONCERT', 'WEDDING'],
     enum: ArtistSpecialty,
-    isArray: true
+    isArray: true,
   })
   @IsOptional()
   @IsArray()
   @IsEnum(ArtistSpecialty, {
     each: true,
-    message: 'Chaque spécialité doit être une valeur valide'
+    message: 'Chaque spécialité doit être une valeur valide',
   })
   @ArrayMaxSize(6)
   specialties?: ArtistSpecialty[];
@@ -182,7 +189,7 @@ export class UpdateArtistProfileDto {
   @ApiPropertyOptional({
     description: 'Équipements possédés',
     example: ['Micro', 'Amplificateur', 'Système son'],
-    type: [String]
+    type: [String],
   })
   @IsOptional()
   @IsArray()
@@ -193,7 +200,7 @@ export class UpdateArtistProfileDto {
   @ApiPropertyOptional({
     description: 'Équipements requis de la venue',
     example: ['Scène', 'Éclairage', 'Système son'],
-    type: [String]
+    type: [String],
   })
   @IsOptional()
   @IsArray()
@@ -204,7 +211,7 @@ export class UpdateArtistProfileDto {
   // Pricing & Conditions
   @ApiPropertyOptional({
     description: 'Détails des tarifs par type de prestation',
-    type: PriceDetailsDto
+    type: PriceDetailsDto,
   })
   @IsOptional()
   @IsObject()
@@ -216,7 +223,7 @@ export class UpdateArtistProfileDto {
     description: 'Rayon de déplacement en kilomètres',
     example: 50,
     minimum: 0,
-    maximum: 500
+    maximum: 500,
   })
   @IsOptional()
   @IsInt()
@@ -227,7 +234,7 @@ export class UpdateArtistProfileDto {
   // Social & Media Links
   @ApiPropertyOptional({
     description: 'Liens vers les réseaux sociaux et plateformes',
-    type: SocialLinksDto
+    type: SocialLinksDto,
   })
   @IsOptional()
   @IsObject()
@@ -237,12 +244,13 @@ export class UpdateArtistProfileDto {
 
   // Portfolio & Visibility
   @ApiPropertyOptional({
-    description: 'Portfolio multimédia (photos, vidéos, audio en base64 ou URLs)',
+    description:
+      'Portfolio multimédia (photos, vidéos, audio en base64 ou URLs)',
     example: {
       photos: ['data:image/jpeg;base64,...'],
       videos: ['https://youtube.com/watch?v=...'],
-      audio: ['data:audio/mp3;base64,...']
-    }
+      audio: ['data:audio/mp3;base64,...'],
+    },
   })
   @IsOptional()
   @IsObject()
@@ -254,7 +262,7 @@ export class UpdateArtistProfileDto {
 
   @ApiPropertyOptional({
     description: 'Profil visible publiquement',
-    example: true
+    example: true,
   })
   @IsOptional()
   @IsBoolean()
@@ -262,7 +270,7 @@ export class UpdateArtistProfileDto {
 
   @ApiPropertyOptional({
     description: 'Slug personnalisé pour URL publique',
-    example: 'jean-dupont-music'
+    example: 'jean-dupont-music',
   })
   @IsOptional()
   @IsString()
@@ -271,9 +279,9 @@ export class UpdateArtistProfileDto {
 
   // Group/Solo Management
   @ApiPropertyOptional({
-    description: 'Type d\'artiste (solo, groupe, etc)',
+    description: "Type d'artiste (solo, groupe, etc)",
     example: 'BAND',
-    enum: ArtistType
+    enum: ArtistType,
   })
   @IsOptional()
   @IsEnum(ArtistType)
@@ -283,7 +291,7 @@ export class UpdateArtistProfileDto {
     description: 'Nombre de membres dans le groupe',
     example: 4,
     minimum: 1,
-    maximum: 50
+    maximum: 50,
   })
   @IsOptional()
   @IsInt()

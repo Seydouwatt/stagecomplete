@@ -11,13 +11,12 @@ import {
 import {
   ApiTags,
   ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
-  ApiNotFoundResponse
+  ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { UpdateProfileDto } from '../auth/dto/update-profile.dto';
 import { ProfileService } from './profile.service';
@@ -34,7 +33,7 @@ export class ProfileController {
   @Get()
   @ApiOperation({
     summary: 'Récupérer le profil utilisateur',
-    description: 'Retourne le profil complet de l\'utilisateur connecté'
+    description: "Retourne le profil complet de l'utilisateur connecté",
   })
   @ApiOkResponse({
     description: 'Profil récupéré avec succès',
@@ -54,11 +53,11 @@ export class ProfileController {
             website: { type: 'string' },
             socialLinks: { type: 'object' },
             createdAt: { type: 'string' },
-            updatedAt: { type: 'string' }
-          }
-        }
-      }
-    }
+            updatedAt: { type: 'string' },
+          },
+        },
+      },
+    },
   })
   @ApiUnauthorizedResponse({ description: 'Token JWT manquant ou invalide' })
   @ApiNotFoundResponse({ description: 'Utilisateur ou profil non trouvé' })
@@ -70,7 +69,8 @@ export class ProfileController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Mettre à jour le profil utilisateur',
-    description: 'Met à jour les informations du profil de l\'utilisateur connecté'
+    description:
+      "Met à jour les informations du profil de l'utilisateur connecté",
   })
   @ApiBody({
     type: UpdateProfileDto,
@@ -80,7 +80,7 @@ export class ProfileController {
         summary: 'Profil complet',
         value: {
           name: 'Jean Dupont',
-          bio: 'Musicien professionnel spécialisé dans le jazz moderne avec 10 ans d\'expérience.',
+          bio: "Musicien professionnel spécialisé dans le jazz moderne avec 10 ans d'expérience.",
           avatar: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABA...',
           phone: '+33123456789',
           location: 'Paris, France',
@@ -89,18 +89,18 @@ export class ProfileController {
             instagram: 'https://instagram.com/jeandupont_music',
             facebook: 'https://facebook.com/jeandupont.music',
             youtube: 'https://youtube.com/c/jeandupont',
-            linkedin: 'https://linkedin.com/in/jean-dupont-music'
-          }
-        }
+            linkedin: 'https://linkedin.com/in/jean-dupont-music',
+          },
+        },
       },
       partial: {
         summary: 'Mise à jour partielle',
         value: {
           bio: 'Nouvelle biographie mise à jour',
-          location: 'Lyon, France'
-        }
-      }
-    }
+          location: 'Lyon, France',
+        },
+      },
+    },
   })
   @ApiOkResponse({
     description: 'Profil mis à jour avec succès',
@@ -108,18 +108,23 @@ export class ProfileController {
       type: 'object',
       properties: {
         message: { type: 'string' },
-        profile: { type: 'object' }
-      }
-    }
+        profile: { type: 'object' },
+      },
+    },
   })
-  @ApiBadRequestResponse({ description: 'Données invalides ou profil non trouvé' })
+  @ApiBadRequestResponse({
+    description: 'Données invalides ou profil non trouvé',
+  })
   @ApiUnauthorizedResponse({ description: 'Token JWT manquant ou invalide' })
   async updateProfile(
     @GetUser() user: AuthenticatedUser,
     @Body() updateProfileDto: UpdateProfileDto,
   ) {
     try {
-      return await this.profileService.updateProfile(user.userId, updateProfileDto);
+      return await this.profileService.updateProfile(
+        user.userId,
+        updateProfileDto,
+      );
     } catch (error) {
       throw new BadRequestException({
         message: 'Erreur lors de la mise à jour du profil',
@@ -131,7 +136,8 @@ export class ProfileController {
   @Get('completion')
   @ApiOperation({
     summary: 'Obtenir le pourcentage de complétion du profil',
-    description: 'Retourne le pourcentage de complétion du profil et les champs manquants'
+    description:
+      'Retourne le pourcentage de complétion du profil et les champs manquants',
   })
   @ApiOkResponse({
     description: 'Statut de complétion récupéré avec succès',
@@ -141,26 +147,26 @@ export class ProfileController {
         completion: {
           type: 'number',
           description: 'Pourcentage de complétion (0-100)',
-          example: 75
+          example: 75,
         },
         missingFields: {
           type: 'array',
           items: { type: 'string' },
           description: 'Liste des champs manquants',
-          example: ['bio', 'website']
+          example: ['bio', 'website'],
         },
         totalFields: {
           type: 'number',
           description: 'Nombre total de champs',
-          example: 7
+          example: 7,
         },
         filledFields: {
           type: 'number',
           description: 'Nombre de champs remplis',
-          example: 5
-        }
-      }
-    }
+          example: 5,
+        },
+      },
+    },
   })
   @ApiUnauthorizedResponse({ description: 'Token JWT manquant ou invalide' })
   async getProfileCompletion(@GetUser() user: AuthenticatedUser) {
