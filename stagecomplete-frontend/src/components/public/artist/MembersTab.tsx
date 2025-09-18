@@ -93,7 +93,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({ artistProfile }) => {
         <div className="card-body text-center">
           <h2 className="card-title justify-center text-2xl mb-4">
             <Users className="w-6 h-6 text-primary" />
-            L'équipe de {artistProfile.profile.displayName}
+            L'équipe de {artistProfile.artistName}
           </h2>
           <p className="text-base-content/70 mb-4">
             Découvrez les talents qui composent ce{" "}

@@ -159,6 +159,8 @@ export const ArtistProfileForm: React.FC = () => {
       const slug = await artistService.generateSlug(
         _artistData.artistName.replace(/\s+/g, "-").toLowerCase()
       );
+      console.log(slug);
+
       setGeneratedSlug(slug);
       setFormData((prev) => ({ ...prev, publicSlug: slug }));
       toast.success("Slug généré !");
@@ -681,13 +683,15 @@ const PublicProfileTab: React.FC<{
   formData: UpdateArtistProfileData;
   updateFormData: (field: keyof UpdateArtistProfileData, value: any) => void;
   onGenerateSlug: () => void;
-  artistData: ArtistProfile | null;
+  // artistData: ArtistProfile | null;
 }> = ({
   formData,
   updateFormData,
   onGenerateSlug,
-  artistData: _artistData,
+  // artistData: _artistData,
 }) => {
+  console.log(formData);
+
   return (
     <div className="space-y-6">
       <h3 className="text-xl font-semibold">Profil public</h3>
@@ -697,7 +701,7 @@ const PublicProfileTab: React.FC<{
           <input
             type="checkbox"
             className="checkbox checkbox-primary"
-            checked={_artistData?.isPublic || false}
+            checked={formData?.isPublic || false}
             onChange={(e) => updateFormData("isPublic", e.target.checked)}
           />
           <div>
@@ -711,7 +715,7 @@ const PublicProfileTab: React.FC<{
         </label>
       </div>
 
-      {_artistData?.isPublic && (
+      {formData?.isPublic && (
         <>
           <div className="form-control">
             <label className="label">
@@ -727,17 +731,20 @@ const PublicProfileTab: React.FC<{
                   type="text"
                   className="input input-bordered rounded-l-none flex-1"
                   placeholder="votre-nom-artiste"
-                  value={_artistData?.publicSlug || ""}
+                  value={formData?.publicSlug || ""}
                   onChange={(e) => updateFormData("publicSlug", e.target.value)}
                 />
               </div>
-              <button
-                type="button"
-                onClick={onGenerateSlug}
-                className="btn btn-outline"
-              >
-                Générer
-              </button>
+
+              {formData?.publicSlug === "" && (
+                <button
+                  type="button"
+                  onClick={onGenerateSlug}
+                  className="btn btn-outline"
+                >
+                  Générer
+                </button>
+              )}
             </div>
             {formData.publicSlug && (
               <label className="label">

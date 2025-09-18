@@ -162,8 +162,7 @@ export const PublicArtistProfile: React.FC = () => {
 
   // Mise à jour des meta tags pour SEO
   const updateMetaTags = (profile: PublicArtistProfileType) => {
-    const artistName =
-      (profile.profile as any).name || profile.profile.displayName || "Artiste";
+    const artistName = artistProfile?.artistName || "Artiste";
     document.title = `${artistName} - Artiste ${profile.genres.join(
       ", "
     )} | StageComplete`;
@@ -293,7 +292,7 @@ export const PublicArtistProfile: React.FC = () => {
                       artistProfile.profile.avatar ||
                       "https://via.placeholder.com/96x96/1f2937/white?text=Artist"
                     }
-                    alt={artistProfile.profile.displayName}
+                    alt={artistProfile.artistName}
                   />
                 </div>
               </div>
@@ -301,9 +300,7 @@ export const PublicArtistProfile: React.FC = () => {
               {/* Infos principales */}
               <div className="flex-1 text-white">
                 <h1 className="text-3xl font-bold mb-2">
-                  {(artistProfile.profile as any).name ||
-                    artistProfile.profile.displayName ||
-                    "Artiste"}
+                  {artistProfile.artistName || "Artiste"}
                 </h1>
                 <div className="flex flex-wrap gap-4 text-white/90 text-sm">
                   <div className="flex items-center gap-1">

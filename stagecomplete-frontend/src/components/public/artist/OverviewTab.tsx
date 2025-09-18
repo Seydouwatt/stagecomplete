@@ -30,6 +30,30 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ artistProfile }) => {
     }
   };
 
+  const getArtistCategriesLabel = (type: string) => {
+    switch (type) {
+      case "MUSIC":
+        return "Musique";
+      case "THEATER":
+        return "Théâtre";
+      case "ACTOR":
+        return "Acteur";
+      case "COMEDIENNE":
+        return "Comédienne";
+      case "COMEDIE":
+        return "Comédie";
+      case "DANCE":
+        return "Danse";
+      case "CIRCUS":
+        return "Cirque";
+      case "MAGIE":
+        return "Magie";
+      case "OTHER":
+        return "Autre";
+      default:
+        return type;
+    }
+  };
   const getArtistTypeLabel = (type: string) => {
     switch (type) {
       case "SOLO":
@@ -69,6 +93,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ artistProfile }) => {
         return specialty;
     }
   };
+  console.log(artistProfile);
 
   return (
     <div className="space-y-8">
@@ -80,13 +105,12 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ artistProfile }) => {
       >
         <div className="card-body">
           <h2 className="card-title text-2xl mb-4">
-            <Palette className="w-6 h-6 text-primary" />À propos de
-            {artistProfile.profile.displayName}
+            <Palette className="w-6 h-6 text-primary" />À propos de &nbsp;
+            {artistProfile.artistName}
           </h2>
           <p className="text-base-content/80 text-lg leading-relaxed">
-            {artistProfile.artisticBio ||
-              artistProfile.profile.bio ||
-              "Aucune bio artistique disponible pour le moment."}
+            {artistProfile.artistDescription ||
+              "Descrition simple bientôt disponible."}
           </p>
         </div>
       </motion.div>
@@ -165,7 +189,8 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ artistProfile }) => {
             </div>
             <div className="space-y-2">
               <div className="badge badge-info badge-outline">
-                {getArtistTypeLabel(artistProfile.artistType || "SOLO")}
+                {getArtistTypeLabel(artistProfile.artistType || "SOLO")} -{" "}
+                {getArtistCategriesLabel(artistProfile.artistDiscipline || "")}
               </div>
               {artistProfile.memberCount && artistProfile.memberCount > 1 && (
                 <div className="text-sm text-base-content/70">

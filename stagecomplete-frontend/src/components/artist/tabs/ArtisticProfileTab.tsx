@@ -46,6 +46,22 @@ const ArtisticProfileTab: React.FC<{
     <div className="space-y-6">
       <h3 className="text-xl font-semibold">Profil artistique</h3>
 
+      <div className="form-control flex flex-col">
+        <label className="label">
+          <span className="label-text font-medium">Biographie</span>
+          <span className="label-text-alt text-base-content/60">
+            {formData.artisticBio?.length}/10000 caractères
+          </span>
+        </label>
+        <textarea
+          className="textarea textarea-bordered h-24 w-full"
+          placeholder="Présentez-vous en quelques mots..."
+          value={formData.artisticBio || ""}
+          onChange={(e) => updateFormData("artisticBio", e.target.value)}
+          maxLength={10000}
+        />
+      </div>
+
       <MultiSelect
         label="Spécialités"
         options={SPECIALTY_OPTIONS}

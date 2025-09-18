@@ -16,38 +16,59 @@ interface GeneralInfoTabProps {
   artistProfile: PublicArtistProfile;
 }
 
-export const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ artistProfile }) => {
+export const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({
+  artistProfile,
+}) => {
   const getExperienceLabel = (experience: string) => {
     switch (experience) {
-      case "BEGINNER": return "Débutant";
-      case "INTERMEDIATE": return "Intermédiaire";
-      case "PROFESSIONAL": return "Professionnel";
-      default: return experience;
+      case "BEGINNER":
+        return "Débutant";
+      case "INTERMEDIATE":
+        return "Intermédiaire";
+      case "PROFESSIONAL":
+        return "Professionnel";
+      default:
+        return experience;
     }
   };
 
   const getArtistTypeLabel = (type: string) => {
     switch (type) {
-      case "SOLO": return "Artiste solo";
-      case "BAND": return "Groupe";
-      case "THEATER_GROUP": return "Troupe de théâtre";
-      case "COMEDY_GROUP": return "Troupe de comédie";
-      case "ORCHESTRA": return "Orchestre";
-      case "CHOIR": return "Chorale";
-      case "OTHER": return "Autre";
-      default: return type;
+      case "SOLO":
+        return "Artiste solo";
+      case "BAND":
+        return "Groupe";
+      case "THEATER_GROUP":
+        return "Troupe de théâtre";
+      case "COMEDY_GROUP":
+        return "Troupe de comédie";
+      case "ORCHESTRA":
+        return "Orchestre";
+      case "CHOIR":
+        return "Chorale";
+      case "OTHER":
+        return "Autre";
+      default:
+        return type;
     }
   };
 
   const getSpecialtyLabel = (specialty: string) => {
     switch (specialty) {
-      case "CONCERT": return "Concerts";
-      case "STUDIO": return "Studio";
-      case "TEACHING": return "Enseignement";
-      case "WEDDING": return "Mariages";
-      case "CORPORATE": return "Événements corporate";
-      case "PRIVATE": return "Événements privés";
-      default: return specialty;
+      case "CONCERT":
+        return "Concerts";
+      case "STUDIO":
+        return "Studio";
+      case "TEACHING":
+        return "Enseignement";
+      case "WEDDING":
+        return "Mariages";
+      case "CORPORATE":
+        return "Événements corporate";
+      case "PRIVATE":
+        return "Événements privés";
+      default:
+        return specialty;
     }
   };
 
@@ -66,8 +87,8 @@ export const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ artistProfile })
           </h2>
           <div className="prose max-w-none">
             <p className="text-lg leading-relaxed text-base-content/80">
-              {artistProfile.artisticBio || artistProfile.profile.bio ||
-               "Aucune biographie artistique détaillée n'est disponible pour le moment."}
+              {artistProfile.artisticBio ??
+                "Aucune biographie artistique détaillée n'est disponible pour le moment."}
             </p>
           </div>
         </div>
@@ -95,11 +116,12 @@ export const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ artistProfile })
                   <p className="font-medium">Type d'artiste</p>
                   <p className="text-base-content/70">
                     {getArtistTypeLabel(artistProfile.artistType || "SOLO")}
-                    {artistProfile.memberCount && artistProfile.memberCount > 1 && (
-                      <span className="ml-2 text-sm">
-                        ({artistProfile.memberCount} membres)
-                      </span>
-                    )}
+                    {artistProfile.memberCount &&
+                      artistProfile.memberCount > 1 && (
+                        <span className="ml-2 text-sm">
+                          ({artistProfile.memberCount} membres)
+                        </span>
+                      )}
                   </p>
                 </div>
               </div>
@@ -152,9 +174,11 @@ export const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ artistProfile })
                 <div>
                   <p className="font-medium">Membre depuis</p>
                   <p className="text-base-content/70">
-                    {new Date(artistProfile.profile.user.createdAt).toLocaleDateString('fr-FR', {
-                      year: 'numeric',
-                      month: 'long'
+                    {new Date(
+                      artistProfile.profile.user.createdAt
+                    ).toLocaleDateString("fr-FR", {
+                      year: "numeric",
+                      month: "long",
                     })}
                   </p>
                 </div>
@@ -214,24 +238,25 @@ export const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ artistProfile })
               </div>
 
               {/* Spécialités */}
-              {artistProfile.specialties && artistProfile.specialties.length > 0 && (
-                <div>
-                  <h4 className="font-medium mb-3 flex items-center gap-2">
-                    <Briefcase className="w-4 h-4 text-accent" />
-                    Types d'événements
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {artistProfile.specialties.map((specialty, index) => (
-                      <span
-                        key={index}
-                        className="badge badge-accent badge-outline"
-                      >
-                        {getSpecialtyLabel(specialty)}
-                      </span>
-                    ))}
+              {artistProfile.specialties &&
+                artistProfile.specialties.length > 0 && (
+                  <div>
+                    <h4 className="font-medium mb-3 flex items-center gap-2">
+                      <Briefcase className="w-4 h-4 text-accent" />
+                      Types d'événements
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {artistProfile.specialties.map((specialty, index) => (
+                        <span
+                          key={index}
+                          className="badge badge-accent badge-outline"
+                        >
+                          {getSpecialtyLabel(specialty)}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* Fourchette de prix */}
               {artistProfile.priceRange && (
@@ -268,7 +293,10 @@ export const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ artistProfile })
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {artistProfile.equipment.slice(0, 6).map((equipment, index) => (
-                <div key={index} className="flex items-center gap-2 p-2 bg-base-200 rounded-lg">
+                <div
+                  key={index}
+                  className="flex items-center gap-2 p-2 bg-base-200 rounded-lg"
+                >
                   <div className="w-2 h-2 bg-success rounded-full"></div>
                   <span className="text-sm">{equipment}</span>
                 </div>
@@ -276,7 +304,8 @@ export const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ artistProfile })
             </div>
             {artistProfile.equipment.length > 6 && (
               <p className="text-center text-sm text-base-content/60 mt-4">
-                +{artistProfile.equipment.length - 6} autres équipements (détails dans l'onglet Fiche technique)
+                +{artistProfile.equipment.length - 6} autres équipements
+                (détails dans l'onglet Fiche technique)
               </p>
             )}
           </div>
@@ -296,24 +325,32 @@ export const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({ artistProfile })
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
             <div>
-              <h4 className="font-medium text-base-content mb-2">Profil vérifié</h4>
+              <h4 className="font-medium text-base-content mb-2">
+                Profil vérifié
+              </h4>
               <p className="text-base-content/70">
-                Ce profil a été créé par l'artiste et contient des informations à jour.
+                Ce profil a été créé par l'artiste et contient des informations
+                à jour.
               </p>
             </div>
             <div>
-              <h4 className="font-medium text-base-content mb-2">Disponibilité</h4>
+              <h4 className="font-medium text-base-content mb-2">
+                Disponibilité
+              </h4>
               <p className="text-base-content/70">
-                Contactez l'artiste pour connaître ses disponibilités actuelles et futures.
+                Contactez l'artiste pour connaître ses disponibilités actuelles
+                et futures.
               </p>
             </div>
             <div>
-              <h4 className="font-medium text-base-content mb-2">Dernière mise à jour</h4>
+              <h4 className="font-medium text-base-content mb-2">
+                Dernière mise à jour
+              </h4>
               <p className="text-base-content/70">
-                {new Date(artistProfile.updatedAt).toLocaleDateString('fr-FR', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
+                {new Date(artistProfile.updatedAt).toLocaleDateString("fr-FR", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
                 })}
               </p>
             </div>
