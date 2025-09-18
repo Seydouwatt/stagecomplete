@@ -45,10 +45,14 @@ export const MembersTab: React.FC<MembersTabProps> = ({ artistProfile }) => {
 
   const getExperienceLabel = (experience: string) => {
     switch (experience) {
-      case "BEGINNER": return "Débutant";
-      case "INTERMEDIATE": return "Intermédiaire";
-      case "PROFESSIONAL": return "Professionnel";
-      default: return experience;
+      case "BEGINNER":
+        return "Débutant";
+      case "INTERMEDIATE":
+        return "Intermédiaire";
+      case "PROFESSIONAL":
+        return "Professionnel";
+      default:
+        return experience;
     }
   };
 
@@ -71,7 +75,8 @@ export const MembersTab: React.FC<MembersTabProps> = ({ artistProfile }) => {
           Aucun membre répertorié
         </h3>
         <p className="text-base-content/50 max-w-md">
-          Les informations sur les membres du groupe ne sont pas encore disponibles.
+          Les informations sur les membres du groupe ne sont pas encore
+          disponibles.
         </p>
       </div>
     );
@@ -88,15 +93,17 @@ export const MembersTab: React.FC<MembersTabProps> = ({ artistProfile }) => {
         <div className="card-body text-center">
           <h2 className="card-title justify-center text-2xl mb-4">
             <Users className="w-6 h-6 text-primary" />
-            L'équipe de {artistProfile.profile.name}
+            L'équipe de {artistProfile.profile.displayName}
           </h2>
           <p className="text-base-content/70 mb-4">
-            Découvrez les talents qui composent ce {artistProfile.artistType === "BAND" ? "groupe" : "collectif"}
+            Découvrez les talents qui composent ce{" "}
+            {artistProfile.artistType === "BAND" ? "groupe" : "collectif"}
             de {members.length} membres passionnés.
           </p>
           <div className="flex justify-center gap-4 text-sm">
             <div className="badge badge-primary badge-outline">
-              {members.filter(m => m.isFounder).length} fondateur{members.filter(m => m.isFounder).length > 1 ? "s" : ""}
+              {members.filter((m) => m.isFounder).length} fondateur
+              {members.filter((m) => m.isFounder).length > 1 ? "s" : ""}
             </div>
             <div className="badge badge-secondary badge-outline">
               {members.length} membres actifs
@@ -124,7 +131,12 @@ export const MembersTab: React.FC<MembersTabProps> = ({ artistProfile }) => {
                 <div className="avatar">
                   <div className="w-16 h-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                     <img
-                      src={member.avatar || `https://via.placeholder.com/64x64/1f2937/white?text=${member.name.charAt(0)}`}
+                      src={
+                        member.avatar ||
+                        `https://via.placeholder.com/64x64/1f2937/white?text=${member.name.charAt(
+                          0
+                        )}`
+                      }
                       alt={member.name}
                     />
                   </div>
@@ -188,9 +200,12 @@ export const MembersTab: React.FC<MembersTabProps> = ({ artistProfile }) => {
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4" />
                   <span>
-                    Membre depuis {new Date(member.joinDate || member.createdAt).toLocaleDateString('fr-FR', {
-                      year: 'numeric',
-                      month: 'long'
+                    Membre depuis{" "}
+                    {new Date(
+                      member.joinDate || member.createdAt
+                    ).toLocaleDateString("fr-FR", {
+                      year: "numeric",
+                      month: "long",
                     })}
                   </span>
                 </div>
@@ -267,14 +282,15 @@ export const MembersTab: React.FC<MembersTabProps> = ({ artistProfile }) => {
               <div className="text-2xl font-bold text-primary mb-1">
                 {members.length}
               </div>
-              <div className="text-sm text-base-content/70">
-                Membres
-              </div>
+              <div className="text-sm text-base-content/70">Membres</div>
             </div>
 
             <div>
               <div className="text-2xl font-bold text-secondary mb-1">
-                {Math.round(members.reduce((acc, m) => acc + (m.yearsActive || 0), 0) / members.length)}
+                {Math.round(
+                  members.reduce((acc, m) => acc + (m.yearsActive || 0), 0) /
+                    members.length
+                )}
               </div>
               <div className="text-sm text-base-content/70">
                 Années d'exp. moy.
@@ -283,20 +299,20 @@ export const MembersTab: React.FC<MembersTabProps> = ({ artistProfile }) => {
 
             <div>
               <div className="text-2xl font-bold text-accent mb-1">
-                {members.filter(m => m.isFounder).length}
+                {members.filter((m) => m.isFounder).length}
               </div>
-              <div className="text-sm text-base-content/70">
-                Fondateurs
-              </div>
+              <div className="text-sm text-base-content/70">Fondateurs</div>
             </div>
 
             <div>
               <div className="text-2xl font-bold text-info mb-1">
-                {Array.from(new Set(members.flatMap(m => m.instruments || []))).length}
+                {
+                  Array.from(
+                    new Set(members.flatMap((m) => m.instruments || []))
+                  ).length
+                }
               </div>
-              <div className="text-sm text-base-content/70">
-                Instruments
-              </div>
+              <div className="text-sm text-base-content/70">Instruments</div>
             </div>
           </div>
         </div>

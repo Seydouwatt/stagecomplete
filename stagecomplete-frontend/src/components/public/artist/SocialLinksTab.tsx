@@ -17,7 +17,9 @@ interface SocialLinksTabProps {
   artistProfile: PublicArtistProfile;
 }
 
-export const SocialLinksTab: React.FC<SocialLinksTabProps> = ({ artistProfile }) => {
+export const SocialLinksTab: React.FC<SocialLinksTabProps> = ({
+  artistProfile,
+}) => {
   const profileSocialLinks = artistProfile.profile.socialLinks || {};
   const artistSocialLinks = artistProfile.socialLinks || {};
 
@@ -92,7 +94,7 @@ export const SocialLinksTab: React.FC<SocialLinksTabProps> = ({ artistProfile })
     },
   ];
 
-  const activePlatforms = socialPlatforms.filter(platform => platform.url);
+  const activePlatforms = socialPlatforms.filter((platform) => platform.url);
 
   if (activePlatforms.length === 0) {
     return (
@@ -102,7 +104,8 @@ export const SocialLinksTab: React.FC<SocialLinksTabProps> = ({ artistProfile })
           Aucun réseau social configuré
         </h3>
         <p className="text-base-content/50 max-w-md">
-          L'artiste n'a pas encore ajouté de liens vers ses réseaux sociaux ou plateformes musicales.
+          L'artiste n'a pas encore ajouté de liens vers ses réseaux sociaux ou
+          plateformes musicales.
         </p>
       </div>
     );
@@ -119,11 +122,12 @@ export const SocialLinksTab: React.FC<SocialLinksTabProps> = ({ artistProfile })
         <div className="card-body text-center">
           <h2 className="card-title justify-center text-2xl mb-4">
             <Globe className="w-6 h-6 text-primary" />
-            Suivez {artistProfile.profile.name}
+            Suivez {artistProfile.profile.displayName}
           </h2>
           <p className="text-base-content/70">
-            Découvrez l'univers de {artistProfile.profile.name} sur ses plateformes préférées.
-            Restez connecté pour ne rien manquer de son actualité musicale !
+            Découvrez l'univers de {artistProfile.profile.displayName} sur ses
+            plateformes préférées. Restez connecté pour ne rien manquer de son
+            actualité musicale !
           </p>
         </div>
       </motion.div>
@@ -149,7 +153,9 @@ export const SocialLinksTab: React.FC<SocialLinksTabProps> = ({ artistProfile })
             className="card bg-base-100 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group"
           >
             <div className="card-body p-6 text-center">
-              <div className={`w-16 h-16 rounded-full ${platform.color} flex items-center justify-center mx-auto mb-4 text-white group-hover:scale-110 transition-transform duration-300`}>
+              <div
+                className={`w-16 h-16 rounded-full ${platform.color} flex items-center justify-center mx-auto mb-4 text-white group-hover:scale-110 transition-transform duration-300`}
+              >
                 {platform.icon}
               </div>
               <h3 className="font-semibold text-lg mb-2">{platform.label}</h3>
@@ -186,18 +192,14 @@ export const SocialLinksTab: React.FC<SocialLinksTabProps> = ({ artistProfile })
             </div>
 
             <div className="text-center">
-              <div className="text-2xl font-bold text-secondary mb-1">
-                🌟
-              </div>
+              <div className="text-2xl font-bold text-secondary mb-1">🌟</div>
               <div className="text-sm text-base-content/70">
                 Présence vérifiée
               </div>
             </div>
 
             <div className="text-center">
-              <div className="text-2xl font-bold text-accent mb-1">
-                ⚡
-              </div>
+              <div className="text-2xl font-bold text-accent mb-1">⚡</div>
               <div className="text-sm text-base-content/70">
                 Actif régulièrement
               </div>
@@ -206,15 +208,18 @@ export const SocialLinksTab: React.FC<SocialLinksTabProps> = ({ artistProfile })
 
           <div className="text-center mt-6">
             <p className="text-sm text-base-content/60">
-              Suivez {artistProfile.profile.name} pour découvrir ses dernières créations,
-              concerts à venir et moments forts de sa carrière artistique.
+              Suivez {artistProfile.profile.displayName} pour découvrir ses
+              dernières créations, concerts à venir et moments forts de sa
+              carrière artistique.
             </p>
           </div>
         </div>
       </motion.div>
 
       {/* Plateformes musicales spécifiques */}
-      {(allSocialLinks.spotify || allSocialLinks.soundcloud || allSocialLinks.youtube) && (
+      {(allSocialLinks.spotify ||
+        allSocialLinks.soundcloud ||
+        allSocialLinks.youtube) && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -224,7 +229,7 @@ export const SocialLinksTab: React.FC<SocialLinksTabProps> = ({ artistProfile })
           <div className="card-body">
             <h3 className="card-title mb-6">
               <Music className="w-5 h-5 text-accent" />
-              Écoutez la musique de {artistProfile.profile.name}
+              Écoutez la musique de {artistProfile.profile.displayName}
             </h3>
 
             <div className="space-y-4">
@@ -236,7 +241,9 @@ export const SocialLinksTab: React.FC<SocialLinksTabProps> = ({ artistProfile })
                     </div>
                     <div>
                       <p className="font-medium">Spotify</p>
-                      <p className="text-sm text-base-content/60">Écoutez les morceaux et playlists</p>
+                      <p className="text-sm text-base-content/60">
+                        Écoutez les morceaux et playlists
+                      </p>
                     </div>
                   </div>
                   <a
@@ -259,7 +266,9 @@ export const SocialLinksTab: React.FC<SocialLinksTabProps> = ({ artistProfile })
                     </div>
                     <div>
                       <p className="font-medium">SoundCloud</p>
-                      <p className="text-sm text-base-content/60">Découvrez les créations originales</p>
+                      <p className="text-sm text-base-content/60">
+                        Découvrez les créations originales
+                      </p>
                     </div>
                   </div>
                   <a
@@ -282,7 +291,9 @@ export const SocialLinksTab: React.FC<SocialLinksTabProps> = ({ artistProfile })
                     </div>
                     <div>
                       <p className="font-medium">YouTube</p>
-                      <p className="text-sm text-base-content/60">Regardez les clips et performances live</p>
+                      <p className="text-sm text-base-content/60">
+                        Regardez les clips et performances live
+                      </p>
                     </div>
                   </div>
                   <a

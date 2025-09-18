@@ -19,35 +19,54 @@ interface OverviewTabProps {
 export const OverviewTab: React.FC<OverviewTabProps> = ({ artistProfile }) => {
   const getExperienceLabel = (experience: string) => {
     switch (experience) {
-      case "BEGINNER": return "Débutant";
-      case "INTERMEDIATE": return "Intermédiaire";
-      case "PROFESSIONAL": return "Professionnel";
-      default: return experience;
+      case "BEGINNER":
+        return "Débutant";
+      case "INTERMEDIATE":
+        return "Intermédiaire";
+      case "PROFESSIONAL":
+        return "Professionnel";
+      default:
+        return experience;
     }
   };
 
   const getArtistTypeLabel = (type: string) => {
     switch (type) {
-      case "SOLO": return "Artiste solo";
-      case "BAND": return "Groupe";
-      case "THEATER_GROUP": return "Troupe de théâtre";
-      case "COMEDY_GROUP": return "Troupe de comédie";
-      case "ORCHESTRA": return "Orchestre";
-      case "CHOIR": return "Chorale";
-      case "OTHER": return "Autre";
-      default: return type;
+      case "SOLO":
+        return "Artiste solo";
+      case "BAND":
+        return "Groupe";
+      case "THEATER_GROUP":
+        return "Troupe de théâtre";
+      case "COMEDY_GROUP":
+        return "Troupe de comédie";
+      case "ORCHESTRA":
+        return "Orchestre";
+      case "CHOIR":
+        return "Chorale";
+      case "OTHER":
+        return "Autre";
+      default:
+        return type;
     }
   };
 
   const getSpecialtyLabel = (specialty: string) => {
     switch (specialty) {
-      case "CONCERT": return "Concerts";
-      case "STUDIO": return "Studio";
-      case "TEACHING": return "Enseignement";
-      case "WEDDING": return "Mariages";
-      case "CORPORATE": return "Événements corporate";
-      case "PRIVATE": return "Événements privés";
-      default: return specialty;
+      case "CONCERT":
+        return "Concerts";
+      case "STUDIO":
+        return "Studio";
+      case "TEACHING":
+        return "Enseignement";
+      case "WEDDING":
+        return "Mariages";
+      case "CORPORATE":
+        return "Événements corporate";
+      case "PRIVATE":
+        return "Événements privés";
+      default:
+        return specialty;
     }
   };
 
@@ -61,12 +80,13 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ artistProfile }) => {
       >
         <div className="card-body">
           <h2 className="card-title text-2xl mb-4">
-            <Palette className="w-6 h-6 text-primary" />
-            À propos de {artistProfile.profile.name}
+            <Palette className="w-6 h-6 text-primary" />À propos de
+            {artistProfile.profile.displayName}
           </h2>
           <p className="text-base-content/80 text-lg leading-relaxed">
-            {artistProfile.artisticBio || artistProfile.profile.bio ||
-             "Aucune bio artistique disponible pour le moment."}
+            {artistProfile.artisticBio ||
+              artistProfile.profile.bio ||
+              "Aucune bio artistique disponible pour le moment."}
           </p>
         </div>
       </motion.div>
@@ -87,10 +107,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ artistProfile }) => {
             </div>
             <div className="flex flex-wrap gap-2">
               {artistProfile.genres.map((genre, index) => (
-                <span
-                  key={index}
-                  className="badge badge-primary badge-outline"
-                >
+                <span key={index} className="badge badge-primary badge-outline">
                   {genre}
                 </span>
               ))}
@@ -203,34 +220,41 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ artistProfile }) => {
       </motion.div>
 
       {/* Galerie photos aperçu */}
-      {artistProfile.portfolio?.photos && artistProfile.portfolio.photos.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="card bg-base-100 shadow-lg"
-        >
-          <div className="card-body">
-            <h3 className="card-title mb-4">Aperçu du portfolio</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {artistProfile.portfolio.photos.slice(0, 4).map((photo, index) => (
-                <div key={index} className="aspect-square rounded-lg overflow-hidden">
-                  <img
-                    src={photo}
-                    alt={`Portfolio ${index + 1}`}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              ))}
+      {artistProfile.portfolio?.photos &&
+        artistProfile.portfolio.photos.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="card bg-base-100 shadow-lg"
+          >
+            <div className="card-body">
+              <h3 className="card-title mb-4">Aperçu du portfolio</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {artistProfile.portfolio.photos
+                  .slice(0, 4)
+                  .map((photo, index) => (
+                    <div
+                      key={index}
+                      className="aspect-square rounded-lg overflow-hidden"
+                    >
+                      <img
+                        src={photo}
+                        alt={`Portfolio ${index + 1}`}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  ))}
+              </div>
+              {artistProfile.portfolio.photos.length > 4 && (
+                <p className="text-center text-sm text-base-content/60 mt-4">
+                  +{artistProfile.portfolio.photos.length - 4} autres photos
+                  dans l'onglet Portfolio
+                </p>
+              )}
             </div>
-            {artistProfile.portfolio.photos.length > 4 && (
-              <p className="text-center text-sm text-base-content/60 mt-4">
-                +{artistProfile.portfolio.photos.length - 4} autres photos dans l'onglet Portfolio
-              </p>
-            )}
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
 
       {/* Call to action pour venues */}
       <motion.div
@@ -244,7 +268,8 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ artistProfile }) => {
             Intéressé(e) par cet artiste ?
           </h3>
           <p className="text-base-content/70 mb-4">
-            Découvrez plus d'informations dans les onglets ci-dessus, ou contactez directement l'artiste.
+            Découvrez plus d'informations dans les onglets ci-dessus, ou
+            contactez directement l'artiste.
           </p>
           <div className="flex flex-wrap justify-center gap-2">
             <div className="badge badge-outline">Professionnel</div>

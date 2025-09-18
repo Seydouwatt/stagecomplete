@@ -16,7 +16,7 @@ interface FilterPanelProps {
   isOpen: boolean;
   onClose: () => void;
   onFiltersChange: (filters: FilterOptions) => void;
-  userRole: "ARTIST" | "VENUE" | "ADMIN";
+  userRole: "ARTIST" | "VENUE" | "ADMIN" | "MEMBER";
 }
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({
@@ -62,7 +62,6 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     "Bordeaux",
     "Lille",
   ];
-
 
   const handleGenreToggle = (genre: string) => {
     const newGenres = filters.genres.includes(genre)

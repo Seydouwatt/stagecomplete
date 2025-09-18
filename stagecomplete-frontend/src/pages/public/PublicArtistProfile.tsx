@@ -46,7 +46,8 @@ export const PublicArtistProfile: React.FC = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthStore();
 
-  const [artistProfile, setArtistProfile] = useState<PublicArtistProfileType | null>(null);
+  const [artistProfile, setArtistProfile] =
+    useState<PublicArtistProfileType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
@@ -147,8 +148,6 @@ export const PublicArtistProfile: React.FC = () => {
 
         // Mise à jour des meta tags pour SEO
         updateMetaTags(profile);
-
-
       } catch (err: any) {
         console.error("Erreur lors du chargement du profil:", err);
         setError(err.message || "Erreur lors du chargement du profil");
@@ -163,28 +162,40 @@ export const PublicArtistProfile: React.FC = () => {
 
   // Mise à jour des meta tags pour SEO
   const updateMetaTags = (profile: PublicArtistProfileType) => {
-    const artistName = (profile.profile as any).name || profile.profile.displayName || "Artiste";
-    document.title = `${artistName} - Artiste ${profile.genres.join(", ")} | StageComplete`;
+    const artistName =
+      (profile.profile as any).name || profile.profile.displayName || "Artiste";
+    document.title = `${artistName} - Artiste ${profile.genres.join(
+      ", "
+    )} | StageComplete`;
 
     // Meta description
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
-      metaDescription.setAttribute("content",
-        `Découvrez ${artistName}, artiste ${profile.genres.join(", ")} ${profile.profile.location ? `basé à ${profile.profile.location}` : ""}. ${profile.artisticBio?.substring(0, 120)}...`
+      metaDescription.setAttribute(
+        "content",
+        `Découvrez ${artistName}, artiste ${profile.genres.join(", ")} ${
+          profile.profile.location ? `basé à ${profile.profile.location}` : ""
+        }. ${profile.artisticBio?.substring(0, 120)}...`
       );
     }
 
     // OpenGraph tags
     const ogTitle = document.querySelector('meta[property="og:title"]');
     if (ogTitle) {
-      ogTitle.setAttribute("content", `${artistName} - Artiste ${profile.genres.join(", ")}`);
+      ogTitle.setAttribute(
+        "content",
+        `${artistName} - Artiste ${profile.genres.join(", ")}`
+      );
     }
   };
 
   // Partage du profil
   const handleShare = async () => {
     const url = window.location.href;
-    const artistName = (artistProfile?.profile as any)?.name || artistProfile?.profile.displayName || "Artiste";
+    const artistName =
+      (artistProfile?.profile as any)?.name ||
+      artistProfile?.profile.displayName ||
+      "Artiste";
     const title = `${artistName} - Artiste sur StageComplete`;
 
     if (navigator.share) {
@@ -206,13 +217,20 @@ export const PublicArtistProfile: React.FC = () => {
   const handleContact = () => {
     if (artistProfile?.profile.user.id && user?.role === "VENUE") {
       const email = `contact@stagecomplete.com`; // TODO: email réel de l'artiste
-      const artistName = (artistProfile.profile as any).name || artistProfile.profile.displayName || "Artiste";
+      const artistName =
+        (artistProfile.profile as any).name ||
+        artistProfile.profile.displayName ||
+        "Artiste";
       const subject = `Demande de contact via StageComplete - ${artistName}`;
       const body = `Bonjour,\n\nJe suis intéressé(e) par vos services pour un événement.\n\nCordialement`;
 
-      window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = `mailto:${email}?subject=${encodeURIComponent(
+        subject
+      )}&body=${encodeURIComponent(body)}`;
     } else {
-      toast.error("Vous devez être connecté en tant que venue pour contacter cet artiste");
+      toast.error(
+        "Vous devez être connecté en tant que venue pour contacter cet artiste"
+      );
     }
   };
 
@@ -221,7 +239,9 @@ export const PublicArtistProfile: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center bg-base-200">
         <div className="text-center">
           <div className="loading loading-spinner loading-lg mb-4"></div>
-          <p className="text-base-content/70">Chargement du profil artiste...</p>
+          <p className="text-base-content/70">
+            Chargement du profil artiste...
+          </p>
         </div>
       </div>
     );
@@ -231,9 +251,12 @@ export const PublicArtistProfile: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-base-200">
         <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold text-error mb-4">Profil introuvable</h1>
+          <h1 className="text-2xl font-bold text-error mb-4">
+            Profil introuvable
+          </h1>
           <p className="text-base-content/70 mb-6">
-            {error || "Ce profil artiste n'existe pas ou n'est plus accessible."}
+            {error ||
+              "Ce profil artiste n'existe pas ou n'est plus accessible."}
           </p>
           <button
             onClick={() => navigate("/")}
@@ -247,7 +270,8 @@ export const PublicArtistProfile: React.FC = () => {
     );
   }
 
-  const ActiveTabComponent = availableTabs.find(tab => tab.id === activeTab)?.component || OverviewTab;
+  const ActiveTabComponent =
+    availableTabs.find((tab) => tab.id === activeTab)?.component || OverviewTab;
 
   return (
     <div className="min-h-screen bg-base-200">
@@ -265,15 +289,22 @@ export const PublicArtistProfile: React.FC = () => {
               <div className="avatar">
                 <div className="w-24 h-24 rounded-full ring ring-white ring-offset-base-100 ring-offset-2">
                   <img
-                    src={artistProfile.profile.avatar || "https://via.placeholder.com/96x96/1f2937/white?text=Artist"}
-                    alt={artistProfile.profile.name}
+                    src={
+                      artistProfile.profile.avatar ||
+                      "https://via.placeholder.com/96x96/1f2937/white?text=Artist"
+                    }
+                    alt={artistProfile.profile.displayName}
                   />
                 </div>
               </div>
 
               {/* Infos principales */}
               <div className="flex-1 text-white">
-                <h1 className="text-3xl font-bold mb-2">{(artistProfile.profile as any).name || artistProfile.profile.displayName || "Artiste"}</h1>
+                <h1 className="text-3xl font-bold mb-2">
+                  {(artistProfile.profile as any).name ||
+                    artistProfile.profile.displayName ||
+                    "Artiste"}
+                </h1>
                 <div className="flex flex-wrap gap-4 text-white/90 text-sm">
                   <div className="flex items-center gap-1">
                     <Music className="w-4 h-4" />

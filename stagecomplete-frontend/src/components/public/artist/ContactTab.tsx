@@ -48,10 +48,10 @@ export const ContactTab: React.FC<ContactTabProps> = ({ artistProfile }) => {
 
     try {
       // TODO: Implémenter l'envoi du formulaire
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Redirection vers email en attendant l'API
-      const subject = `Demande de contact via StageComplete - ${artistProfile.profile.name}`;
+      const subject = `Demande de contact via StageComplete - ${artistProfile.profile.displayName}`;
       const body = `Bonjour,
 
 Nom de la venue : ${contactForm.venueName}
@@ -70,7 +70,9 @@ ${contactForm.message}
 Cordialement,
 ${contactForm.contactName}`;
 
-      window.location.href = `mailto:contact@stagecomplete.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = `mailto:contact@stagecomplete.com?subject=${encodeURIComponent(
+        subject
+      )}&body=${encodeURIComponent(body)}`;
 
       toast.success("Redirection vers votre client email...");
 
@@ -92,10 +94,14 @@ ${contactForm.contactName}`;
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setContactForm(prev => ({
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    setContactForm((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
@@ -111,7 +117,8 @@ ${contactForm.contactName}`;
         <div>
           <h3 className="font-semibold">Contact professionnel</h3>
           <div className="text-sm">
-            Cette section est réservée aux venues pour des demandes de prestations professionnelles.
+            Cette section est réservée aux venues pour des demandes de
+            prestations professionnelles.
           </div>
         </div>
       </motion.div>
@@ -208,7 +215,7 @@ ${contactForm.contactName}`;
                     value={contactForm.eventDate}
                     onChange={handleChange}
                     className="input input-bordered"
-                    min={new Date().toISOString().split('T')[0]}
+                    min={new Date().toISOString().split("T")[0]}
                   />
                 </div>
 
@@ -223,8 +230,10 @@ ${contactForm.contactName}`;
                     className="select select-bordered"
                   >
                     <option value="">Sélectionner...</option>
-                    {eventTypes.map(type => (
-                      <option key={type} value={type}>{type}</option>
+                    {eventTypes.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -259,7 +268,12 @@ ${contactForm.contactName}`;
 
               <button
                 type="submit"
-                disabled={isSubmitting || !contactForm.venueName || !contactForm.contactName || !contactForm.email}
+                disabled={
+                  isSubmitting ||
+                  !contactForm.venueName ||
+                  !contactForm.contactName ||
+                  !contactForm.email
+                }
                 className="btn btn-primary w-full gap-2"
               >
                 {isSubmitting ? (
@@ -292,22 +306,21 @@ ${contactForm.contactName}`;
                 <Phone className="w-5 h-5 text-secondary" />
                 Contact direct
               </h3>
-
               <div className="space-y-4">
-                {artistProfile.profile.phone && (
-                  <div className="flex items-center gap-3 p-3 bg-secondary/10 rounded-lg">
-                    <Phone className="w-5 h-5 text-secondary" />
-                    <div>
-                      <p className="font-medium">Téléphone</p>
-                      <a
-                        href={`tel:${artistProfile.profile.phone}`}
-                        className="text-secondary hover:underline"
-                      >
-                        {artistProfile.profile.phone}
-                      </a>
-                    </div>
+                {/* {artistProfile.profile.phone !== "" && ( */}
+                <div className="flex items-center gap-3 p-3 bg-secondary/10 rounded-lg">
+                  <Phone className="w-5 h-5 text-secondary" />
+                  <div>
+                    <p className="font-medium">Téléphone</p>
+                    <a
+                      href={`tel:${"artistProfile.profile.phone"}`}
+                      className="text-secondary hover:underline"
+                    >
+                      {"artistProfile.profile.phone"}
+                    </a>
                   </div>
-                )}
+                </div>
+                {/* )} */}
 
                 <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-lg">
                   <Mail className="w-5 h-5 text-primary" />
@@ -327,7 +340,9 @@ ${contactForm.contactName}`;
                     <MapPin className="w-5 h-5 text-info" />
                     <div>
                       <p className="font-medium">Localisation</p>
-                      <p className="text-base-content/70">{artistProfile.profile.location}</p>
+                      <p className="text-base-content/70">
+                        {artistProfile.profile.location}
+                      </p>
                       {artistProfile.travelRadius && (
                         <p className="text-sm text-base-content/60">
                           Rayon d'intervention : {artistProfile.travelRadius}km
@@ -355,7 +370,9 @@ ${contactForm.contactName}`;
                 </div>
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-4 h-4 text-success" />
-                  <span className="text-sm">Disponibilités mises à jour régulièrement</span>
+                  <span className="text-sm">
+                    Disponibilités mises à jour régulièrement
+                  </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-4 h-4 text-success" />
@@ -365,8 +382,8 @@ ${contactForm.contactName}`;
 
               <div className="mt-4 p-3 bg-accent/10 rounded-lg">
                 <p className="text-sm text-base-content/80">
-                  <strong>Conseil :</strong> Plus votre demande est détaillée, plus nous pourrons
-                  vous proposer une offre adaptée rapidement.
+                  <strong>Conseil :</strong> Plus votre demande est détaillée,
+                  plus nous pourrons vous proposer une offre adaptée rapidement.
                 </p>
               </div>
             </div>
@@ -376,8 +393,7 @@ ${contactForm.contactName}`;
           <div className="card bg-gradient-to-r from-success/10 to-info/10 border border-success/20">
             <div className="card-body">
               <h3 className="card-title mb-4">
-                <User className="w-5 h-5 text-success" />
-                À propos de ce contact
+                <User className="w-5 h-5 text-success" />À propos de ce contact
               </h3>
 
               <div className="space-y-3 text-sm">
@@ -386,7 +402,8 @@ ${contactForm.contactName}`;
                   <div>
                     <p className="font-medium">Contact vérifié</p>
                     <p className="text-base-content/70">
-                      Artiste professionnel inscrit sur StageComplete avec profil vérifié
+                      Artiste professionnel inscrit sur StageComplete avec
+                      profil vérifié
                     </p>
                   </div>
                 </div>
@@ -396,7 +413,8 @@ ${contactForm.contactName}`;
                   <div>
                     <p className="font-medium">Expérience confirmée</p>
                     <p className="text-base-content/70">
-                      {artistProfile.yearsActive} années d'expérience dans le domaine artistique
+                      {artistProfile.yearsActive} années d'expérience dans le
+                      domaine artistique
                     </p>
                   </div>
                 </div>
@@ -406,7 +424,8 @@ ${contactForm.contactName}`;
                   <div>
                     <p className="font-medium">Communication sécurisée</p>
                     <p className="text-base-content/70">
-                      Tous les échanges sont sécurisés via la plateforme StageComplete
+                      Tous les échanges sont sécurisés via la plateforme
+                      StageComplete
                     </p>
                   </div>
                 </div>

@@ -18,7 +18,9 @@ interface PricingTabProps {
 }
 
 export const PricingTab: React.FC<PricingTabProps> = ({ artistProfile }) => {
-  const hasPriceDetails = artistProfile.priceDetails && Object.values(artistProfile.priceDetails).some(v => v);
+  const hasPriceDetails =
+    artistProfile.priceDetails &&
+    Object.values(artistProfile.priceDetails).some((v) => v);
   const hasPriceRange = artistProfile.priceRange;
 
   const eventTypes = [
@@ -66,7 +68,9 @@ export const PricingTab: React.FC<PricingTabProps> = ({ artistProfile }) => {
         <div>
           <h3 className="font-semibold">Informations confidentielles</h3>
           <div className="text-sm">
-            Les tarifs sont réservés aux venues connectées. Ces prix sont indicatifs et peuvent varier selon les spécificités de votre événement.
+            Les tarifs sont réservés aux venues connectées. Ces prix sont
+            indicatifs et peuvent varier selon les spécificités de votre
+            événement.
           </div>
         </div>
       </motion.div>
@@ -88,7 +92,8 @@ export const PricingTab: React.FC<PricingTabProps> = ({ artistProfile }) => {
               {artistProfile.priceRange}
             </div>
             <p className="text-base-content/70">
-              Prix indicatifs variables selon le type d'événement, la durée et les conditions
+              Prix indicatifs variables selon le type d'événement, la durée et
+              les conditions
             </p>
           </div>
         </motion.div>
@@ -116,7 +121,12 @@ export const PricingTab: React.FC<PricingTabProps> = ({ artistProfile }) => {
                 className={`card ${eventType.bgColor} border ${eventType.borderColor} shadow-lg`}
               >
                 <div className="card-body p-6 text-center">
-                  <div className={`w-12 h-12 mx-auto mb-4 ${eventType.bgColor.replace('/10', '/20')} rounded-full flex items-center justify-center`}>
+                  <div
+                    className={`w-12 h-12 mx-auto mb-4 ${eventType.bgColor.replace(
+                      "/10",
+                      "/20"
+                    )} rounded-full flex items-center justify-center`}
+                  >
                     <span className={eventType.color}>{eventType.icon}</span>
                   </div>
 
@@ -168,7 +178,9 @@ export const PricingTab: React.FC<PricingTabProps> = ({ artistProfile }) => {
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle className="w-4 h-4 text-success flex-shrink-0 mt-0.5" />
-                <span className="text-sm">Équipements personnels de l'artiste</span>
+                <span className="text-sm">
+                  Équipements personnels de l'artiste
+                </span>
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle className="w-4 h-4 text-success flex-shrink-0 mt-0.5" />
@@ -181,7 +193,9 @@ export const PricingTab: React.FC<PricingTabProps> = ({ artistProfile }) => {
               {artistProfile.travelRadius && (
                 <li className="flex items-start gap-3">
                   <CheckCircle className="w-4 h-4 text-success flex-shrink-0 mt-0.5" />
-                  <span className="text-sm">Déplacement jusqu'à 50km inclus</span>
+                  <span className="text-sm">
+                    Déplacement jusqu'à 50km inclus
+                  </span>
                 </li>
               )}
             </ul>
@@ -201,28 +215,36 @@ export const PricingTab: React.FC<PricingTabProps> = ({ artistProfile }) => {
                 <Clock className="w-4 h-4 text-info flex-shrink-0 mt-0.5" />
                 <div className="text-sm">
                   <div className="font-medium">Prolongation</div>
-                  <div className="text-base-content/70">+150€/heure supplémentaire</div>
+                  <div className="text-base-content/70">
+                    +150€/heure supplémentaire
+                  </div>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-info flex-shrink-0 mt-0.5" />
                 <div className="text-sm">
                   <div className="font-medium">Déplacement longue distance</div>
-                  <div className="text-base-content/70">0,50€/km au-delà de 50km</div>
+                  <div className="text-base-content/70">
+                    0,50€/km au-delà de 50km
+                  </div>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <Users className="w-4 h-4 text-info flex-shrink-0 mt-0.5" />
                 <div className="text-sm">
                   <div className="font-medium">Musiciens supplémentaires</div>
-                  <div className="text-base-content/70">Sur demande selon formation</div>
+                  <div className="text-base-content/70">
+                    Sur demande selon formation
+                  </div>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <Calendar className="w-4 h-4 text-info flex-shrink-0 mt-0.5" />
                 <div className="text-sm">
                   <div className="font-medium">Dates particulières</div>
-                  <div className="text-base-content/70">Majorations weekend/jours fériés</div>
+                  <div className="text-base-content/70">
+                    Majorations weekend/jours fériés
+                  </div>
                 </div>
               </li>
             </ul>
@@ -299,11 +321,11 @@ export const PricingTab: React.FC<PricingTabProps> = ({ artistProfile }) => {
         <div className="card bg-gradient-to-r from-primary to-secondary text-white">
           <div className="card-body">
             <h3 className="card-title justify-center text-xl mb-4">
-              Prêt à réserver {artistProfile.profile.name} ?
+              Prêt à réserver {artistProfile.profile.displayName} ?
             </h3>
             <p className="mb-6 opacity-90">
-              Contactez-nous pour discuter de votre projet et obtenir un devis personnalisé
-              adapté à vos besoins spécifiques.
+              Contactez-nous pour discuter de votre projet et obtenir un devis
+              personnalisé adapté à vos besoins spécifiques.
             </p>
             <button className="btn btn-white gap-2">
               <DollarSign className="w-4 h-4" />
