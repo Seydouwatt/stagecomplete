@@ -357,7 +357,7 @@ export const ArtistProfileForm: React.FC = () => {
               formData={formData}
               updateFormData={updateFormData}
               onGenerateSlug={handleGenerateSlug}
-              artistData={_artistData}
+              // artistData={_artistData}
             />
           )}
         </div>
