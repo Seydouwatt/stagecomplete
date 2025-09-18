@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import {
-  X,
-  User,
-  Mail,
-  Phone,
-  Music,
-  Crown,
-  Link,
-} from "lucide-react";
+import { X, User, Mail, Phone, Music, Crown, Link } from "lucide-react";
 import {
   memberService,
   type ArtistMember,
@@ -173,19 +165,14 @@ export const MemberForm: React.FC<MemberFormProps> = ({
       if (member) {
         // Mode édition
         await memberService.updateMember(member.id, cleanData);
-        addToast({
-          type: "success",
-          title: "Membre modifié",
-          message: `${cleanData.name} a été modifié avec succès`,
-        });
+        addToast(`${cleanData.name} a été modifié avec succès`, "success");
       } else {
         // Mode création
         await memberService.createMember(cleanData as CreateArtistMemberDto);
-        addToast({
-          type: "success",
-          title: "Membre ajouté",
-          message: `${cleanData.name} a été ajouté au groupe avec succès`,
-        });
+        addToast(
+          `${cleanData.name} a été ajouté au groupe avec succès`,
+          "success"
+        );
       }
 
       onSuccess();
@@ -194,11 +181,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
       console.error("Erreur lors de la sauvegarde:", error);
       const errorMessage =
         error.response?.data?.message || "Une erreur est survenue";
-      addToast({
-        type: "error",
-        title: "Erreur",
-        message: errorMessage,
-      });
+      addToast(errorMessage, "error");
     } finally {
       setLoading(false);
     }
