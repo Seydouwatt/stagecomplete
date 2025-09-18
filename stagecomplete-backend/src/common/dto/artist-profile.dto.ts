@@ -342,6 +342,16 @@ export class UpdateArtistProfileDto {
   @MaxLength(50)
   publicSlug?: string;
 
+  @ApiPropertyOptional({
+    description:
+      'Petite description/bio pour la page publique, section "A propos"',
+    example: 'Musicien professionnel spécialisé dans le jazz moderne...',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  artistDescription?: string;
+
   // Group/Solo Management
   @ApiPropertyOptional({
     description: "Type d'artiste (solo, groupe, etc)",

@@ -86,6 +86,7 @@ model Artist {
   availability    Json?       // Calendar data
   isPublic        Boolean     @default(false)  // Profil public visible
   publicSlug      String?     // Pour URL publique /p/slug
+  artistDescription String?   // Description courte pour la page publique
   
   // Group/Solo Management
   artistType      ArtistType       @default(SOLO)  // Type d'artiste (solo, groupe, etc)

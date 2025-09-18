@@ -215,6 +215,7 @@ export interface ArtistProfile {
   // Member management
   artistType?: ArtistType;
   artistDiscipline?: ArtistDiscipline;
+  artistDescription?: string;
   memberCount?: number;
   members?: ArtistMember[];
 
@@ -262,6 +263,7 @@ export interface UpdateArtistProfileData {
   requirements?: string[];
   artistType?: ArtistType;
   artistDiscipline?: ArtistDiscipline;
+  artistDescription?: string;
   memberCount?: number;
   priceDetails?: PriceDetails;
   travelRadius?: number;

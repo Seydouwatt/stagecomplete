@@ -130,7 +130,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
   return (
     <aside
       className={clsx(
-        "bg-base-200 border-r border-base-300 transition-all duration-300",
+        "bg-base-200 border-r border-base-300 transition-all duration-300 h-[calc(100vh-64px)]",
         "lg:static lg:translate-x-0",
         isOpen ? "translate-x-0" : "-translate-x-full",
         "fixed lg:relative inset-y-0 left-0 z-50",
@@ -154,7 +154,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
               </span>
             </div>
             <div>
-              <p className="font-semibold text-sm">{user?.profile?.name}</p>
+              <p className="font-semibold text-sm">
+                {user?.profile?.displayName}
+              </p>
               <p className="text-xs text-base-content/60">
                 {user?.role === "ARTIST" ? "Artiste" : "Venue"}
               </p>
@@ -247,13 +249,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
               <div className="avatar">
                 <div className="w-8 h-8 rounded-full bg-primary/20">
                   <span className="text-sm">
-                    {user?.profile?.name?.charAt(0) || "?"}
+                    {user?.profile?.displayName?.charAt(0) || "?"}
                   </span>
                 </div>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">
-                  {user?.profile?.name}
+                  {user?.profile?.displayName}
                 </p>
                 <p className="text-xs text-base-content/60">Plan Premium</p>
               </div>

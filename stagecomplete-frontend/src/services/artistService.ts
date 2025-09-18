@@ -1,12 +1,9 @@
 import axios from "axios";
 import type {
-  ExtendedUser,
   UpdateArtistProfileData,
   PublicArtistProfile,
   ArtistSearchFilters,
   ArtistSearchResponse,
-  Profile,
-  ProfileResponse,
   ArtistProfile,
 } from "../types";
 import { API_URL } from "../constants";

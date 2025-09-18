@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
   };
 
   const userAvatar = user?.profile?.avatar || null;
-  const userName = user?.profile?.name || "Utilisateur";
+  const userName = user?.profile?.displayName || "Utilisateur";
   const userRole = user?.role || "USER";
 
   const roleConfig = {
@@ -59,7 +59,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
     roleConfig[userRole as keyof typeof roleConfig] || roleConfig.ARTIST;
 
   return (
-    <header className="navbar bg-base-100 border-b border-base-300 px-4 lg:px-6">
+    <header className="navbar bg-base-100 border-b border-base-300 px-4 sticky top-0 z-50">
       {/* Mobile menu button */}
       <div className="navbar-start">
         <button

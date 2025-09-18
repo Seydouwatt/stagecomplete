@@ -32,8 +32,8 @@ export const MainLayout: React.FC = () => {
         )}
 
         {/* Main content */}
-        <main className="flex-1 min-h-screen">
-          <div className="p-4 lg:p-6">
+        <main className="flex-1 ">
+          <div className="">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

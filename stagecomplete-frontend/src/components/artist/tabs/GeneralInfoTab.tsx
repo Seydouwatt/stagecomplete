@@ -63,7 +63,7 @@ const GeneralInfoTab: React.FC<{
   updateFormData: (field: keyof UpdateArtistProfileData, value: any) => void;
 }> = ({ formData, updateFormData }) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-scroll h-[calc(100vh - 380px)] lg:h-[calc(100vh-335px)]">
       {/* ===== SECTION 1: IDENTITÉ =====  */}
       <div className="card bg-base-100 border border-base-300">
         <div className="card-body">
@@ -196,16 +196,16 @@ const GeneralInfoTab: React.FC<{
               <label className="label">
                 <span className="label-text font-medium">A propos de vous</span>
                 <span className="label-text-alt text-info">
-                  Présentez votre univers artistique en quelques phrases
+                  Présentez votre univers artistique en une phrase ou deux
                 </span>
               </label>
               <div className="flex gap-2 flex-col">
                 <textarea
-                  className="textarea textarea-bordered h-32 w-full"
-                  placeholder="Racontez votre histoire, votre style, vos influences..."
-                  value={formData.artisticBio || ""}
+                  className="textarea textarea-bordered h-20 w-full"
+                  placeholder="Qui etes-vous en quelques mots?"
+                  value={formData.artistDescription || ""}
                   onChange={(e) =>
-                    updateFormData("artisticBio", e.target.value)
+                    updateFormData("artistDescription", e.target.value)
                   }
                   maxLength={1000}
                 />
