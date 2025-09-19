@@ -1,0 +1,668 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  UserIcon,
+  MusicalNoteIcon,
+  EyeIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CheckIcon,
+  ExclamationTriangleIcon,
+} from '@heroicons/react/24/outline';
+import { MultiSelect } from '../forms/MultiSelect';
+import { ImageUpload } from '../forms/ImageUpload';
+import type { ArtistType, ArtistDiscipline } from '../../types';
+
+interface PublicationWizardProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onComplete: (data: PublicationData) => void;
+  initialData?: Partial<PublicationData>;
+}
+
+export interface PublicationData {
+  // Étape 1 - Infos essentielles
+  artistName: string;
+  artistDescription: string;
+  artistType: ArtistType;
+  artistDiscipline: ArtistDiscipline;
+  genres: string[];
+  baseLocation: string;
+  mainPhoto: string;
+
+  // Étape 2 - Portfolio créatif
+  portfolioPhotos: string[];
+  socialLinks: {
+    spotify?: string;
+    youtube?: string;
+    soundcloud?: string;
+    instagram?: string;
+    website?: string;
+  };
+  demoVideo?: string;
+  priceRange?: string;
+
+  // Étape 3 - Publication
+  isPublic: boolean;
+  qualityScore: number;
+}
+
+const ARTIST_TYPE_OPTIONS: { value: ArtistType; label: string }[] = [
+  { value: "SOLO", label: "Artiste solo" },
+  { value: "BAND", label: "Groupe / Band" },
+  { value: "THEATER_GROUP", label: "Troupe de théâtre" },
+  { value: "COMEDY_GROUP", label: "Groupe humoristique" },
+  { value: "ORCHESTRA", label: "Orchestre" },
+  { value: "CHOIR", label: "Chorale" },
+  { value: "OTHER", label: "Autre" },
+];
+
+const ARTIST_DISCIPLINE_OPTIONS: { value: ArtistDiscipline; label: string }[] = [
+  { value: "MUSIC", label: "Musique" },
+  { value: "THEATER", label: "Théâtre" },
+  { value: "ACTOR", label: "Acting" },
+  { value: "COMEDIENNE", label: "Comédie/Humour" },
+  { value: "COMEDIE", label: "Stand-up" },
+  { value: "DANCE", label: "Danse" },
+  { value: "CIRCUS", label: "Cirque" },
+  { value: "MAGIE", label: "Magie" },
+  { value: "OTHER", label: "Autre" },
+];
+
+const MUSIC_GENRES = [
+  "Rock", "Pop", "Jazz", "Blues", "Funk", "Soul", "R&B",
+  "Hip-Hop", "Rap", "Reggae", "Folk", "Country", "Classical",
+  "Electronic", "House", "Techno", "Ambient", "Indie",
+  "Alternative", "Metal", "Punk", "Reggaeton", "Latino",
+  "World Music", "French Song", "Chanson"
+];
+
+const PRICE_RANGES = [
+  "0-200", "200-500", "500-1000", "1000-2000", "2000+"
+];
+
+export const PublicationWizard: React.FC<PublicationWizardProps> = ({
+  isOpen,
+  onClose,
+  onComplete,
+  initialData
+}) => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState<PublicationData>({
+    artistName: "",
+    artistDescription: "",
+    artistType: "SOLO",
+    artistDiscipline: "MUSIC",
+    genres: [],
+    baseLocation: "",
+    mainPhoto: "",
+    portfolioPhotos: [],
+    socialLinks: {},
+    isPublic: false,
+    qualityScore: 0,
+    ...initialData
+  });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Calculer le score de qualité en temps réel
+  useEffect(() => {
+    const score = calculateQualityScore(formData);
+    setFormData(prev => ({ ...prev, qualityScore: score }));
+  }, [formData.artistName, formData.artistDescription, formData.genres, formData.baseLocation, formData.mainPhoto, formData.portfolioPhotos, formData.socialLinks, formData.demoVideo, formData.priceRange]);
+
+  const calculateQualityScore = (data: PublicationData): number => {
+    let score = 0;
+
+    // Photo profil (20%)
+    if (data.mainPhoto) score += 20;
+
+    // Bio complète (15%)
+    if (data.artistDescription && data.artistDescription.length >= 50) score += 15;
+
+    // 3+ genres (10%)
+    if (data.genres.length >= 3) score += 10;
+    else if (data.genres.length >= 1) score += 5;
+
+    // Localisation (10%)
+    if (data.baseLocation) score += 10;
+
+    // Liens sociaux (15%)
+    const socialLinksCount = Object.values(data.socialLinks).filter(link => link && link.trim()).length;
+    if (socialLinksCount >= 2) score += 15;
+    else if (socialLinksCount >= 1) score += 8;
+
+    // Photos portfolio (15%)
+    if (data.portfolioPhotos.length >= 3) score += 15;
+    else if (data.portfolioPhotos.length >= 1) score += 8;
+
+    // Vidéo (10%)
+    if (data.demoVideo) score += 10;
+
+    // Tarifs (5%)
+    if (data.priceRange) score += 5;
+
+    return Math.min(100, score);
+  };
+
+  const updateFormData = (field: keyof PublicationData, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Effacer l'erreur si le champ est maintenant valide
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const updateSocialLinks = (platform: string, url: string) => {
+    setFormData(prev => ({
+      ...prev,
+      socialLinks: {
+        ...prev.socialLinks,
+        [platform]: url
+      }
+    }));
+  };
+
+  const validateStep = (step: number): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (step === 1) {
+      if (!formData.artistName.trim()) {
+        newErrors.artistName = "Le nom artistique est requis";
+      }
+      if (!formData.artistDescription.trim()) {
+        newErrors.artistDescription = "La description est requise";
+      } else if (formData.artistDescription.length < 20) {
+        newErrors.artistDescription = "La description doit faire au moins 20 caractères";
+      }
+      if (formData.genres.length === 0) {
+        newErrors.genres = "Sélectionnez au moins un genre";
+      }
+      if (!formData.baseLocation.trim()) {
+        newErrors.baseLocation = "La localisation est requise";
+      }
+      if (!formData.mainPhoto) {
+        newErrors.mainPhoto = "Une photo de profil est requise";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const nextStep = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(prev => Math.min(3, prev + 1));
+    }
+  };
+
+  const prevStep = () => {
+    setCurrentStep(prev => Math.max(1, prev - 1));
+  };
+
+  const handleComplete = () => {
+    if (validateStep(currentStep)) {
+      onComplete(formData);
+    }
+  };
+
+  const getQualityColor = (score: number) => {
+    if (score >= 80) return "text-success";
+    if (score >= 60) return "text-warning";
+    return "text-error";
+  };
+
+  const getQualityMessage = (score: number) => {
+    if (score >= 80) return "Excellent profil !";
+    if (score >= 60) return "Bon profil, quelques améliorations possibles";
+    return "Profil à compléter pour une meilleure visibilité";
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="bg-base-100 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
+      >
+        {/* Header */}
+        <div className="bg-primary text-primary-content p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold">Assistant de Publication</h2>
+              <p className="opacity-90">Créez votre profil public en 3 étapes</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="btn btn-circle btn-ghost text-primary-content"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Steps indicator */}
+          <div className="flex items-center gap-4 mt-6">
+            {[1, 2, 3].map((step) => {
+              const isActive = step === currentStep;
+              const isCompleted = step < currentStep;
+              const icons = [UserIcon, MusicalNoteIcon, EyeIcon];
+              const Icon = icons[step - 1];
+
+              return (
+                <div key={step} className="flex items-center">
+                  <div className={`
+                    flex items-center justify-center w-10 h-10 rounded-full
+                    ${isActive ? 'bg-primary-content text-primary' : ''}
+                    ${isCompleted ? 'bg-success text-success-content' : ''}
+                    ${!isActive && !isCompleted ? 'bg-primary-content/20 text-primary-content' : ''}
+                  `}>
+                    {isCompleted ? (
+                      <CheckIcon className="w-5 h-5" />
+                    ) : (
+                      <Icon className="w-5 h-5" />
+                    )}
+                  </div>
+                  {step < 3 && (
+                    <div className={`w-16 h-0.5 mx-2 ${
+                      step < currentStep ? 'bg-success' : 'bg-primary-content/20'
+                    }`} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+          <AnimatePresence mode="wait">
+            {currentStep === 1 && (
+              <motion.div
+                key="step1"
+                initial={{ x: 20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -20, opacity: 0 }}
+                className="space-y-6"
+              >
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Informations essentielles</h3>
+                  <p className="text-base-content/60">Renseignez vos informations de base</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">Nom artistique *</span>
+                    </label>
+                    <input
+                      type="text"
+                      className={`input input-bordered ${errors.artistName ? 'input-error' : ''}`}
+                      placeholder="Ex: The Rolling Stones"
+                      value={formData.artistName}
+                      onChange={(e) => updateFormData('artistName', e.target.value)}
+                      maxLength={100}
+                    />
+                    {errors.artistName && (
+                      <label className="label">
+                        <span className="label-text-alt text-error">{errors.artistName}</span>
+                      </label>
+                    )}
+                  </div>
+
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">Localisation *</span>
+                    </label>
+                    <input
+                      type="text"
+                      className={`input input-bordered ${errors.baseLocation ? 'input-error' : ''}`}
+                      placeholder="Ex: Paris, France"
+                      value={formData.baseLocation}
+                      onChange={(e) => updateFormData('baseLocation', e.target.value)}
+                    />
+                    {errors.baseLocation && (
+                      <label className="label">
+                        <span className="label-text-alt text-error">{errors.baseLocation}</span>
+                      </label>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">Type d'artiste *</span>
+                    </label>
+                    <select
+                      className="select select-bordered"
+                      value={formData.artistType}
+                      onChange={(e) => updateFormData('artistType', e.target.value as ArtistType)}
+                    >
+                      {ARTIST_TYPE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">Discipline artistique *</span>
+                    </label>
+                    <select
+                      className="select select-bordered"
+                      value={formData.artistDiscipline}
+                      onChange={(e) => updateFormData('artistDiscipline', e.target.value as ArtistDiscipline)}
+                    >
+                      {ARTIST_DISCIPLINE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <MultiSelect
+                  label="Genres / Styles *"
+                  options={MUSIC_GENRES}
+                  value={formData.genres}
+                  onChange={(value) => updateFormData('genres', value)}
+                  placeholder="Sélectionnez vos genres"
+                  maxSelections={5}
+                  allowCustom={true}
+                  error={errors.genres}
+                />
+
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text font-medium">Description artistique * (250 caractères)</span>
+                    <span className="label-text-alt">{formData.artistDescription.length}/250</span>
+                  </label>
+                  <textarea
+                    className={`textarea textarea-bordered h-24 ${errors.artistDescription ? 'textarea-error' : ''}`}
+                    placeholder="Décrivez votre style, votre univers artistique, votre expérience..."
+                    value={formData.artistDescription}
+                    onChange={(e) => updateFormData('artistDescription', e.target.value)}
+                    maxLength={250}
+                  />
+                  {errors.artistDescription && (
+                    <label className="label">
+                      <span className="label-text-alt text-error">{errors.artistDescription}</span>
+                    </label>
+                  )}
+                </div>
+
+                <ImageUpload
+                  label="Photo de profil principale *"
+                  value={formData.mainPhoto ? [formData.mainPhoto] : []}
+                  onChange={(value) => updateFormData('mainPhoto', value[0] || "")}
+                  maxImages={1}
+                  error={errors.mainPhoto}
+                />
+              </motion.div>
+            )}
+
+            {currentStep === 2 && (
+              <motion.div
+                key="step2"
+                initial={{ x: 20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -20, opacity: 0 }}
+                className="space-y-6"
+              >
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Portfolio créatif</h3>
+                  <p className="text-base-content/60">Enrichissez votre profil avec vos créations</p>
+                </div>
+
+                <ImageUpload
+                  label="Photos du portfolio (3-5 recommandées)"
+                  value={formData.portfolioPhotos}
+                  onChange={(value) => updateFormData('portfolioPhotos', value)}
+                  maxImages={8}
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">Spotify</span>
+                    </label>
+                    <input
+                      type="url"
+                      className="input input-bordered"
+                      placeholder="https://open.spotify.com/artist/..."
+                      value={formData.socialLinks.spotify || ""}
+                      onChange={(e) => updateSocialLinks('spotify', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">YouTube</span>
+                    </label>
+                    <input
+                      type="url"
+                      className="input input-bordered"
+                      placeholder="https://youtube.com/@..."
+                      value={formData.socialLinks.youtube || ""}
+                      onChange={(e) => updateSocialLinks('youtube', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">SoundCloud</span>
+                    </label>
+                    <input
+                      type="url"
+                      className="input input-bordered"
+                      placeholder="https://soundcloud.com/..."
+                      value={formData.socialLinks.soundcloud || ""}
+                      onChange={(e) => updateSocialLinks('soundcloud', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">Instagram</span>
+                    </label>
+                    <input
+                      type="url"
+                      className="input input-bordered"
+                      placeholder="https://instagram.com/..."
+                      value={formData.socialLinks.instagram || ""}
+                      onChange={(e) => updateSocialLinks('instagram', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text font-medium">Vidéo démo</span>
+                    <span className="label-text-alt">YouTube ou Vimeo</span>
+                  </label>
+                  <input
+                    type="url"
+                    className="input input-bordered"
+                    placeholder="https://youtube.com/watch?v=..."
+                    value={formData.demoVideo || ""}
+                    onChange={(e) => updateFormData('demoVideo', e.target.value)}
+                  />
+                </div>
+
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text font-medium">Fourchette de tarifs</span>
+                  </label>
+                  <select
+                    className="select select-bordered"
+                    value={formData.priceRange || ""}
+                    onChange={(e) => updateFormData('priceRange', e.target.value)}
+                  >
+                    <option value="">Non spécifié</option>
+                    {PRICE_RANGES.map((range) => (
+                      <option key={range} value={range}>
+                        {range}€
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </motion.div>
+            )}
+
+            {currentStep === 3 && (
+              <motion.div
+                key="step3"
+                initial={{ x: 20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -20, opacity: 0 }}
+                className="space-y-6"
+              >
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Prêt pour la publication</h3>
+                  <p className="text-base-content/60">Vérifiez et publiez votre profil</p>
+                </div>
+
+                {/* Score de qualité */}
+                <div className="card bg-base-200 border">
+                  <div className="card-body">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-semibold">Score de qualité</h4>
+                        <p className={`text-lg font-bold ${getQualityColor(formData.qualityScore)}`}>
+                          {formData.qualityScore}/100
+                        </p>
+                        <p className="text-sm text-base-content/60">
+                          {getQualityMessage(formData.qualityScore)}
+                        </p>
+                      </div>
+                      <div className={`radial-progress ${getQualityColor(formData.qualityScore)}`}
+                           style={{"--value": formData.qualityScore, "--size": "4rem"} as React.CSSProperties}>
+                        {formData.qualityScore}%
+                      </div>
+                    </div>
+
+                    {formData.qualityScore < 80 && (
+                      <div className="mt-4 space-y-2">
+                        <p className="text-sm font-medium">Suggestions d'amélioration :</p>
+                        <ul className="text-sm space-y-1">
+                          {!formData.mainPhoto && <li>• Ajoutez une photo de profil</li>}
+                          {formData.artistDescription.length < 50 && <li>• Complétez votre description (50+ caractères)</li>}
+                          {formData.genres.length < 3 && <li>• Ajoutez plus de genres ({formData.genres.length}/3)</li>}
+                          {Object.values(formData.socialLinks).filter(Boolean).length < 2 && <li>• Ajoutez des liens vers vos réseaux</li>}
+                          {formData.portfolioPhotos.length < 3 && <li>• Ajoutez plus de photos portfolio ({formData.portfolioPhotos.length}/3)</li>}
+                          {!formData.demoVideo && <li>• Ajoutez une vidéo démo</li>}
+                          {!formData.priceRange && <li>• Indiquez vos tarifs</li>}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Aperçu du profil */}
+                <div className="card bg-base-100 border">
+                  <div className="card-body">
+                    <h4 className="font-semibold mb-4">Aperçu de votre profil public</h4>
+
+                    <div className="flex gap-4">
+                      {formData.mainPhoto && (
+                        <div className="avatar">
+                          <div className="w-16 h-16 rounded-full">
+                            <img src={formData.mainPhoto} alt="Profil" />
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex-1">
+                        <h5 className="font-bold text-lg">{formData.artistName || "Nom de l'artiste"}</h5>
+                        <p className="text-base-content/60">{formData.baseLocation}</p>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {formData.genres.slice(0, 3).map((genre) => (
+                            <span key={genre} className="badge badge-primary badge-sm">
+                              {genre}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <p className="mt-4 text-sm">
+                      {formData.artistDescription || "Description de l'artiste..."}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Options de publication */}
+                <div className="form-control">
+                  <label className="cursor-pointer label justify-start gap-4">
+                    <input
+                      type="checkbox"
+                      className="checkbox checkbox-primary"
+                      checked={formData.isPublic}
+                      onChange={(e) => updateFormData('isPublic', e.target.checked)}
+                    />
+                    <div>
+                      <span className="label-text font-medium">
+                        Publier mon profil maintenant
+                      </span>
+                      <p className="text-sm text-base-content/60">
+                        Votre profil sera visible par les venues et le public
+                      </p>
+                    </div>
+                  </label>
+                </div>
+
+                {formData.qualityScore < 60 && (
+                  <div className="alert alert-warning">
+                    <ExclamationTriangleIcon className="w-5 h-5" />
+                    <div>
+                      <p className="font-medium">Profil incomplet</p>
+                      <p className="text-sm">
+                        Un score plus élevé améliore votre visibilité.
+                        Revenez aux étapes précédentes pour compléter votre profil.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Footer */}
+        <div className="border-t bg-base-50 px-6 py-4 flex justify-between">
+          <button
+            onClick={currentStep === 1 ? onClose : prevStep}
+            className="btn btn-outline gap-2"
+          >
+            <ArrowLeftIcon className="w-4 h-4" />
+            {currentStep === 1 ? 'Annuler' : 'Précédent'}
+          </button>
+
+          {currentStep < 3 ? (
+            <button
+              onClick={nextStep}
+              className="btn btn-primary gap-2"
+            >
+              Suivant
+              <ArrowRightIcon className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              onClick={handleComplete}
+              className="btn btn-primary gap-2"
+            >
+              <CheckIcon className="w-4 h-4" />
+              {formData.isPublic ? 'Publier le profil' : 'Sauvegarder en brouillon'}
+            </button>
+          )}
+        </div>
+      </motion.div>
+    </div>
+  );
+};

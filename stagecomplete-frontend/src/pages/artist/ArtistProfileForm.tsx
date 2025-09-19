@@ -9,6 +9,7 @@ import {
   ArrowLeftIcon,
   EyeIcon,
   UsersIcon,
+  SparklesIcon,
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
@@ -24,6 +25,7 @@ import { ImageUpload } from "../../components/forms/ImageUpload";
 import { LoadingOverlay } from "../../components/ui/LoadingOverlay";
 import ArtisticProfileTab from "../../components/artist/tabs/ArtisticProfileTab";
 import GeneralInfoTab from "../../components/artist/tabs/GeneralInfoTab";
+import { PublicationWizard, type PublicationData } from "../../components/artist/PublicationWizard";
 
 const PRICE_RANGE_OPTIONS = [
   "0-200",
@@ -48,6 +50,7 @@ export const ArtistProfileForm: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [_artistData, setArtistData] = useState<ArtistProfile | null>(null);
   const [, setGeneratedSlug] = useState("");
+  const [showWizard, setShowWizard] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState<UpdateArtistProfileData>({
@@ -191,6 +194,53 @@ export const ArtistProfileForm: React.FC = () => {
     }));
   };
 
+  // Gérer la completion du wizard
+  const handleWizardComplete = async (data: PublicationData) => {
+    try {
+      setIsSaving(true);
+
+      // Convertir les données du wizard vers le format du profil artiste
+      const updatedData: UpdateArtistProfileData = {
+        artistName: data.artistName,
+        artistDescription: data.artistDescription,
+        artistType: data.artistType,
+        artistDiscipline: data.artistDiscipline,
+        genres: data.genres,
+        baseLocation: data.baseLocation,
+        coverPhoto: data.mainPhoto,
+        portfolio: {
+          ...formData.portfolio,
+          // Remplacer les photos par celles du wizard (qui représentent l'état final)
+          photos: data.portfolioPhotos
+        },
+        socialLinks: {
+          ...formData.socialLinks,
+          // Merger les liens sociaux en prenant priorité sur ceux du wizard
+          ...data.socialLinks
+        },
+        priceRange: data.priceRange,
+        isPublic: data.isPublic
+      };
+
+      const updatedProfile = await artistService.updateArtistProfile(updatedData);
+      setArtistData(updatedProfile);
+      setFormData(prev => ({ ...prev, ...updatedData }));
+
+      setShowWizard(false);
+      toast.success(data.isPublic ? "Profil publié avec succès !" : "Profil sauvegardé en brouillon !");
+
+      // Rediriger vers l'onglet public si publié
+      if (data.isPublic) {
+        setActiveTab("public");
+      }
+    } catch (error) {
+      console.error("Error saving wizard data:", error);
+      toast.error("Erreur lors de la sauvegarde");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <LoadingOverlay
@@ -263,6 +313,14 @@ export const ArtistProfileForm: React.FC = () => {
             <ArrowLeftIcon className="w-4 h-4" />
             Dashboard
           </Link>
+
+          <button
+            onClick={() => setShowWizard(true)}
+            className="btn btn-accent btn-sm gap-2"
+          >
+            <SparklesIcon className="w-4 h-4" />
+            Assistant Publication
+          </button>
 
           {formData.isPublic && formData.publicSlug && (
             <Link
@@ -362,6 +420,28 @@ export const ArtistProfileForm: React.FC = () => {
           )}
         </div>
       </motion.div>
+
+      {/* Publication Wizard */}
+      <PublicationWizard
+        isOpen={showWizard}
+        onClose={() => setShowWizard(false)}
+        onComplete={handleWizardComplete}
+        initialData={{
+          artistName: formData.artistName || "",
+          artistDescription: formData.artistDescription || "",
+          artistType: formData.artistType || "SOLO",
+          artistDiscipline: formData.artistDiscipline || "MUSIC",
+          genres: formData.genres || [],
+          baseLocation: formData.baseLocation || "",
+          mainPhoto: formData.coverPhoto || "",
+          portfolioPhotos: formData.portfolio?.photos || [],
+          socialLinks: formData.socialLinks || {},
+          demoVideo: "",
+          priceRange: formData.priceRange,
+          isPublic: formData.isPublic || false,
+          qualityScore: 0
+        }}
+      />
     </div>
   );
 };

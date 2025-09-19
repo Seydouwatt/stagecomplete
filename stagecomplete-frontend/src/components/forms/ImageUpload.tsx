@@ -173,6 +173,12 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         {maxImages > 1 && (
           <p>• La première image sera votre photo principale</p>
         )}
+        {value.length > 0 && (
+          <p className="text-success">
+            • {value.length} image(s) •
+            {Math.round(value.reduce((total, img) => total + (img.length / 1024), 0))} KB total
+          </p>
+        )}
       </div>
 
       {/* Error message */}

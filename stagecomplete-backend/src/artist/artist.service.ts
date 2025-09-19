@@ -66,12 +66,51 @@ export class ArtistService {
     const { priceDetails, socialLinks, portfolio, ...restData } =
       updateArtistProfileDto;
 
+    // Gestion intelligente des photos portfolio
+    let processedPortfolio = portfolio as any;
+    if (portfolio && user.profile.artist?.portfolio) {
+      const existingPhotos = (user.profile.artist.portfolio as any)?.photos || [];
+      const newPhotos = portfolio.photos || [];
+
+      // Logger les changements de photos pour debugging/cleanup futur
+      const removedPhotos = existingPhotos.filter((photo: string) => !newPhotos.includes(photo));
+      const addedPhotos = newPhotos.filter((photo: string) => !existingPhotos.includes(photo));
+
+      if (removedPhotos.length > 0) {
+        console.log(`[ArtistService] ${removedPhotos.length} photo(s) supprimée(s) du portfolio`);
+      }
+      if (addedPhotos.length > 0) {
+        console.log(`[ArtistService] ${addedPhotos.length} photo(s) ajoutée(s) au portfolio`);
+      }
+
+      // Validation basique des images base64
+      const validPhotos = newPhotos.filter((photo: string) => {
+        if (!photo || typeof photo !== 'string') return false;
+        if (!photo.startsWith('data:image/')) return false;
+        // Limite de taille approximative (5MB en base64 ≈ 6.7MB)
+        if (photo.length > 7000000) {
+          console.warn(`[ArtistService] Photo trop volumineuse ignorée: ${photo.length} caractères`);
+          return false;
+        }
+        return true;
+      });
+
+      processedPortfolio = {
+        ...portfolio,
+        photos: validPhotos,
+      };
+
+      if (validPhotos.length !== newPhotos.length) {
+        console.log(`[ArtistService] ${newPhotos.length - validPhotos.length} photo(s) invalide(s) filtrée(s)`);
+      }
+    }
+
     const artistData = {
       ...restData,
       // Conversion explicite des types JSON pour Prisma
       priceDetails: priceDetails as any,
       socialLinks: socialLinks as any,
-      portfolio: portfolio as any,
+      portfolio: processedPortfolio,
     };
 
     if (user.profile.artist) {
