@@ -4,7 +4,6 @@ import { ProtectedRoute } from "../components/auth";
 import { MainLayout } from "../components/layout";
 import { ROUTES } from "../constants";
 import { Browse } from "../pages/Browse";
-import Home from "../pages/Home";
 import { publicRoutes } from "./public/publicRoutes";
 import { artistRoutes } from "./artist/artistRoutes";
 import { venueRoutes } from "./venue/venueRoutes";
@@ -38,7 +37,6 @@ export const AppRoutes = () => (
     </Route>
 
     {/* Fallbacks */}
-    <Route path="/" element={<Home />} />
-    <Route path="*" element={<Navigate to="/home" replace />} />
+    <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>
 );
