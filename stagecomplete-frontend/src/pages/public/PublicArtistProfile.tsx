@@ -18,6 +18,7 @@ import {
 import { useAuthStore } from "../../stores/authStore";
 import { toast } from "../../stores/useToastStore";
 import { artistService } from "../../services/artistService";
+import { SEOHead, SEO_TEMPLATES, generateArtistSchema } from "../../components/seo/SEOHead";
 import type { PublicArtistProfile as PublicArtistProfileType } from "../../types";
 
 // Sous-composants des onglets
@@ -272,8 +273,20 @@ export const PublicArtistProfile: React.FC = () => {
   const ActiveTabComponent =
     availableTabs.find((tab) => tab.id === activeTab)?.component || OverviewTab;
 
+  // SEO Data
+  const seoData = SEO_TEMPLATES.artist(artistProfile);
+
   return (
     <div className="min-h-screen bg-base-200">
+      <SEOHead
+        title={seoData.title}
+        description={seoData.description}
+        keywords={seoData.keywords}
+        url={`/artist/${artistProfile.publicSlug}`}
+        type="profile"
+        image={artistProfile.coverPhoto || artistProfile.portfolio?.photos?.[0]}
+        schemaData={generateArtistSchema(artistProfile)}
+      />
       {/* Header avec photo de couverture */}
       <div className="relative h-64 bg-gradient-to-r from-primary to-secondary overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>

@@ -9,6 +9,7 @@ import {
 import { PublicSearchBar } from '../../components/public/PublicSearchBar';
 import { FeaturedArtists } from '../../components/public/FeaturedArtists';
 import { artistService } from '../../services/artistService';
+import { SEOHead, SEO_TEMPLATES, generateSearchSchema } from '../../components/seo/SEOHead';
 import type { PublicArtistProfile, ArtistSearchFilters } from '../../types';
 
 export const SearchResults: React.FC = () => {
@@ -95,8 +96,17 @@ export const SearchResults: React.FC = () => {
     return <DiscoveryPage onSearch={handleSearch} />;
   }
 
+  const seoData = SEO_TEMPLATES.search(query, location);
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <SEOHead
+        title={seoData.title}
+        description={seoData.description}
+        keywords={seoData.keywords.filter((k): k is string => Boolean(k))}
+        url={`/search?q=${encodeURIComponent(query)}${location ? `&location=${encodeURIComponent(location)}` : ''}`}
+        schemaData={generateSearchSchema(query, totalResults)}
+      />
       {/* Header avec recherche */}
       <section className="bg-white border-b sticky top-0 z-10 shadow-sm">
         <div className="container mx-auto px-4 py-4">
@@ -224,6 +234,12 @@ export const SearchResults: React.FC = () => {
 const DiscoveryPage: React.FC<{ onSearch: (query: string, location?: string) => void }> = ({ onSearch }) => {
   return (
     <div className="min-h-screen">
+      <SEOHead
+        title={SEO_TEMPLATES.directory.title}
+        description={SEO_TEMPLATES.directory.description}
+        keywords={SEO_TEMPLATES.directory.keywords}
+        url="/directory"
+      />
       {/* Hero de recherche */}
       <section className="bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 py-20">
         <div className="container mx-auto px-4 text-center">
