@@ -9,6 +9,13 @@
   publish = "dist"
 
 # Configuration pour SPA (Single Page Application)
+# Exclure les assets de la redirection SPA
+[[redirects]]
+  from = "/assets/*"
+  to = "/assets/:splat"
+  status = 200
+
+# Redirection SPA pour toutes les autres routes
 [[redirects]]
   from = "/*"
   to = "/index.html"
