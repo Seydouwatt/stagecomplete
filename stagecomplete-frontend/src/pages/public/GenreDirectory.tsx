@@ -321,13 +321,13 @@ const ArtistCard: React.FC<{ artist: PublicArtistProfile }> = ({ artist }) => {
           {profilePhoto ? (
             <img
               src={profilePhoto}
-              alt={artist.artistName}
+              alt={artist.profile.name}
               className="w-full h-full object-cover"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <span className="text-white text-3xl font-bold">
-                {artist.artistName?.[0]?.toUpperCase() || 'A'}
+                {artist.profile.name?.[0]?.toUpperCase() || 'A'}
               </span>
             </div>
           )}
@@ -340,7 +340,7 @@ const ArtistCard: React.FC<{ artist: PublicArtistProfile }> = ({ artist }) => {
 
         <div className="p-4">
           <h3 className="font-bold text-lg text-gray-900 mb-1 group-hover:text-primary transition-colors">
-            {artist.artistName}
+            {artist.profile.name}
           </h3>
 
           {artist.baseLocation && (

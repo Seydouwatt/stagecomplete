@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 import { X, User, Mail, Phone, Music, Crown, Link } from "lucide-react";
 import {
   memberService,
-  type ArtistMember,
   type CreateArtistMemberDto,
   type UpdateArtistMemberDto,
 } from "../../services/memberService";
+import type { ArtistMember } from "../../types";
 import { useToastStore } from "../../stores/useToastStore";
 
 import { MultiSelect } from "../forms/MultiSelect";
@@ -59,7 +59,9 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   const [formData, setFormData] = useState<
     CreateArtistMemberDto | UpdateArtistMemberDto
   >({
-    name: "",
+    artistName: "",
+    firstName: "",
+    lastName: "",
     role: "",
     bio: "",
     avatar: "",
@@ -87,7 +89,9 @@ export const MemberForm: React.FC<MemberFormProps> = ({
   useEffect(() => {
     if (member) {
       setFormData({
-        name: member.name,
+        artistName: member?.artistName || "",
+        firstName: member?.firstName || "",
+        lastName: member?.lastName || "",
         role: member.role || "",
         bio: member.bio || "",
         avatar: member.avatar || "",
@@ -108,7 +112,9 @@ export const MemberForm: React.FC<MemberFormProps> = ({
     } else {
       // Réinitialiser pour création
       setFormData({
-        name: "",
+        artistName: "",
+        firstName: "",
+        lastName: "",
         role: isSoloArtist ? "Artiste principal" : "",
         bio: "",
         avatar: "",
@@ -165,12 +171,19 @@ export const MemberForm: React.FC<MemberFormProps> = ({
       if (member) {
         // Mode édition
         await memberService.updateMember(member.id, cleanData);
-        addToast(`${cleanData.name} a été modifié avec succès`, "success");
+        addToast(
+          `${
+            cleanData.artistName?.trim() || cleanData.firstName?.trim()
+          } ${cleanData.lastName?.trim()} a été modifié avec succès`,
+          "success"
+        );
       } else {
         // Mode création
         await memberService.createMember(cleanData as CreateArtistMemberDto);
         addToast(
-          `${cleanData.name} a été ajouté au groupe avec succès`,
+          `${
+            cleanData.artistName?.trim() || cleanData.firstName?.trim()
+          } ${cleanData.lastName?.trim()} a été ajouté au groupe avec succès`,
           "success"
         );
       }
@@ -212,17 +225,21 @@ export const MemberForm: React.FC<MemberFormProps> = ({
 
   return (
     <div className="modal modal-open">
+      <div className="modal-backdrop" onClick={onClose}></div>
       <motion.div
-        className="modal-box max-w-2xl max-h-[90vh] overflow-y-auto"
+        className="modal-box max-w-2xl max-h-[90vh] overflow-y-auto relative z-10"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* En-tête */}
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-bold text-xl">
             {member
-              ? `Modifier ${member.name}`
+              ? `Modifier ${member.artistName || member.firstName} ${
+                  member.lastName
+                }`
               : `${isSoloArtist ? "Profil Artiste" : "Nouveau Membre"}`}
           </h3>
           <button
@@ -247,34 +264,65 @@ export const MemberForm: React.FC<MemberFormProps> = ({
           )}
 
           {/* Photo de profil */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-medium flex items-center gap-2">
-                <User className="w-4 h-4" />
-                Photo de profil
-              </span>
-            </label>
-            <ImageUpload
-              label="Photo de profil"
-              value={formData.avatar ? [formData.avatar] : []}
-              onChange={(images) => updateFormData("avatar", images[0] || "")}
-              maxImages={1}
-              className="w-32 h-32 mx-auto"
-            />
+          <div className="flex justify-center h-[300px]">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-medium flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Photo de profil
+                </span>
+              </label>
+              <ImageUpload
+                label="Photo de profil"
+                value={formData.avatar ? [formData.avatar] : []}
+                onChange={(images) => updateFormData("avatar", images[0] || "")}
+                maxImages={1}
+                className=""
+              />
+            </div>
           </div>
 
           {/* Informations de base */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Nom complet *</span>
+                <span className="label-text font-medium">Nom de Scene</span>
               </label>
               <input
                 type="text"
+                name="artistName"
                 className="input input-bordered w-full"
-                value={formData.name}
-                onChange={(e) => updateFormData("name", e.target.value)}
-                placeholder="Nom et prénom"
+                value={formData.artistName}
+                onChange={(e) => updateFormData("artistName", e.target.value)}
+                placeholder="Nom de Scene"
+                required
+              />
+            </div>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-medium">Prenom Civil *</span>
+              </label>
+              <input
+                type="text"
+                name="firstName"
+                className="input input-bordered w-full"
+                value={formData.firstName}
+                onChange={(e) => updateFormData("firstName", e.target.value)}
+                placeholder="Prenom Civil"
+                required
+              />
+            </div>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-medium">Nom de Famille *</span>
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                className="input input-bordered w-full"
+                value={formData.lastName}
+                onChange={(e) => updateFormData("lastName", e.target.value)}
+                placeholder="Nom de Famille"
                 required
               />
             </div>
@@ -287,6 +335,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
               </label>
               <input
                 type="text"
+                name="role"
                 className="input input-bordered w-full"
                 value={formData.role || ""}
                 onChange={(e) => updateFormData("role", e.target.value)}
@@ -305,6 +354,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
               <span className="label-text font-medium">Bio / Présentation</span>
             </label>
             <textarea
+              name="bio"
               className="textarea textarea-bordered w-full h-24"
               value={formData.bio || ""}
               onChange={(e) => updateFormData("bio", e.target.value)}
@@ -329,6 +379,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
               </label>
               <input
                 type="email"
+                name="email"
                 className="input input-bordered w-full"
                 value={formData.email || ""}
                 onChange={(e) => updateFormData("email", e.target.value)}
@@ -345,6 +396,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
               </label>
               <input
                 type="tel"
+                name="phone"
                 className="input input-bordered w-full"
                 value={formData.phone || ""}
                 onChange={(e) => updateFormData("phone", e.target.value)}
@@ -454,6 +506,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({
             <label className="label cursor-pointer justify-start gap-3">
               <input
                 type="checkbox"
+                name="isFounder"
                 className="checkbox checkbox-primary"
                 checked={formData.isFounder || false}
                 onChange={(e) => updateFormData("isFounder", e.target.checked)}

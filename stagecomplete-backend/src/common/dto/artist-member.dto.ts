@@ -44,10 +44,27 @@ export class SocialLinksDto {
 }
 
 export class CreateArtistMemberDto {
-  @ApiProperty({ example: 'John Doe', description: 'Nom du membre' })
+  @ApiPropertyOptional({
+    example: 'John Doe',
+    description: 'Nom de scène du membre',
+  })
   @IsString()
   @MaxLength(100)
-  name: string;
+  @IsOptional()
+  artistName?: string; // Nom de scène du membre
+
+  @ApiProperty({ example: 'John', description: 'Prénom du membre' })
+  @IsString()
+  @MaxLength(100)
+  firstName: string; // Prénom civil
+
+  @ApiProperty({
+    example: 'Doe',
+    description: 'Nom de famille du membre',
+  })
+  @IsString()
+  @MaxLength(100)
+  lastName: string; // Nom civil
 
   @ApiPropertyOptional({
     example: 'Guitariste principal',
@@ -155,11 +172,27 @@ export class CreateArtistMemberDto {
 }
 
 export class UpdateArtistMemberDto {
-  @ApiPropertyOptional({ example: 'John Doe', description: 'Nom du membre' })
-  @IsOptional()
+  @ApiPropertyOptional({
+    example: 'John Doe',
+    description: 'Nom de scène du membre',
+  })
   @IsString()
   @MaxLength(100)
-  name?: string;
+  @IsOptional()
+  artistName?: string; // Nom de scène du membre
+
+  @ApiProperty({ example: 'John', description: 'Prénom du membre' })
+  @IsString()
+  @MaxLength(100)
+  firstName: string; // Prénom civil
+
+  @ApiProperty({
+    example: 'Doe',
+    description: 'Nom de famille du membre',
+  })
+  @IsString()
+  @MaxLength(100)
+  lastName: string; // Nom civil
 
   @ApiPropertyOptional({
     example: 'Guitariste principal',

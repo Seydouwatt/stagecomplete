@@ -1,10 +1,20 @@
+// Artist Media types
+export interface ArtistMedia {
+  id: number;
+  type: "PHOTO" | "VIDEO";
+  url: string;
+  title?: string;
+  isPublic: boolean;
+  sortOrder?: number;
+}
+
 // Artist Member types
 export interface ArtistMember {
   id: string;
   artistId: string;
   artistName: string; // Nom de scène du membre
   firstName?: string; // Prénom civil
-  lastName?: string;  // Nom civil
+  lastName?: string; // Nom civil
   role?: string;
   bio?: string;
   avatar?: string;

@@ -14,9 +14,9 @@ import {
 } from "lucide-react";
 import {
   memberService,
-  type ArtistMember,
   type ArtistMembersResponse,
 } from "../../services/memberService";
+import type { ArtistMember } from "../../types";
 import { useToastStore, type ToastType } from "../../stores/useToastStore";
 import { MemberForm } from "./MemberForm";
 import LoadingButton from "../ui/LoadingButton";
@@ -145,7 +145,7 @@ export const MemberManagement: React.FC<MemberManagementProps> = ({
             (!isSoloArtist && canAddMember)) && (
             <motion.button
               className="btn btn-primary"
-              data-testid="add-member-btn"
+              data-testid="create-add-member-btn"
               onClick={() => setShowAddForm(true)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -193,13 +193,13 @@ export const MemberManagement: React.FC<MemberManagementProps> = ({
                         {member.avatar ? (
                           <img
                             src={member.avatar}
-                            alt={member.name}
+                            alt={member.artistName}
                             className="w-full h-full object-cover rounded-full"
                           />
                         ) : (
                           <div className="bg-primary/10 w-full h-full rounded-full flex items-center justify-center">
                             <span className="text-primary font-semibold">
-                              {member.name.charAt(0).toUpperCase()}
+                              {member.artistName.charAt(0).toUpperCase()}
                             </span>
                           </div>
                         )}
@@ -209,7 +209,7 @@ export const MemberManagement: React.FC<MemberManagementProps> = ({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className="font-semibold text-base-content truncate">
-                          {member.name}
+                          {member.artistName}
                         </h3>
                         {member.isFounder && (
                           <Crown className="w-4 h-4 text-warning">

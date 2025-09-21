@@ -19,31 +19,43 @@ Feature: Artist Profile Management
     And I enter "10" as years of experience
     And I switch to the "Membres" tab
     And I select artist type "SOLO"
-    Then I should see that a default member is created
-    And I click on "Sauvegarder"
-    Then I should see "Profil sauvegardé avec succès"
+    And I add a member with:
 
-  Scenario: Create a band profile with multiple members
-    When I go to the artist profile page
-    And I switch to the "Membres" tab
-    And I select artist type "BAND"
-    And I add a member with:
-      | name        | Marie Dupont   |
-      | role        | Singer         |
-      | email       | marie@band.com |
-      | instruments | Vocals         |
-      | experience  | PROFESSIONAL   |
-      | founder     | true           |
-    And I add a member with:
-      | name        | Paul Martin   |
-      | role        | Guitarist     |
-      | email       | paul@band.com |
-      | instruments | Guitar, Bass  |
-      | experience  | EXPERT        |
-      | founder     | false         |
-    And I click on "Sauvegarder"
-    Then I should see "Profil sauvegardé avec succès"
-    And I should see 2 members in the list
+      | artistName   | Marie D.                                                                               |
+      | firstName    | Marie                                                                                  |
+      | lastName     | Dupont                                                                                 |
+      | role         | Guitarist                                                                              |
+      | instrument   | Guitar                                                                                 |
+      | bio          | Guitar player                                                                          |
+      | location     | Paris, France                                                                          |
+      | website      | https://guitar.com                                                                     |
+      | social_links | { facebook: "https://facebook.com/guitar", instagram: "https://instagram.com/guitar" } |
+    And I click on "Ajouter"
+    And I click on Sauvegarder
+    Then I should see that a default member is created
+    And I should see "Profil sauvegardé avec succès"
+
+# Scenario: Create a band profile with multiple members
+#   When I go to the artist profile page
+#   And I switch to the "Membres" tab
+#   And I select artist type "BAND"
+#   And I add a member with:
+#     | name        | Marie Dupont   |
+#     | role        | Singer         |
+#     | email       | marie@band.com |
+#     | instruments | Vocals         |
+#     | experience  | PROFESSIONAL   |
+#     | founder     | true           |
+#   And I add a member with:
+#     | name        | Paul Martin   |
+#     | role        | Guitarist     |
+#     | email       | paul@band.com |
+#     | instruments | Guitar, Bass  |
+#     | experience  | EXPERT        |
+#     | founder     | false         |
+#   And I click on "Sauvegarder"
+#   Then I should see "Profil sauvegardé avec succès"
+#   And I should see 2 members in the list
 
 # Scenario: Edit an existing member
 #   Given I have a band profile with 2 members

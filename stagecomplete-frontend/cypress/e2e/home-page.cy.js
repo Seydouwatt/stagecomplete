@@ -1,37 +1,82 @@
 describe('Home Page', () => {
-  it('should display the home page with title and CTAs', () => {
-    cy.visit('/home');
+  it('should display the home page with hero section and CTAs', () => {
+    cy.visit('/');
 
-    // Vérifier le titre
-    cy.contains('StageComplete').should('be.visible');
+    // Vérifier le titre principal
+    cy.contains('Découvrez l\'artiste').should('be.visible');
+    cy.contains('parfait pour vous').should('be.visible');
 
-    // Vérifier la description (partie du texte)
-    // cy.contains('plateforme qui connecte').should('be.visible');
+    // Vérifier le badge
+    cy.contains('La plateforme de découverte d\'artistes').should('be.visible');
+
+    // Vérifier la description
+    cy.contains('La plus grande communauté d\'artistes professionnels').should('be.visible');
+
+    // Vérifier la barre de recherche
+    cy.get('[data-cy="public-search-bar"]').should('be.visible');
 
     // Vérifier les boutons CTA
-    cy.get('a').contains('Se connecter').should('be.visible');
-    cy.get('a').contains('Créer mon compte').should('be.visible');
+    cy.get('a').contains('Créer mon profil d\'artiste').should('be.visible');
+    cy.get('a').contains('Découvrir les artistes').should('be.visible');
 
-    // Vérifier les sections de fonctionnalités
-    cy.contains('Profil Artistique').should('be.visible');
-    cy.contains('Gestion d\'Équipe').should('be.visible');
-    cy.contains('Statistiques').should('be.visible');
+    cy.scrollTo('bottom');
+
+    // Vérifier les sections "Comment ça marche"
+    cy.contains('Créez votre profil').should('be.visible');
+    cy.contains('Publiez votre vitrine').should('be.visible');
+    cy.contains('Soyez découvert').should('be.visible');
   });
 
-  it('should navigate to login page when clicking Se connecter', () => {
+  it('should navigate to register page when clicking Créer mon profil d\'artiste', () => {
     cy.visit('/');
-    cy.contains('Se connecter').click();
-    cy.url().should('include', '/login');
-  });
-
-  it('should navigate to register page when clicking Créer mon compte', () => {
-    cy.visit('/home');
-    cy.get('a').contains('Créer mon compte').click();
+    cy.get('a').contains('Créer mon profil d\'artiste').click();
     cy.url().should('include', '/register');
   });
 
-  it('should be accessible from /home route', () => {
-    cy.visit('/home');
-    cy.contains('StageComplete').should('be.visible');
+  it('should navigate to directory page when clicking Découvrir les artistes', () => {
+    cy.visit('/');
+    cy.get('a').contains('Découvrir les artistes').click();
+    cy.url().should('include', '/directory');
+  });
+
+  it('should display popular search suggestions', () => {
+    cy.visit('/');
+
+    // Vérifier les suggestions populaires
+    cy.contains('Recherches populaires').should('be.visible');
+    cy.contains('Jazz Paris').should('be.visible');
+    cy.contains('Rock Lyon').should('be.visible');
+    cy.contains('Solo Marseille').should('be.visible');
+  });
+
+  it('should navigate to search results when clicking popular searches', () => {
+    cy.visit('/');
+
+    // Cliquer sur une recherche populaire et vérifier la navigation
+    cy.contains('Jazz Paris').click();
+    cy.url().should('include', '/search?q=Jazz%20Paris');
+  });
+
+  it('should display featured artists section', () => {
+    cy.visit('/');
+
+    // Vérifier que la section artistes en vedette existe
+    cy.get('[data-cy="featured-artists"]').should('be.visible');
+  });
+
+  it('should display public stats section', () => {
+    cy.visit('/');
+
+    // Vérifier que la section stats publiques existe
+    cy.get('[data-cy="public-stats"]').should('be.visible');
+  });
+
+  it('should display final CTA section', () => {
+    cy.visit('/');
+
+    // Vérifier la section CTA finale
+    cy.contains('Prêt à partager votre talent ?').should('be.visible');
+    cy.contains('Créer mon profil gratuitement').should('be.visible');
+    cy.contains('Voir la démo').should('be.visible');
   });
 });

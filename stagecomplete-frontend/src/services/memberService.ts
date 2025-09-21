@@ -1,5 +1,6 @@
 import axios from "axios";
 import { API_URL } from "../constants";
+import type { ArtistMember } from "../types";
 
 // Configuration axios pour les services membre
 const api = axios.create({
@@ -25,35 +26,10 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Types pour les membres
-export interface ArtistMember {
-  id: string;
-  artistId: string;
-  name: string;
-  role?: string;
-  bio?: string;
-  avatar?: string;
-  email?: string;
-  phone?: string;
-  socialLinks?: {
-    instagram?: string;
-    facebook?: string;
-    twitter?: string;
-    youtube?: string;
-    [key: string]: string | undefined;
-  };
-  instruments?: string[];
-  experience?: "BEGINNER" | "INTERMEDIATE" | "PROFESSIONAL" | "EXPERT";
-  yearsActive?: number;
-  isFounder?: boolean;
-  joinDate?: string;
-  isActive?: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface CreateArtistMemberDto {
-  name: string;
+  artistName?: string;
+  firstName: string;
+  lastName: string;
   role?: string;
   bio?: string;
   avatar?: string;
@@ -153,16 +129,16 @@ class MemberService {
 
     // Validation du nom (obligatoire pour création)
     if (
-      "name" in memberData &&
-      (!memberData.name || memberData.name.trim().length === 0)
+      "memberName" in memberData &&
+      (!memberData.memberName || memberData.memberName.trim().length === 0)
     ) {
       errors.push("Le nom du membre est obligatoire");
     }
 
     if (
-      "name" in memberData &&
-      memberData.name &&
-      memberData.name.length > 100
+      "memberName" in memberData &&
+      memberData.memberName &&
+      memberData.memberName.length > 100
     ) {
       errors.push("Le nom du membre ne peut pas dépasser 100 caractères");
     }
@@ -226,7 +202,7 @@ class MemberService {
   formatMemberForDisplay(member: ArtistMember) {
     return {
       ...member,
-      displayName: member.name,
+      displayName: member.memberName,
       displayRole: member.role || "Membre",
       experienceLabel: this.getExperienceLabel(member.experience),
       joinDateFormatted: member.joinDate
@@ -266,7 +242,7 @@ class MemberService {
     artistEmail?: string
   ): CreateArtistMemberDto {
     return {
-      name: artistName,
+      memberName: artistName,
       role: "Artiste principal",
       isFounder: true,
       isActive: true,

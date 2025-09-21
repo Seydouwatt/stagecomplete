@@ -9,7 +9,7 @@ Feature: Artist Authentication
 
   Scenario: Registration of a new artist
     Given I am on the homepage
-    When I click on "Créer mon compte"
+    When I click on "Créer mon profil d'artiste"
     And I fill the registration form with valid data
     And I submit the form
     Then I should be redirected to the artist dashboard
