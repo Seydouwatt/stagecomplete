@@ -93,7 +93,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({ artistProfile }) => {
         <div className="card-body text-center">
           <h2 className="card-title justify-center text-2xl mb-4">
             <Users className="w-6 h-6 text-primary" />
-            L'équipe de {artistProfile.artistName}
+            L'équipe de {artistProfile.profile.name}
           </h2>
           <p className="text-base-content/70 mb-4">
             Découvrez les talents qui composent ce{" "}
@@ -133,17 +133,17 @@ export const MembersTab: React.FC<MembersTabProps> = ({ artistProfile }) => {
                     <img
                       src={
                         member.avatar ||
-                        `https://via.placeholder.com/64x64/1f2937/white?text=${member.name.charAt(
+                        `https://via.placeholder.com/64x64/1f2937/white?text=${member.memberName.charAt(
                           0
                         )}`
                       }
-                      alt={member.name}
+                      alt={member.memberName}
                     />
                   </div>
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-bold text-lg">{member.name}</h3>
+                    <h3 className="font-bold text-lg">{member.memberName}</h3>
                     {member.isFounder && (
                       <div className="badge badge-warning badge-sm gap-1">
                         <Star className="w-3 h-3" />

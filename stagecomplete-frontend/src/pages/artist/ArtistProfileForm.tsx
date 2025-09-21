@@ -14,7 +14,6 @@ import {
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
 import { artistService } from "../../services/artistService";
-import { authService } from "../../services/authService";
 import { toast } from "../../stores/useToastStore";
 import type {
   UpdateArtistProfileData,
@@ -48,7 +47,7 @@ type TabType =
   | "public";
 
 export const ArtistProfileForm: React.FC = () => {
-  const { user } = useAuthStore();
+  const { user, updateProfile } = useAuthStore();
   const [activeTab, setActiveTab] = useState<TabType>("general");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -96,8 +95,8 @@ export const ArtistProfileForm: React.FC = () => {
         // Pré-remplir le formulaire avec les données existantes
         const artist = profile;
         if (artist) {
-          // Initialiser le nom du profile
-          setProfileName(artist.profile?.name || "");
+          // Initialiser le nom du profile depuis user.profile
+          setProfileName(user?.profile?.name || "");
 
           setFormData({
             // General information (identity) - artistName supprimé
@@ -149,7 +148,9 @@ export const ArtistProfileForm: React.FC = () => {
 
       // Sauvegarder le nom du profil si modifié
       if (profileName !== user?.profile?.name) {
-        await authService.updateProfile({ name: profileName });
+        console.log(profileName, "profile name");
+
+        await updateProfile({ name: profileName });
       }
 
       // Sauvegarder le profil artiste
@@ -214,7 +215,6 @@ export const ArtistProfileForm: React.FC = () => {
 
       // Convertir les données du wizard vers le format du profil artiste
       const updatedData: UpdateArtistProfileData = {
-        artistName: data.artistName,
         artistDescription: data.artistDescription,
         artistType: data.artistType,
         artistDiscipline: data.artistDiscipline,
@@ -234,6 +234,12 @@ export const ArtistProfileForm: React.FC = () => {
         priceRange: data.priceRange,
         isPublic: data.isPublic,
       };
+
+      // Mettre à jour le nom du profil si différent
+      if (data.artistName !== user?.profile?.name) {
+        await updateProfile({ name: data.artistName });
+        setProfileName(data.artistName);
+      }
 
       const updatedProfile = await artistService.updateArtistProfile(
         updatedData
@@ -355,6 +361,7 @@ export const ArtistProfileForm: React.FC = () => {
           <button
             onClick={handleSave}
             disabled={isSaving}
+            data-cy="save-profile-btn"
             className="btn btn-primary btn-sm gap-2"
           >
             {isSaving ? (
@@ -396,15 +403,12 @@ export const ArtistProfileForm: React.FC = () => {
       >
         <div className="card-body">
           {activeTab === "general" && (
-            <>
-              <div>{profileName}</div>
-              <GeneralInfoTab
-                formData={formData}
-                updateFormData={updateFormData}
-                profileName={profileName}
-                updateProfileName={setProfileName}
-              />
-            </>
+            <GeneralInfoTab
+              formData={formData}
+              updateFormData={updateFormData}
+              profileName={profileName}
+              updateProfileName={setProfileName}
+            />
           )}
 
           {activeTab === "artistic" && (
@@ -451,7 +455,7 @@ export const ArtistProfileForm: React.FC = () => {
         onClose={() => setShowWizard(false)}
         onComplete={handleWizardComplete}
         initialData={{
-          artistName: formData.artistName || "",
+          artistName: profileName || "",
           artistDescription: formData.artistDescription || "",
           artistType: formData.artistType || "SOLO",
           artistDiscipline: formData.artistDiscipline || "MUSIC",

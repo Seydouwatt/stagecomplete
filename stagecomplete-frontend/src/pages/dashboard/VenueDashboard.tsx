@@ -133,7 +133,7 @@ export const VenueDashboard: React.FC = () => {
               transition={{ delay: 0.2 }}
               className="text-3xl font-bold mb-4"
             >
-              Bienvenue, {user?.profile?.displayName} ! 🎪
+              Bienvenue, {user?.profile?.name} ! 🎪
             </motion.h1>
             <motion.p
               initial={{ y: 20, opacity: 0 }}

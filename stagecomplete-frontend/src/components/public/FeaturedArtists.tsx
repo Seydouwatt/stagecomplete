@@ -127,14 +127,14 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist }) => {
           {profilePhoto ? (
             <img
               src={profilePhoto}
-              alt={artist.artistName}
+              alt={artist.profile.name}
               className="w-full h-full object-cover"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
                 <span className="text-white text-2xl font-bold">
-                  {artist.artistName?.[0]?.toUpperCase() || 'A'}
+                  {artist.profile.name?.[0]?.toUpperCase() || 'A'}
                 </span>
               </div>
             </div>
@@ -157,7 +157,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({ artist }) => {
         {/* Contenu */}
         <div className="p-6">
           <h3 className="font-bold text-xl text-gray-900 mb-2 group-hover:text-primary transition-colors">
-            {artist.artistName}
+            {artist.profile.name}
           </h3>
 
           <div className="flex items-center gap-2 text-gray-600 mb-3">

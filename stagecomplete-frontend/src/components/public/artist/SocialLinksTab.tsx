@@ -122,10 +122,10 @@ export const SocialLinksTab: React.FC<SocialLinksTabProps> = ({
         <div className="card-body text-center">
           <h2 className="card-title justify-center text-2xl mb-4">
             <Globe className="w-6 h-6 text-primary" />
-            Suivez {artistProfile.artistName}
+            Suivez {artistProfile.profile.name}
           </h2>
           <p className="text-base-content/70">
-            Découvrez l'univers de {artistProfile.artistName} sur ses
+            Découvrez l'univers de {artistProfile.profile.name} sur ses
             plateformes préférées. Restez connecté pour ne rien manquer de son
             actualité musicale !
           </p>
@@ -208,7 +208,7 @@ export const SocialLinksTab: React.FC<SocialLinksTabProps> = ({
 
           <div className="text-center mt-6">
             <p className="text-sm text-base-content/60">
-              Suivez {artistProfile.artistName} pour découvrir ses dernières
+              Suivez {artistProfile.profile.name} pour découvrir ses dernières
               créations, concerts à venir et moments forts de sa carrière
               artistique.
             </p>
@@ -229,7 +229,7 @@ export const SocialLinksTab: React.FC<SocialLinksTabProps> = ({
           <div className="card-body">
             <h3 className="card-title mb-6">
               <Music className="w-5 h-5 text-accent" />
-              Écoutez la musique de {artistProfile.artistName}
+              Écoutez la musique de {artistProfile.profile.name}
             </h3>
 
             <div className="space-y-4">

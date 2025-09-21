@@ -106,7 +106,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ artistProfile }) => {
         <div className="card-body">
           <h2 className="card-title text-2xl mb-4">
             <Palette className="w-6 h-6 text-primary" />À propos de &nbsp;
-            {artistProfile.artistName}
+            {artistProfile.profile.name}
           </h2>
           <p className="text-base-content/80 text-lg leading-relaxed">
             {artistProfile.artistDescription ||

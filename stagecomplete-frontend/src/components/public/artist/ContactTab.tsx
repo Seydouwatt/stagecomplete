@@ -51,7 +51,7 @@ export const ContactTab: React.FC<ContactTabProps> = ({ artistProfile }) => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Redirection vers email en attendant l'API
-      const subject = `Demande de contact via StageComplete - ${artistProfile.profile.displayName}`;
+      const subject = `Demande de contact via StageComplete - ${artistProfile.profile.name}`;
       const body = `Bonjour,
 
 Nom de la venue : ${contactForm.venueName}

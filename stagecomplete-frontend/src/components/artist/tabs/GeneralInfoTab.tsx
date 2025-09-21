@@ -64,8 +64,6 @@ const GeneralInfoTab: React.FC<{
   profileName?: string;
   updateProfileName?: (name: string) => void;
 }> = ({ formData, updateFormData, profileName, updateProfileName }) => {
-  console.log(formData, profileName);
-
   return (
     <div className="space-y-6 overflow-scroll h-[calc(100vh - 380px)] lg:h-[calc(100vh-335px)]">
       {/* ===== SECTION 1: IDENTITÉ =====  */}
@@ -83,7 +81,7 @@ const GeneralInfoTab: React.FC<{
                   Nom de l'artiste ou du groupe
                 </span>
                 <span className="label-text-alt text-info">
-                  Différent de votre nom d'utilisateur
+                  Ce nom sera affiché sur la page de profil
                 </span>
               </label>
               <input
@@ -206,7 +204,7 @@ const GeneralInfoTab: React.FC<{
               <div className="flex gap-2 flex-col">
                 <textarea
                   className="textarea textarea-bordered h-20 w-full"
-                  placeholder="Qui etes-vous en quelques mots?"
+                  placeholder="Vous et votre art en quelques mots..."
                   value={formData.artistDescription || ""}
                   onChange={(e) =>
                     updateFormData("artistDescription", e.target.value)
@@ -310,6 +308,7 @@ const GeneralInfoTab: React.FC<{
                   </span>
                 </label>
                 <input
+                  name="yearsActive"
                   type="number"
                   className="input input-bordered w-full"
                   placeholder="Ex: 5"

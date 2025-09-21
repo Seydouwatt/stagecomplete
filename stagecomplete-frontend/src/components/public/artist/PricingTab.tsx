@@ -321,7 +321,7 @@ export const PricingTab: React.FC<PricingTabProps> = ({ artistProfile }) => {
         <div className="card bg-gradient-to-r from-primary to-secondary text-white">
           <div className="card-body">
             <h3 className="card-title justify-center text-xl mb-4">
-              Prêt à réserver {artistProfile.profile.displayName} ?
+              Prêt à réserver {artistProfile.profile.name} ?
             </h3>
             <p className="mb-6 opacity-90">
               Contactez-nous pour discuter de votre projet et obtenir un devis
