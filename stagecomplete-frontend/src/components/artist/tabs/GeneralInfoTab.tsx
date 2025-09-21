@@ -61,7 +61,11 @@ const INSTRUMENTS_OPTIONS = [
 const GeneralInfoTab: React.FC<{
   formData: UpdateArtistProfileData;
   updateFormData: (field: keyof UpdateArtistProfileData, value: any) => void;
-}> = ({ formData, updateFormData }) => {
+  profileName?: string;
+  updateProfileName?: (name: string) => void;
+}> = ({ formData, updateFormData, profileName, updateProfileName }) => {
+  console.log(formData, profileName);
+
   return (
     <div className="space-y-6 overflow-scroll h-[calc(100vh - 380px)] lg:h-[calc(100vh-335px)]">
       {/* ===== SECTION 1: IDENTITÉ =====  */}
@@ -86,8 +90,8 @@ const GeneralInfoTab: React.FC<{
                 type="text"
                 className="input input-bordered w-full"
                 placeholder="ex: Les Étoiles Filantes, DJ Martin, Théâtre du Soleil..."
-                value={formData.artistName || ""}
-                onChange={(e) => updateFormData("artistName", e.target.value)}
+                value={profileName || ""}
+                onChange={(e) => updateProfileName?.(e.target.value)}
                 maxLength={100}
               />
             </div>

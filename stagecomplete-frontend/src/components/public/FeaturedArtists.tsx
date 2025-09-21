@@ -77,7 +77,7 @@ export const FeaturedArtists: React.FC<FeaturedArtistsProps> = ({
   }
 
   return (
-    <section className={`${className}`}>
+    <section className={`${className}`} data-cy="featured-artists">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="text-3xl font-bold text-gray-900">Artistes mis en avant</h2>

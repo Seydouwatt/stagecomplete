@@ -34,6 +34,7 @@ export class AuthService {
    */
   async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
     const { email, password, name, role } = registerDto;
+    console.log(registerDto);
 
     try {
       // 1. Vérifier si l'utilisateur existe déjà
@@ -64,7 +65,7 @@ export class AuthService {
         const newProfile = await prisma.profile.create({
           data: {
             userId: newUser.id,
-            displayName: name,
+            name: name,
             // Initialiser selon le rôle
             bio:
               role === 'ARTIST'
@@ -136,7 +137,7 @@ export class AuthService {
           role: completeUser.role,
           profile: {
             id: completeUser.profile.id,
-            name: completeUser.profile.displayName || 'Utilisateur',
+            name: completeUser.profile.name || 'Utilisateur',
             bio: completeUser.profile.bio ?? undefined,
             avatar: completeUser.profile.avatar ?? undefined,
             location: completeUser.profile.location ?? undefined,
@@ -226,7 +227,7 @@ export class AuthService {
           role: user.role,
           profile: {
             id: user.profile.id,
-            name: user.profile.displayName || 'Utilisateur',
+            name: user.profile.name || 'Utilisateur',
             bio: user.profile.bio ?? undefined,
             avatar: user.profile.avatar ?? undefined,
             location: user.profile.location ?? undefined,
@@ -238,7 +239,7 @@ export class AuthService {
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         },
-        message: `Bienvenue ${user.profile.displayName} ! Connexion réussie.`,
+        message: `Bienvenue ${user.profile.name} ! Connexion réussie.`,
       };
     } catch (error) {
       // Gestion des erreurs spécifiques
@@ -590,7 +591,7 @@ export class AuthService {
           profile: {
             select: {
               id: true,
-              displayName: true,
+              name: true,
               avatar: true,
               createdAt: true,
               updatedAt: true,

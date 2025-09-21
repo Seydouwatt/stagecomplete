@@ -163,7 +163,7 @@ export const PublicArtistProfile: React.FC = () => {
 
   // Mise à jour des meta tags pour SEO
   const updateMetaTags = (profile: PublicArtistProfileType) => {
-    const artistName = artistProfile?.artistName || "Artiste";
+    const artistName = artistProfile?.profile?.name || "Artiste";
     document.title = `${artistName} - Artiste ${profile.genres.join(
       ", "
     )} | StageComplete`;
@@ -192,10 +192,7 @@ export const PublicArtistProfile: React.FC = () => {
   // Partage du profil
   const handleShare = async () => {
     const url = window.location.href;
-    const artistName =
-      (artistProfile?.profile as any)?.name ||
-      artistProfile?.profile.displayName ||
-      "Artiste";
+    const artistName = artistProfile?.profile?.name || "Artiste";
     const title = `${artistName} - Artiste sur StageComplete`;
 
     if (navigator.share) {
@@ -217,10 +214,7 @@ export const PublicArtistProfile: React.FC = () => {
   const handleContact = () => {
     if (artistProfile?.profile.user.id && user?.role === "VENUE") {
       const email = `contact@stagecomplete.com`; // TODO: email réel de l'artiste
-      const artistName =
-        (artistProfile.profile as any).name ||
-        artistProfile.profile.displayName ||
-        "Artiste";
+      const artistName = artistProfile?.profile?.name || "Artiste";
       const subject = `Demande de contact via StageComplete - ${artistName}`;
       const body = `Bonjour,\n\nJe suis intéressé(e) par vos services pour un événement.\n\nCordialement`;
 
@@ -305,7 +299,7 @@ export const PublicArtistProfile: React.FC = () => {
                       artistProfile.profile.avatar ||
                       "https://via.placeholder.com/96x96/1f2937/white?text=Artist"
                     }
-                    alt={artistProfile.artistName}
+                    alt={artistProfile.profile.name}
                   />
                 </div>
               </div>
@@ -313,7 +307,7 @@ export const PublicArtistProfile: React.FC = () => {
               {/* Infos principales */}
               <div className="flex-1 text-white">
                 <h1 className="text-3xl font-bold mb-2">
-                  {artistProfile.artistName || "Artiste"}
+                  {artistProfile.profile.name || "Artiste"}
                 </h1>
                 <div className="flex flex-wrap gap-4 text-white/90 text-sm">
                   <div className="flex items-center gap-1">

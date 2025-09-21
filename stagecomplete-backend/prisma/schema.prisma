@@ -34,7 +34,7 @@ model User {
 model Profile {
   id          String   @id @default(cuid())
   userId      String   @unique
-  displayName String?  // Nom d'affichage professionnel (optionnel)
+  name        String   // Nom d'affichage universel (source unique de vérité)
   bio         String?
   avatar      String?  // Base64 pour le début
   location    String?
@@ -53,8 +53,7 @@ model Artist {
   id              String   @id @default(cuid())
   profileId       String   @unique
 
-  // General information (identity)
-  artistName      String?     // Nom de l'artiste/groupe (différent du displayName)
+  // General information (identity) - artistName synchronisé avec Profile.name
   coverPhoto      String?     // Photo de couverture/bannière (base64)
   logo            String?     // Logo/image d'identité (base64)
   baseLocation    String?     // Ville/Pays de base (différent du location du profil)
@@ -106,10 +105,12 @@ model Artist {
 
 model ArtistMember {
   id          String   @id @default(cuid())
-  artistId    String   
-  
+  artistId    String
+
   // Personal Info
-  name        String                      // Nom du membre
+  artistName  String                      // Nom de scène du membre
+  firstName   String?                     // Prénom civil
+  lastName    String?                     // Nom civil
   role        String?                     // Rôle dans le groupe (chanteur, guitariste, etc)
   bio         String?                     // Bio personnelle du membre
   avatar      String?                     // Photo du membre (base64)

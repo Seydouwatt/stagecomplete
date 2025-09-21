@@ -82,7 +82,7 @@ export const PublicStats: React.FC<PublicStatsProps> = ({ className = "" }) => {
   }
 
   return (
-    <section className={`py-12 ${className}`}>
+    <section className={`py-12 ${className}`} data-cy="public-stats">
       <div className="text-center mb-12">
         <h2 className="text-3xl font-bold text-gray-900 mb-4">
           Une communauté grandissante

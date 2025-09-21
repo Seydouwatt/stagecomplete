@@ -14,6 +14,7 @@ import {
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
 import { artistService } from "../../services/artistService";
+import { authService } from "../../services/authService";
 import { toast } from "../../stores/useToastStore";
 import type {
   UpdateArtistProfileData,
@@ -25,7 +26,10 @@ import { ImageUpload } from "../../components/forms/ImageUpload";
 import { LoadingOverlay } from "../../components/ui/LoadingOverlay";
 import ArtisticProfileTab from "../../components/artist/tabs/ArtisticProfileTab";
 import GeneralInfoTab from "../../components/artist/tabs/GeneralInfoTab";
-import { PublicationWizard, type PublicationData } from "../../components/artist/PublicationWizard";
+import {
+  PublicationWizard,
+  type PublicationData,
+} from "../../components/artist/PublicationWizard";
 
 const PRICE_RANGE_OPTIONS = [
   "0-200",
@@ -51,11 +55,11 @@ export const ArtistProfileForm: React.FC = () => {
   const [_artistData, setArtistData] = useState<ArtistProfile | null>(null);
   const [, setGeneratedSlug] = useState("");
   const [showWizard, setShowWizard] = useState(false);
+  const [profileName, setProfileName] = useState("");
 
   // Form state
   const [formData, setFormData] = useState<UpdateArtistProfileData>({
-    // General information (identity)
-    artistName: "",
+    // General information (identity) - artistName géré séparément
     coverPhoto: "",
     logo: "",
     baseLocation: "",
@@ -92,9 +96,11 @@ export const ArtistProfileForm: React.FC = () => {
         // Pré-remplir le formulaire avec les données existantes
         const artist = profile;
         if (artist) {
+          // Initialiser le nom du profile
+          setProfileName(artist.profile?.name || "");
+
           setFormData({
-            // General information (identity)
-            artistName: artist.artistName,
+            // General information (identity) - artistName supprimé
             coverPhoto: artist.coverPhoto,
             logo: artist.logo,
             baseLocation: artist.baseLocation,
@@ -140,6 +146,13 @@ export const ArtistProfileForm: React.FC = () => {
   const handleSave = async () => {
     try {
       setIsSaving(true);
+
+      // Sauvegarder le nom du profil si modifié
+      if (profileName !== user?.profile?.name) {
+        await authService.updateProfile({ name: profileName });
+      }
+
+      // Sauvegarder le profil artiste
       const updatedProfile = await artistService.updateArtistProfile(formData);
       setArtistData(updatedProfile);
       toast.success("Profil sauvegardé avec succès !");
@@ -153,14 +166,14 @@ export const ArtistProfileForm: React.FC = () => {
 
   // Générer un slug
   const handleGenerateSlug = async () => {
-    if (!_artistData?.artistName) {
+    if (!profileName) {
       toast.error("Veuillez renseigner votre nom dans le profil");
       return;
     }
 
     try {
       const slug = await artistService.generateSlug(
-        _artistData.artistName.replace(/\s+/g, "-").toLowerCase()
+        profileName.replace(/\s+/g, "-").toLowerCase()
       );
       console.log(slug);
 
@@ -211,23 +224,29 @@ export const ArtistProfileForm: React.FC = () => {
         portfolio: {
           ...formData.portfolio,
           // Remplacer les photos par celles du wizard (qui représentent l'état final)
-          photos: data.portfolioPhotos
+          photos: data.portfolioPhotos,
         },
         socialLinks: {
           ...formData.socialLinks,
           // Merger les liens sociaux en prenant priorité sur ceux du wizard
-          ...data.socialLinks
+          ...data.socialLinks,
         },
         priceRange: data.priceRange,
-        isPublic: data.isPublic
+        isPublic: data.isPublic,
       };
 
-      const updatedProfile = await artistService.updateArtistProfile(updatedData);
+      const updatedProfile = await artistService.updateArtistProfile(
+        updatedData
+      );
       setArtistData(updatedProfile);
-      setFormData(prev => ({ ...prev, ...updatedData }));
+      setFormData((prev) => ({ ...prev, ...updatedData }));
 
       setShowWizard(false);
-      toast.success(data.isPublic ? "Profil publié avec succès !" : "Profil sauvegardé en brouillon !");
+      toast.success(
+        data.isPublic
+          ? "Profil publié avec succès !"
+          : "Profil sauvegardé en brouillon !"
+      );
 
       // Rediriger vers l'onglet public si publié
       if (data.isPublic) {
@@ -377,10 +396,15 @@ export const ArtistProfileForm: React.FC = () => {
       >
         <div className="card-body">
           {activeTab === "general" && (
-            <GeneralInfoTab
-              formData={formData}
-              updateFormData={updateFormData}
-            />
+            <>
+              <div>{profileName}</div>
+              <GeneralInfoTab
+                formData={formData}
+                updateFormData={updateFormData}
+                profileName={profileName}
+                updateProfileName={setProfileName}
+              />
+            </>
           )}
 
           {activeTab === "artistic" && (
@@ -439,7 +463,7 @@ export const ArtistProfileForm: React.FC = () => {
           demoVideo: "",
           priceRange: formData.priceRange,
           isPublic: formData.isPublic || false,
-          qualityScore: 0
+          qualityScore: 0,
         }}
       />
     </div>

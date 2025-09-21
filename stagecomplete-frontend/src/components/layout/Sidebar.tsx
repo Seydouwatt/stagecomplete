@@ -154,9 +154,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
               </span>
             </div>
             <div>
-              <p className="font-semibold text-sm">
-                {user?.profile?.displayName}
-              </p>
+              <p className="font-semibold text-sm">{user?.profile?.name}</p>
               <p className="text-xs text-base-content/60">
                 {user?.role === "ARTIST" ? "Artiste" : "Venue"}
               </p>
@@ -242,20 +240,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
       </nav>
 
       {/* Bottom user card */}
-      <div className="absolute bottom-4 left-4 right-4">
+      <div className=" bottom-4 left-4 right-4">
         <div className="card bg-base-100 shadow-sm">
           <div className="card-body p-4">
             <div className="flex items-center gap-3">
               <div className="avatar">
                 <div className="w-8 h-8 rounded-full bg-primary/20">
                   <span className="text-sm">
-                    {user?.profile?.displayName?.charAt(0) || "?"}
+                    {user?.profile?.name?.charAt(0) || "?"}
                   </span>
                 </div>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">
-                  {user?.profile?.displayName}
+                  {user?.profile?.name}
                 </p>
                 <p className="text-xs text-base-content/60">Plan Premium</p>
               </div>

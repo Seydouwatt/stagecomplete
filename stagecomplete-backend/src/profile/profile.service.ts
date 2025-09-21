@@ -96,7 +96,7 @@ export class ProfileService {
 
     const profile = user.profile;
     const fields = {
-      name: profile.displayName,
+      name: profile.name,
       bio: profile.bio,
       avatar: profile.avatar,
       phone: null, // phone sera dans User.phone

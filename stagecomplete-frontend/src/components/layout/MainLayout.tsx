@@ -12,12 +12,12 @@ export const MainLayout: React.FC = () => {
   const closeSidebar = () => setIsSidebarOpen(false);
 
   return (
-    <div className="min-h-screen bg-base-100">
-      {/* Header */}
+    <div className="h-screen bg-base-100 flex flex-col overflow-hidden">
+      {/* Header - Fixed at top */}
       <Header onToggleSidebar={toggleSidebar} />
 
-      <div className="flex">
-        {/* Sidebar */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar - Fixed on left */}
         <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
         {/* Mobile overlay */}
@@ -31,9 +31,9 @@ export const MainLayout: React.FC = () => {
           />
         )}
 
-        {/* Main content */}
-        <main className="flex-1 ">
-          <div className="">
+        {/* Main content - Scrollable area */}
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

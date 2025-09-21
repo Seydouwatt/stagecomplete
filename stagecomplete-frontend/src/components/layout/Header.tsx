@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
   };
 
   const userAvatar = user?.profile?.avatar || null;
-  const userName = user?.profile?.displayName || "Utilisateur";
+  const userName = user?.profile?.name || "Utilisateur";
   const userRole = user?.role || "USER";
 
   const roleConfig = {

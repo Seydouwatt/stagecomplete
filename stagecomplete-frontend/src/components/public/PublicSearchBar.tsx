@@ -170,7 +170,7 @@ export const PublicSearchBar: React.FC<PublicSearchBarProps> = ({
   };
 
   return (
-    <div ref={searchRef} className={`relative ${className}`}>
+    <div ref={searchRef} className={`relative ${className}`} data-cy="public-search-bar">
       <div className={`flex bg-white rounded-full shadow-lg border border-gray-200 hover:shadow-xl transition-shadow ${sizeClasses[size]}`}>
         {/* Champ de recherche principal */}
         <div className="flex-1 relative">

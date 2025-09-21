@@ -188,7 +188,7 @@ export const Register: React.FC = () => {
 
               {/* Name */}
               <Input
-                data-cy="register-name"
+                data-cy="name"
                 label="Nom complet"
                 type="text"
                 placeholder="Votre nom ou nom de venue"

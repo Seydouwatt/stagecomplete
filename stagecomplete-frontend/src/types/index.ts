@@ -2,7 +2,9 @@
 export interface ArtistMember {
   id: string;
   artistId: string;
-  name: string;
+  artistName: string; // Nom de scène du membre
+  firstName?: string; // Prénom civil
+  lastName?: string;  // Nom civil
   role?: string;
   bio?: string;
   avatar?: string;
@@ -41,7 +43,7 @@ export interface User {
 
 export interface Profile {
   id: string;
-  displayName?: string;
+  name: string; // Nom d'affichage universel (source unique de vérité)
   bio?: string;
   avatar?: string;
   location?: string;
@@ -77,7 +79,7 @@ export interface RegisterData {
 }
 
 export interface UpdateProfileData {
-  displayName?: string;
+  name?: string; // Nom d'affichage universel
   bio?: string;
   avatar?: string;
   location?: string;
@@ -192,8 +194,7 @@ export interface ArtistProfile {
   id: string;
   profileId: string;
 
-  // General information (identity)
-  artistName?: string;
+  // General information (identity) - artistName synchronisé avec Profile.name
   coverPhoto?: string;
   logo?: string;
   baseLocation?: string;
@@ -244,8 +245,7 @@ export interface ExtendedUser extends User {
 }
 
 export interface UpdateArtistProfileData {
-  // General information (identity)
-  artistName?: string;
+  // General information (identity) - artistName géré via Profile.name
   coverPhoto?: string;
   logo?: string;
   baseLocation?: string;
