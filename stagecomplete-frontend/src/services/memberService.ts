@@ -28,8 +28,8 @@ api.interceptors.request.use((config) => {
 
 export interface CreateArtistMemberDto {
   artistName?: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   role?: string;
   bio?: string;
   avatar?: string;
@@ -127,22 +127,24 @@ class MemberService {
   ): string[] {
     const errors: string[] = [];
 
-    // Validation du nom (obligatoire pour création)
-    if (
-      "memberName" in memberData &&
-      (!memberData.memberName || memberData.memberName.trim().length === 0)
-    ) {
-      errors.push("Le nom du membre est obligatoire");
+    // Validation du nom de l'artiste (obligatoire)
+    if (!memberData.artistName || memberData.artistName.trim().length === 0) {
+      errors.push("Le nom de l'artiste est obligatoire");
     }
 
-    if (
-      "memberName" in memberData &&
-      memberData.memberName &&
-      memberData.memberName.length > 100
-    ) {
-      errors.push("Le nom du membre ne peut pas dépasser 100 caractères");
+    // Validation du prenom (obligatoire)
+    if (!memberData.firstName || memberData.firstName.trim().length === 0) {
+      errors.push("Le prénom est obligatoire");
+    } else if (memberData.firstName.length > 100) {
+      errors.push("Le prénom ne peut pas dépasser 100 caractères");
     }
 
+    // Validation du nom de famille (obligatoire)
+    if (!memberData.lastName || memberData.lastName.trim().length === 0) {
+      errors.push("Le nom de famille est obligatoire");
+    } else if (memberData.lastName.length > 100) {
+      errors.push("Le nom de famille ne peut pas dépasser 100 caractères");
+    }
     // Validation du rôle
     if (memberData.role && memberData.role.length > 100) {
       errors.push("Le rôle ne peut pas dépasser 100 caractères");
@@ -202,7 +204,7 @@ class MemberService {
   formatMemberForDisplay(member: ArtistMember) {
     return {
       ...member,
-      displayName: member.memberName,
+      displayName: member.artistName,
       displayRole: member.role || "Membre",
       experienceLabel: this.getExperienceLabel(member.experience),
       joinDateFormatted: member.joinDate
@@ -242,7 +244,9 @@ class MemberService {
     artistEmail?: string
   ): CreateArtistMemberDto {
     return {
-      memberName: artistName,
+      artistName: artistName?.trim() || "",
+      firstName: artistName?.trim() || "",
+      lastName: artistName?.trim() || "",
       role: "Artiste principal",
       isFounder: true,
       isActive: true,

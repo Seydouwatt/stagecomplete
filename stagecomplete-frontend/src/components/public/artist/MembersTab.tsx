@@ -133,17 +133,17 @@ export const MembersTab: React.FC<MembersTabProps> = ({ artistProfile }) => {
                     <img
                       src={
                         member.avatar ||
-                        `https://via.placeholder.com/64x64/1f2937/white?text=${member.memberName.charAt(
+                        `https://via.placeholder.com/64x64/1f2937/white?text=${member.artistName.charAt(
                           0
                         )}`
                       }
-                      alt={member.memberName}
+                      alt={member.artistName}
                     />
                   </div>
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-bold text-lg">{member.memberName}</h3>
+                    <h3 className="font-bold text-lg">{member.artistName}</h3>
                     {member.isFounder && (
                       <div className="badge badge-warning badge-sm gap-1">
                         <Star className="w-3 h-3" />
