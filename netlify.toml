@@ -1,9 +1,6 @@
 [build]
-  # Répertoire où se trouvent les fichiers sources
-  base = "stagecomplete-frontend"
-
-  # Commande de build
-  command = "npm run build"
+  # Commande de build (navigation explicite vers le frontend)
+  command = "cd stagecomplete-frontend && npm ci && npm run build"
 
   # Répertoire de sortie après build
   publish = "stagecomplete-frontend/dist"
