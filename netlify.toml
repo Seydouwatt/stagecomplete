@@ -1,0 +1,44 @@
+[build]
+  # Répertoire où se trouvent les fichiers sources
+  base = "stagecomplete-frontend"
+
+  # Commande de build
+  command = "npm run build"
+
+  # Répertoire de sortie après build
+  publish = "stagecomplete-frontend/dist"
+
+# Configuration pour SPA (Single Page Application)
+# Exclure les assets de la redirection SPA
+[[redirects]]
+  from = "/assets/*"
+  to = "/assets/:splat"
+  status = 200
+
+# Redirection SPA pour toutes les autres routes
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers pour optimiser les performances
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Variables d'environnement pour la production
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_FLAGS = "--legacy-peer-deps"
+  GENERATE_SOURCEMAP = "false"
