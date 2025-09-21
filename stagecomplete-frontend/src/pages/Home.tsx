@@ -27,7 +27,7 @@ const Home: React.FC = () => {
       <section className="relative min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-[url('/api/placeholder/100/100')] bg-repeat opacity-20"></div>
+          <div className="absolute inset-0 bg-[url('https://picsum.photos/100/100')] bg-repeat opacity-20"></div>
         </div>
 
         <div className="relative container mx-auto px-4 py-20">
