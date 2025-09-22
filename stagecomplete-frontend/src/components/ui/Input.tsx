@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 import { clsx } from "clsx";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -11,7 +11,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, isPassword, icon, className, ...props }, ref) => {
-    const [showPassword, setShowPassword] = React.useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const inputType = isPassword
       ? showPassword

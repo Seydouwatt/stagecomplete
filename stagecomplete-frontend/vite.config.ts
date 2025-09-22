@@ -24,20 +24,17 @@ export default defineConfig({
     chunkSizeWarningLimit: 1600,
     rollupOptions: {
       output: {
-        // Division intelligente des chunks
+        // Division sécurisée des chunks
         manualChunks: (id) => {
           // Vendor chunks pour les librairies tierces
           if (id.includes('node_modules')) {
-            // React ecosystem
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+            // React ecosystem - GARDÉ ENSEMBLE pour éviter les conflits forwardRef
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router') ||
+                id.includes('framer-motion') || id.includes('@heroicons') || id.includes('lucide-react')) {
               return 'react-vendor';
             }
-            // UI libraries
-            if (id.includes('framer-motion') || id.includes('@heroicons') || id.includes('lucide-react')) {
-              return 'ui-vendor';
-            }
-            // Autres librairies
-            if (id.includes('zustand') || id.includes('axios')) {
+            // Utilities indépendantes de React
+            if (id.includes('zustand') || id.includes('axios') || id.includes('date-fns') || id.includes('clsx')) {
               return 'utils-vendor';
             }
             // Toutes les autres dépendances
