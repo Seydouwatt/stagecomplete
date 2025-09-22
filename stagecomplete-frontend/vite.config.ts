@@ -20,41 +20,10 @@ export default defineConfig({
     },
   },
   build: {
-    // Augmente la limite avant warning (temporaire)
-    chunkSizeWarningLimit: 1600,
+    // Désactive le découpage en chunks pour éviter les problèmes de production
     rollupOptions: {
       output: {
-        // Division sécurisée des chunks
-        manualChunks: (id) => {
-          // Vendor chunks pour les librairies tierces
-          if (id.includes('node_modules')) {
-            // React ecosystem - GARDÉ ENSEMBLE pour éviter les conflits forwardRef
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router') ||
-                id.includes('framer-motion') || id.includes('@heroicons') || id.includes('lucide-react')) {
-              return 'react-vendor';
-            }
-            // Utilities indépendantes de React
-            if (id.includes('zustand') || id.includes('axios') || id.includes('date-fns') || id.includes('clsx')) {
-              return 'utils-vendor';
-            }
-            // Toutes les autres dépendances
-            return 'vendor';
-          }
-
-          // Feature chunks basés sur les chemins
-          if (id.includes('/pages/artist/') || id.includes('/components/artist/')) {
-            return 'artist-features';
-          }
-          if (id.includes('/pages/public/') || id.includes('/components/public/')) {
-            return 'public-features';
-          }
-          if (id.includes('/pages/auth/') || id.includes('/components/auth/')) {
-            return 'auth-features';
-          }
-          if (id.includes('/pages/dashboard/')) {
-            return 'dashboard-features';
-          }
-        }
+        manualChunks: undefined
       }
     }
   }
