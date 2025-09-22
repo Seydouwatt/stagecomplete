@@ -8,6 +8,12 @@ Given('there is a published artist with slug {string}', (slug) => {
   }).as('getPublicProfile');
 });
 
+Given('there are published artist profiles available', () => {
+  cy.intercept('GET', '**/api/public/artist/**', {
+    fixture: 'public-artist-profile.json'
+  }).as('getPublicProfile');
+});
+
 When('I visit {string}', (url) => {
   cy.visit(url);
 });
@@ -277,9 +283,7 @@ Then('loading should be fast on 3G connections', () => {
   cy.get('[data-cy="public-artist-profile"]').should('be.visible');
 });
 
-Given('I visit {string}', (url) => {
-  cy.visit(url, { failOnStatusCode: false });
-});
+// Removed duplicate - using the When('I visit {string}') definition above
 
 Then('I should see a 404 error page', () => {
   cy.get('[data-cy="404-page"]').should('be.visible');

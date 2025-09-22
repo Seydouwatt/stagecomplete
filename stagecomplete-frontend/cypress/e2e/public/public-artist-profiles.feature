@@ -87,7 +87,6 @@ Feature: Public Artist Profiles
     Given there is an artist with a private profile
     When I try to visit their public URL
     Then I should see a "Profile not available" message
-    Or I should be redirected to the public directory
     And the artist should not appear in public searches
 
   Scenario: Profile view analytics (artist perspective)

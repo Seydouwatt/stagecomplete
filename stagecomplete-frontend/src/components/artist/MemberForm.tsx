@@ -263,260 +263,269 @@ export const MemberForm: React.FC<MemberFormProps> = ({
             </div>
           )}
 
-          {/* Photo de profil */}
-          <div className="flex justify-center h-[300px]">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  Photo de profil
-                </span>
-              </label>
-              <ImageUpload
-                label="Photo de profil"
-                value={formData.avatar ? [formData.avatar] : []}
-                onChange={(images) => updateFormData("avatar", images[0] || "")}
-                maxImages={1}
-                className=""
-              />
-            </div>
-          </div>
-
-          {/* Informations de base */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Nom de Scene</span>
-              </label>
-              <input
-                type="text"
-                name="artistName"
-                className="input input-bordered w-full"
-                value={formData.artistName}
-                onChange={(e) => updateFormData("artistName", e.target.value)}
-                placeholder="Nom de Scene"
-                required
-              />
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Prenom Civil *</span>
-              </label>
-              <input
-                type="text"
-                name="firstName"
-                className="input input-bordered w-full"
-                value={formData.firstName}
-                onChange={(e) => updateFormData("firstName", e.target.value)}
-                placeholder="Prenom Civil"
-                required
-              />
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Nom de Famille *</span>
-              </label>
-              <input
-                type="text"
-                name="lastName"
-                className="input input-bordered w-full"
-                value={formData.lastName}
-                onChange={(e) => updateFormData("lastName", e.target.value)}
-                placeholder="Nom de Famille"
-                required
-              />
+          <div className="h-[60vh] overflow-y-auto">
+            {/* Photo de profil */}
+            <div className="flex justify-center h-[300px]">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Photo de profil
+                  </span>
+                </label>
+                <ImageUpload
+                  label="Photo de profil"
+                  value={formData.avatar ? [formData.avatar] : []}
+                  onChange={(images) =>
+                    updateFormData("avatar", images[0] || "")
+                  }
+                  maxImages={1}
+                  className=""
+                />
+              </div>
             </div>
 
+            {/* Informations de base */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">Nom de Scene</span>
+                </label>
+                <input
+                  type="text"
+                  name="artistName"
+                  className="input input-bordered w-full"
+                  value={formData.artistName}
+                  onChange={(e) => updateFormData("artistName", e.target.value)}
+                  placeholder="Nom de Scene"
+                />
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">Prenom Civil *</span>
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  className="input input-bordered w-full"
+                  value={formData.firstName}
+                  onChange={(e) => updateFormData("firstName", e.target.value)}
+                  placeholder="Prenom Civil"
+                />
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">
+                    Nom de Famille *
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  name="lastName"
+                  className="input input-bordered w-full"
+                  value={formData.lastName}
+                  onChange={(e) => updateFormData("lastName", e.target.value)}
+                  placeholder="Nom de Famille"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">
+                    Rôle dans le groupe
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  name="role"
+                  className="input input-bordered w-full"
+                  value={formData.role || ""}
+                  onChange={(e) => updateFormData("role", e.target.value)}
+                  placeholder={
+                    isSoloArtist
+                      ? "Artiste principal"
+                      : "Ex: Guitariste, Chanteur..."
+                  }
+                />
+              </div>
+            </div>
+
+            {/* Bio */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-medium">
-                  Rôle dans le groupe
+                  Bio / Présentation
                 </span>
               </label>
-              <input
-                type="text"
-                name="role"
-                className="input input-bordered w-full"
-                value={formData.role || ""}
-                onChange={(e) => updateFormData("role", e.target.value)}
-                placeholder={
-                  isSoloArtist
-                    ? "Artiste principal"
-                    : "Ex: Guitariste, Chanteur..."
+              <textarea
+                name="bio"
+                className="textarea textarea-bordered w-full h-24"
+                value={formData.bio || ""}
+                onChange={(e) => updateFormData("bio", e.target.value)}
+                placeholder="Présentez-vous en quelques lignes..."
+                maxLength={1000}
+              />
+              <label className="label">
+                <span className="label-text-alt text-base-content/50">
+                  {(formData.bio || "").length}/1000 caractères
+                </span>
+              </label>
+            </div>
+
+            {/* Contact */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium flex items-center gap-2">
+                    <Mail className="w-4 h-4" />
+                    Email
+                  </span>
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  className="input input-bordered w-full"
+                  value={formData.email || ""}
+                  onChange={(e) => updateFormData("email", e.target.value)}
+                  placeholder="email@exemple.com"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium flex items-center gap-2">
+                    <Phone className="w-4 h-4" />
+                    Téléphone
+                  </span>
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  className="input input-bordered w-full"
+                  value={formData.phone || ""}
+                  onChange={(e) => updateFormData("phone", e.target.value)}
+                  placeholder="+33 1 23 45 67 89"
+                />
+              </div>
+            </div>
+
+            {/* Instruments */}
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-medium flex items-center gap-2">
+                  <Music className="w-4 h-4" />
+                  Instruments
+                </span>
+              </label>
+              <MultiSelect
+                label="Instruments"
+                options={COMMON_INSTRUMENTS}
+                value={formData.instruments || []}
+                onChange={(instruments) =>
+                  updateFormData("instruments", instruments)
                 }
+                placeholder="Sélectionnez vos instruments"
+                allowCustom={true}
+                maxSelections={10}
               />
             </div>
-          </div>
 
-          {/* Bio */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-medium">Bio / Présentation</span>
-            </label>
-            <textarea
-              name="bio"
-              className="textarea textarea-bordered w-full h-24"
-              value={formData.bio || ""}
-              onChange={(e) => updateFormData("bio", e.target.value)}
-              placeholder="Présentez-vous en quelques lignes..."
-              maxLength={1000}
-            />
-            <label className="label">
-              <span className="label-text-alt text-base-content/50">
-                {(formData.bio || "").length}/1000 caractères
-              </span>
-            </label>
-          </div>
+            {/* Expérience */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">
+                    Niveau d'expérience
+                  </span>
+                </label>
+                <select
+                  className="select select-bordered w-full"
+                  value={formData.experience || ""}
+                  onChange={(e) => updateFormData("experience", e.target.value)}
+                >
+                  {EXPERIENCE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          {/* Contact */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-medium">
+                    Années d'expérience
+                  </span>
+                </label>
+                <input
+                  type="number"
+                  className="input input-bordered w-full"
+                  value={formData.yearsActive || ""}
+                  onChange={(e) =>
+                    updateFormData(
+                      "yearsActive",
+                      e.target.value ? parseInt(e.target.value) : undefined
+                    )
+                  }
+                  placeholder="Ex: 5"
+                  min="0"
+                  max="80"
+                />
+              </div>
+            </div>
+
+            {/* Liens sociaux */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-medium flex items-center gap-2">
-                  <Mail className="w-4 h-4" />
-                  Email
+                  <Link className="w-4 h-4" />
+                  Réseaux sociaux
                 </span>
               </label>
-              <input
-                type="email"
-                name="email"
-                className="input input-bordered w-full"
-                value={formData.email || ""}
-                onChange={(e) => updateFormData("email", e.target.value)}
-                placeholder="email@exemple.com"
-              />
-            </div>
-
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium flex items-center gap-2">
-                  <Phone className="w-4 h-4" />
-                  Téléphone
-                </span>
-              </label>
-              <input
-                type="tel"
-                name="phone"
-                className="input input-bordered w-full"
-                value={formData.phone || ""}
-                onChange={(e) => updateFormData("phone", e.target.value)}
-                placeholder="+33 1 23 45 67 89"
-              />
-            </div>
-          </div>
-
-          {/* Instruments */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-medium flex items-center gap-2">
-                <Music className="w-4 h-4" />
-                Instruments
-              </span>
-            </label>
-            <MultiSelect
-              label="Instruments"
-              options={COMMON_INSTRUMENTS}
-              value={formData.instruments || []}
-              onChange={(instruments) =>
-                updateFormData("instruments", instruments)
-              }
-              placeholder="Sélectionnez vos instruments"
-              allowCustom={true}
-              maxSelections={10}
-            />
-          </div>
-
-          {/* Expérience */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  Niveau d'expérience
-                </span>
-              </label>
-              <select
-                className="select select-bordered w-full"
-                value={formData.experience || ""}
-                onChange={(e) => updateFormData("experience", e.target.value)}
-              >
-                {EXPERIENCE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {Object.entries({
+                  instagram: "Instagram",
+                  facebook: "Facebook",
+                  twitter: "Twitter",
+                  youtube: "YouTube",
+                }).map(([platform, label]) => (
+                  <div key={platform}>
+                    <input
+                      type="url"
+                      className="input input-bordered input-sm w-full"
+                      value={formData.socialLinks?.[platform] || ""}
+                      onChange={(e) =>
+                        updateSocialLink(platform, e.target.value)
+                      }
+                      placeholder={`https://${platform}.com/...`}
+                    />
+                    <label className="label">
+                      <span className="label-text-alt">{label}</span>
+                    </label>
+                  </div>
                 ))}
-              </select>
+              </div>
             </div>
 
+            {/* Options avancées */}
             <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">
-                  Années d'expérience
+              <label className="label cursor-pointer justify-start gap-3">
+                <input
+                  type="checkbox"
+                  name="isFounder"
+                  className="checkbox checkbox-primary"
+                  checked={formData.isFounder || false}
+                  onChange={(e) =>
+                    updateFormData("isFounder", e.target.checked)
+                  }
+                  disabled={isSoloArtist} // Pour un artiste solo, toujours fondateur
+                />
+                <span className="label-text flex items-center gap-2">
+                  <Crown className="w-4 h-4 text-warning" />
+                  Membre fondateur du groupe
                 </span>
               </label>
-              <input
-                type="number"
-                className="input input-bordered w-full"
-                value={formData.yearsActive || ""}
-                onChange={(e) =>
-                  updateFormData(
-                    "yearsActive",
-                    e.target.value ? parseInt(e.target.value) : undefined
-                  )
-                }
-                placeholder="Ex: 5"
-                min="0"
-                max="80"
-              />
             </div>
-          </div>
-
-          {/* Liens sociaux */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-medium flex items-center gap-2">
-                <Link className="w-4 h-4" />
-                Réseaux sociaux
-              </span>
-            </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {Object.entries({
-                instagram: "Instagram",
-                facebook: "Facebook",
-                twitter: "Twitter",
-                youtube: "YouTube",
-              }).map(([platform, label]) => (
-                <div key={platform}>
-                  <input
-                    type="url"
-                    className="input input-bordered input-sm w-full"
-                    value={formData.socialLinks?.[platform] || ""}
-                    onChange={(e) => updateSocialLink(platform, e.target.value)}
-                    placeholder={`https://${platform}.com/...`}
-                  />
-                  <label className="label">
-                    <span className="label-text-alt">{label}</span>
-                  </label>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Options avancées */}
-          <div className="form-control">
-            <label className="label cursor-pointer justify-start gap-3">
-              <input
-                type="checkbox"
-                name="isFounder"
-                className="checkbox checkbox-primary"
-                checked={formData.isFounder || false}
-                onChange={(e) => updateFormData("isFounder", e.target.checked)}
-                disabled={isSoloArtist} // Pour un artiste solo, toujours fondateur
-              />
-              <span className="label-text flex items-center gap-2">
-                <Crown className="w-4 h-4 text-warning" />
-                Membre fondateur du groupe
-              </span>
-            </label>
           </div>
 
           {/* Actions */}

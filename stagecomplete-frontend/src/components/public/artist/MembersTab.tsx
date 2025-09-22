@@ -83,7 +83,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({ artistProfile }) => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-cy="members-section">
       {/* Introduction du groupe */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

@@ -176,9 +176,38 @@ Cypress.Commands.add('createCompleteArtistProfile', () => {
   cy.visit('/artist/portfolio');
   cy.contains('Mon Profil Artiste').should('be.visible');
 
-  // Vérifier que le profil a des données (genres sélectionnés)
-  cy.get('body').should('contain', 'Pop');
-  cy.get('body').should('contain', 'Rock');
+  // Remplir les informations générales
+  cy.fillArtistGeneralInfo({
+    stageName: 'The Testers',
+    bio: 'We are a test band for Cypress E2E testing.',
+    location: 'Test City, Test Country',
+    website: 'https://thetesters.com'
+  });
+  
+  // Passer à l'onglet membres et ajouter un membre
+  cy.switchToTab('members');
+  cy.selectArtistType('BAND');
+  cy.addMember({
+    name: 'Alice',
+    role: 'Vocalist',
+    email: 'alice@test.com',
+    instruments: ['Vocals']
+  });
+  cy.addMember({
+    name: 'Bob',
+    role: 'Guitarist',
+    email: 'bob@test.com',
+    instruments: ['Guitare']
+  });
+  
+  // Passer à l'onglet tarifs et remplir les informations
+  cy.switchToTab('pricing');
+  cy.get('input[name="minimum_rate"]').type('100');
+  cy.get('input[name="maximum_rate"]').type('500');
+  cy.get('textarea[name="conditions"]').type('Travel expenses not included');
+  
+  // Passer à l'onglet public et remplir les informations
+  cy.switchToTab('public');
 });
 
 /**

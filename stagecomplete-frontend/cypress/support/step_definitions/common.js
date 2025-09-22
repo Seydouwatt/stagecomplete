@@ -150,6 +150,11 @@ When('I click on {string}', (buttonText) => {
   });
 });
 
+When('I select the number of members {string}', (count) => {
+  cy.get('input[name="memberCount"]').clear().type(count);
+  // cy.get('input[name="memberCount"]').type(count);
+});
+
 When('I enter {string} as {word}', (value, fieldName) => {
   const fieldMap = {
     'email': 'input[name="email"]',
@@ -560,7 +565,7 @@ When('I add a member with:', (dataTable) => {
   });
 });
 
-Then('I should see {int} members in the list', (count) => {
+Then('I should see {int} member in the list', (count) => {
   cy.get('[data-testid="member-list"] .member-item').should('have.length', count);
 });
 
@@ -569,11 +574,11 @@ Given('I have a band profile with {int} members', (memberCount) => {
 });
 
 When('I click on {string} for the first member', (action) => {
-  cy.get('[data-testid="member-list"] .member-item').first().find(`[data-testid="${action.toLowerCase()}-btn"]`).click();
+  cy.get('[data-testid="member-list"] .member-item').first().find(`[data-testid="${action.toLowerCase()}-member-btn"]`).click();
 });
 
 When('I click on {string} for the second member', (action) => {
-  cy.get('[data-testid="member-list"] .member-item').eq(1).find(`[data-testid="${action.toLowerCase()}-btn"]`).click();
+  cy.get('[data-testid="member-list"] .member-item').eq(1).find(`[data-testid="${action.toLowerCase()}-member-btn"]`).click();
 });
 
 When('I change the role to {string}', (newRole) => {
@@ -593,7 +598,7 @@ Then('the member should display {string} as role', (role) => {
 });
 
 When('I leave the name empty', () => {
-  cy.get('input[name="name"]').clear();
+  cy.get('.modal input[name="artistName"]').clear();
 });
 
 When('I enter an invalid email {string}', (invalidEmail) => {
@@ -606,12 +611,12 @@ Then('I should see the validation errors:', (dataTable) => {
   });
 });
 
-When('I fill the pricing with:', (dataTable) => {
-  const data = dataTable.rowsHash();
-  Object.keys(data).forEach(field => {
-    cy.get(`input[name="${field}"], textarea[name="${field}"]`).clear().type(data[field]);
-  });
-});
+// When('I fill the pricing with:', (dataTable) => {
+//   const data = dataTable.rowsHash();
+//   Object.keys(data).forEach(field => {
+//     cy.get(`input[name="${field}"], textarea[name="${field}"]`).clear().type(data[field]);
+//   });
+// });
 
 Given('I have completed my artist profile', () => {
   cy.createCompleteArtistProfile();

@@ -106,7 +106,7 @@ ${contactForm.contactName}`;
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-cy="contact-section">
       {/* Avertissement accès restreint */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   UserIcon,
   MusicalNoteIcon,
@@ -8,10 +8,11 @@ import {
   ArrowRightIcon,
   CheckIcon,
   ExclamationTriangleIcon,
-} from '@heroicons/react/24/outline';
-import { MultiSelect } from '../forms/MultiSelect';
-import { ImageUpload } from '../forms/ImageUpload';
-import type { ArtistType, ArtistDiscipline } from '../../types';
+} from "@heroicons/react/24/outline";
+import { MultiSelect } from "../forms/MultiSelect";
+import { ImageUpload } from "../forms/ImageUpload";
+import type { ArtistType, ArtistDiscipline } from "../../types";
+import PublicOverview from "./PublicOverview";
 
 interface PublicationWizardProps {
   isOpen: boolean;
@@ -57,35 +58,55 @@ const ARTIST_TYPE_OPTIONS: { value: ArtistType; label: string }[] = [
   { value: "OTHER", label: "Autre" },
 ];
 
-const ARTIST_DISCIPLINE_OPTIONS: { value: ArtistDiscipline; label: string }[] = [
-  { value: "MUSIC", label: "Musique" },
-  { value: "THEATER", label: "Théâtre" },
-  { value: "ACTOR", label: "Acting" },
-  { value: "COMEDIENNE", label: "Comédie/Humour" },
-  { value: "COMEDIE", label: "Stand-up" },
-  { value: "DANCE", label: "Danse" },
-  { value: "CIRCUS", label: "Cirque" },
-  { value: "MAGIE", label: "Magie" },
-  { value: "OTHER", label: "Autre" },
-];
+const ARTIST_DISCIPLINE_OPTIONS: { value: ArtistDiscipline; label: string }[] =
+  [
+    { value: "MUSIC", label: "Musique" },
+    { value: "THEATER", label: "Théâtre" },
+    { value: "ACTOR", label: "Acting" },
+    { value: "COMEDIENNE", label: "Comédie/Humour" },
+    { value: "COMEDIE", label: "Stand-up" },
+    { value: "DANCE", label: "Danse" },
+    { value: "CIRCUS", label: "Cirque" },
+    { value: "MAGIE", label: "Magie" },
+    { value: "OTHER", label: "Autre" },
+  ];
 
 const MUSIC_GENRES = [
-  "Rock", "Pop", "Jazz", "Blues", "Funk", "Soul", "R&B",
-  "Hip-Hop", "Rap", "Reggae", "Folk", "Country", "Classical",
-  "Electronic", "House", "Techno", "Ambient", "Indie",
-  "Alternative", "Metal", "Punk", "Reggaeton", "Latino",
-  "World Music", "French Song", "Chanson"
+  "Rock",
+  "Pop",
+  "Jazz",
+  "Blues",
+  "Funk",
+  "Soul",
+  "R&B",
+  "Hip-Hop",
+  "Rap",
+  "Reggae",
+  "Folk",
+  "Country",
+  "Classical",
+  "Electronic",
+  "House",
+  "Techno",
+  "Ambient",
+  "Indie",
+  "Alternative",
+  "Metal",
+  "Punk",
+  "Reggaeton",
+  "Latino",
+  "World Music",
+  "French Song",
+  "Chanson",
 ];
 
-const PRICE_RANGES = [
-  "0-200", "200-500", "500-1000", "1000-2000", "2000+"
-];
+const PRICE_RANGES = ["0-200", "200-500", "500-1000", "1000-2000", "2000+"];
 
 export const PublicationWizard: React.FC<PublicationWizardProps> = ({
   isOpen,
   onClose,
   onComplete,
-  initialData
+  initialData,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<PublicationData>({
@@ -100,7 +121,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
     socialLinks: {},
     isPublic: false,
     qualityScore: 0,
-    ...initialData
+    ...initialData,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -108,8 +129,18 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
   // Calculer le score de qualité en temps réel
   useEffect(() => {
     const score = calculateQualityScore(formData);
-    setFormData(prev => ({ ...prev, qualityScore: score }));
-  }, [formData.artistName, formData.artistDescription, formData.genres, formData.baseLocation, formData.mainPhoto, formData.portfolioPhotos, formData.socialLinks, formData.demoVideo, formData.priceRange]);
+    setFormData((prev) => ({ ...prev, qualityScore: score }));
+  }, [
+    formData.artistName,
+    formData.artistDescription,
+    formData.genres,
+    formData.baseLocation,
+    formData.mainPhoto,
+    formData.portfolioPhotos,
+    formData.socialLinks,
+    formData.demoVideo,
+    formData.priceRange,
+  ]);
 
   const calculateQualityScore = (data: PublicationData): number => {
     let score = 0;
@@ -118,7 +149,8 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
     if (data.mainPhoto) score += 20;
 
     // Bio complète (15%)
-    if (data.artistDescription && data.artistDescription.length >= 50) score += 15;
+    if (data.artistDescription && data.artistDescription.length >= 50)
+      score += 15;
 
     // 3+ genres (10%)
     if (data.genres.length >= 3) score += 10;
@@ -128,7 +160,9 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
     if (data.baseLocation) score += 10;
 
     // Liens sociaux (15%)
-    const socialLinksCount = Object.values(data.socialLinks).filter(link => link && link.trim()).length;
+    const socialLinksCount = Object.values(data.socialLinks).filter(
+      (link) => link && link.trim()
+    ).length;
     if (socialLinksCount >= 2) score += 15;
     else if (socialLinksCount >= 1) score += 8;
 
@@ -146,20 +180,20 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
   };
 
   const updateFormData = (field: keyof PublicationData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Effacer l'erreur si le champ est maintenant valide
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
   const updateSocialLinks = (platform: string, url: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       socialLinks: {
         ...prev.socialLinks,
-        [platform]: url
-      }
+        [platform]: url,
+      },
     }));
   };
 
@@ -173,7 +207,8 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
       if (!formData.artistDescription.trim()) {
         newErrors.artistDescription = "La description est requise";
       } else if (formData.artistDescription.length < 20) {
-        newErrors.artistDescription = "La description doit faire au moins 20 caractères";
+        newErrors.artistDescription =
+          "La description doit faire au moins 20 caractères";
       }
       if (formData.genres.length === 0) {
         newErrors.genres = "Sélectionnez au moins un genre";
@@ -192,12 +227,12 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
 
   const nextStep = () => {
     if (validateStep(currentStep)) {
-      setCurrentStep(prev => Math.min(3, prev + 1));
+      setCurrentStep((prev) => Math.min(3, prev + 1));
     }
   };
 
   const prevStep = () => {
-    setCurrentStep(prev => Math.max(1, prev - 1));
+    setCurrentStep((prev) => Math.max(1, prev - 1));
   };
 
   const handleComplete = () => {
@@ -233,7 +268,9 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold">Assistant de Publication</h2>
-              <p className="opacity-90">Créez votre profil public en 3 étapes</p>
+              <p className="opacity-90">
+                Créez votre profil public en 3 étapes
+              </p>
             </div>
             <button
               onClick={onClose}
@@ -253,12 +290,18 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
 
               return (
                 <div key={step} className="flex items-center">
-                  <div className={`
+                  <div
+                    className={`
                     flex items-center justify-center w-10 h-10 rounded-full
-                    ${isActive ? 'bg-primary-content text-primary' : ''}
-                    ${isCompleted ? 'bg-success text-success-content' : ''}
-                    ${!isActive && !isCompleted ? 'bg-primary-content/20 text-primary-content' : ''}
-                  `}>
+                    ${isActive ? "bg-primary-content text-primary" : ""}
+                    ${isCompleted ? "bg-success text-success-content" : ""}
+                    ${
+                      !isActive && !isCompleted
+                        ? "bg-primary-content/20 text-primary-content"
+                        : ""
+                    }
+                  `}
+                  >
                     {isCompleted ? (
                       <CheckIcon className="w-5 h-5" />
                     ) : (
@@ -266,9 +309,13 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                     )}
                   </div>
                   {step < 3 && (
-                    <div className={`w-16 h-0.5 mx-2 ${
-                      step < currentStep ? 'bg-success' : 'bg-primary-content/20'
-                    }`} />
+                    <div
+                      className={`w-16 h-0.5 mx-2 ${
+                        step < currentStep
+                          ? "bg-success"
+                          : "bg-primary-content/20"
+                      }`}
+                    />
                   )}
                 </div>
               );
@@ -288,44 +335,64 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                 className="space-y-6"
               >
                 <div>
-                  <h3 className="text-xl font-semibold mb-2">Informations essentielles</h3>
-                  <p className="text-base-content/60">Renseignez vos informations de base</p>
+                  <h3 className="text-xl font-semibold mb-2">
+                    Informations essentielles
+                  </h3>
+                  <p className="text-base-content/60">
+                    Renseignez vos informations de base
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text font-medium">Nom artistique *</span>
+                      <span className="label-text font-medium">
+                        Nom artistique *
+                      </span>
                     </label>
                     <input
                       type="text"
-                      className={`input input-bordered ${errors.artistName ? 'input-error' : ''}`}
+                      className={`input input-bordered ${
+                        errors.artistName ? "input-error" : ""
+                      }`}
                       placeholder="Ex: The Rolling Stones"
                       value={formData.artistName}
-                      onChange={(e) => updateFormData('artistName', e.target.value)}
+                      onChange={(e) =>
+                        updateFormData("artistName", e.target.value)
+                      }
                       maxLength={100}
                     />
                     {errors.artistName && (
                       <label className="label">
-                        <span className="label-text-alt text-error">{errors.artistName}</span>
+                        <span className="label-text-alt text-error">
+                          {errors.artistName}
+                        </span>
                       </label>
                     )}
                   </div>
 
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text font-medium">Localisation *</span>
+                      <span className="label-text font-medium">
+                        Localisation *
+                      </span>
                     </label>
                     <input
                       type="text"
-                      className={`input input-bordered ${errors.baseLocation ? 'input-error' : ''}`}
+                      className={`input input-bordered ${
+                        errors.baseLocation ? "input-error" : ""
+                      }`}
                       placeholder="Ex: Paris, France"
                       value={formData.baseLocation}
-                      onChange={(e) => updateFormData('baseLocation', e.target.value)}
+                      onChange={(e) =>
+                        updateFormData("baseLocation", e.target.value)
+                      }
                     />
                     {errors.baseLocation && (
                       <label className="label">
-                        <span className="label-text-alt text-error">{errors.baseLocation}</span>
+                        <span className="label-text-alt text-error">
+                          {errors.baseLocation}
+                        </span>
                       </label>
                     )}
                   </div>
@@ -334,12 +401,19 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text font-medium">Type d'artiste *</span>
+                      <span className="label-text font-medium">
+                        Type d'artiste *
+                      </span>
                     </label>
                     <select
                       className="select select-bordered"
                       value={formData.artistType}
-                      onChange={(e) => updateFormData('artistType', e.target.value as ArtistType)}
+                      onChange={(e) =>
+                        updateFormData(
+                          "artistType",
+                          e.target.value as ArtistType
+                        )
+                      }
                     >
                       {ARTIST_TYPE_OPTIONS.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -351,12 +425,19 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
 
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text font-medium">Discipline artistique *</span>
+                      <span className="label-text font-medium">
+                        Discipline artistique *
+                      </span>
                     </label>
                     <select
                       className="select select-bordered"
                       value={formData.artistDiscipline}
-                      onChange={(e) => updateFormData('artistDiscipline', e.target.value as ArtistDiscipline)}
+                      onChange={(e) =>
+                        updateFormData(
+                          "artistDiscipline",
+                          e.target.value as ArtistDiscipline
+                        )
+                      }
                     >
                       {ARTIST_DISCIPLINE_OPTIONS.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -371,7 +452,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                   label="Genres / Styles *"
                   options={MUSIC_GENRES}
                   value={formData.genres}
-                  onChange={(value) => updateFormData('genres', value)}
+                  onChange={(value) => updateFormData("genres", value)}
                   placeholder="Sélectionnez vos genres"
                   maxSelections={5}
                   allowCustom={true}
@@ -380,19 +461,29 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text font-medium">Description artistique * (250 caractères)</span>
-                    <span className="label-text-alt">{formData.artistDescription.length}/250</span>
+                    <span className="label-text font-medium">
+                      Description artistique * (250 caractères)
+                    </span>
+                    <span className="label-text-alt">
+                      {formData.artistDescription.length}/250
+                    </span>
                   </label>
                   <textarea
-                    className={`textarea textarea-bordered h-24 ${errors.artistDescription ? 'textarea-error' : ''}`}
+                    className={`textarea textarea-bordered h-24 ${
+                      errors.artistDescription ? "textarea-error" : ""
+                    }`}
                     placeholder="Décrivez votre style, votre univers artistique, votre expérience..."
                     value={formData.artistDescription}
-                    onChange={(e) => updateFormData('artistDescription', e.target.value)}
+                    onChange={(e) =>
+                      updateFormData("artistDescription", e.target.value)
+                    }
                     maxLength={250}
                   />
                   {errors.artistDescription && (
                     <label className="label">
-                      <span className="label-text-alt text-error">{errors.artistDescription}</span>
+                      <span className="label-text-alt text-error">
+                        {errors.artistDescription}
+                      </span>
                     </label>
                   )}
                 </div>
@@ -400,7 +491,9 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                 <ImageUpload
                   label="Photo de profil principale *"
                   value={formData.mainPhoto ? [formData.mainPhoto] : []}
-                  onChange={(value) => updateFormData('mainPhoto', value[0] || "")}
+                  onChange={(value) =>
+                    updateFormData("mainPhoto", value[0] || "")
+                  }
                   maxImages={1}
                   error={errors.mainPhoto}
                 />
@@ -416,14 +509,18 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                 className="space-y-6"
               >
                 <div>
-                  <h3 className="text-xl font-semibold mb-2">Portfolio créatif</h3>
-                  <p className="text-base-content/60">Enrichissez votre profil avec vos créations</p>
+                  <h3 className="text-xl font-semibold mb-2">
+                    Portfolio créatif
+                  </h3>
+                  <p className="text-base-content/60">
+                    Enrichissez votre profil avec vos créations
+                  </p>
                 </div>
 
                 <ImageUpload
                   label="Photos du portfolio (3-5 recommandées)"
                   value={formData.portfolioPhotos}
-                  onChange={(value) => updateFormData('portfolioPhotos', value)}
+                  onChange={(value) => updateFormData("portfolioPhotos", value)}
                   maxImages={8}
                 />
 
@@ -437,7 +534,9 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       className="input input-bordered"
                       placeholder="https://open.spotify.com/artist/..."
                       value={formData.socialLinks.spotify || ""}
-                      onChange={(e) => updateSocialLinks('spotify', e.target.value)}
+                      onChange={(e) =>
+                        updateSocialLinks("spotify", e.target.value)
+                      }
                     />
                   </div>
 
@@ -450,7 +549,9 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       className="input input-bordered"
                       placeholder="https://youtube.com/@..."
                       value={formData.socialLinks.youtube || ""}
-                      onChange={(e) => updateSocialLinks('youtube', e.target.value)}
+                      onChange={(e) =>
+                        updateSocialLinks("youtube", e.target.value)
+                      }
                     />
                   </div>
 
@@ -463,7 +564,9 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       className="input input-bordered"
                       placeholder="https://soundcloud.com/..."
                       value={formData.socialLinks.soundcloud || ""}
-                      onChange={(e) => updateSocialLinks('soundcloud', e.target.value)}
+                      onChange={(e) =>
+                        updateSocialLinks("soundcloud", e.target.value)
+                      }
                     />
                   </div>
 
@@ -476,7 +579,9 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       className="input input-bordered"
                       placeholder="https://instagram.com/..."
                       value={formData.socialLinks.instagram || ""}
-                      onChange={(e) => updateSocialLinks('instagram', e.target.value)}
+                      onChange={(e) =>
+                        updateSocialLinks("instagram", e.target.value)
+                      }
                     />
                   </div>
                 </div>
@@ -491,18 +596,24 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                     className="input input-bordered"
                     placeholder="https://youtube.com/watch?v=..."
                     value={formData.demoVideo || ""}
-                    onChange={(e) => updateFormData('demoVideo', e.target.value)}
+                    onChange={(e) =>
+                      updateFormData("demoVideo", e.target.value)
+                    }
                   />
                 </div>
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text font-medium">Fourchette de tarifs</span>
+                    <span className="label-text font-medium">
+                      Fourchette de tarifs
+                    </span>
                   </label>
                   <select
                     className="select select-bordered"
                     value={formData.priceRange || ""}
-                    onChange={(e) => updateFormData('priceRange', e.target.value)}
+                    onChange={(e) =>
+                      updateFormData("priceRange", e.target.value)
+                    }
                   >
                     <option value="">Non spécifié</option>
                     {PRICE_RANGES.map((range) => (
@@ -524,8 +635,12 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                 className="space-y-6"
               >
                 <div>
-                  <h3 className="text-xl font-semibold mb-2">Prêt pour la publication</h3>
-                  <p className="text-base-content/60">Vérifiez et publiez votre profil</p>
+                  <h3 className="text-xl font-semibold mb-2">
+                    Prêt pour la publication
+                  </h3>
+                  <p className="text-base-content/60">
+                    Vérifiez et publiez votre profil
+                  </p>
                 </div>
 
                 {/* Score de qualité */}
@@ -534,30 +649,68 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                     <div className="flex items-center justify-between">
                       <div>
                         <h4 className="font-semibold">Score de qualité</h4>
-                        <p className={`text-lg font-bold ${getQualityColor(formData.qualityScore)}`}>
+                        <p
+                          className={`text-lg font-bold ${getQualityColor(
+                            formData.qualityScore
+                          )}`}
+                        >
                           {formData.qualityScore}/100
                         </p>
                         <p className="text-sm text-base-content/60">
                           {getQualityMessage(formData.qualityScore)}
                         </p>
                       </div>
-                      <div className={`radial-progress ${getQualityColor(formData.qualityScore)}`}
-                           style={{"--value": formData.qualityScore, "--size": "4rem"} as React.CSSProperties}>
+                      <div
+                        className={`radial-progress ${getQualityColor(
+                          formData.qualityScore
+                        )}`}
+                        style={
+                          {
+                            "--value": formData.qualityScore,
+                            "--size": "4rem",
+                          } as React.CSSProperties
+                        }
+                      >
                         {formData.qualityScore}%
                       </div>
                     </div>
 
                     {formData.qualityScore < 80 && (
                       <div className="mt-4 space-y-2">
-                        <p className="text-sm font-medium">Suggestions d'amélioration :</p>
+                        <p className="text-sm font-medium">
+                          Suggestions d'amélioration :
+                        </p>
                         <ul className="text-sm space-y-1">
-                          {!formData.mainPhoto && <li>• Ajoutez une photo de profil</li>}
-                          {formData.artistDescription.length < 50 && <li>• Complétez votre description (50+ caractères)</li>}
-                          {formData.genres.length < 3 && <li>• Ajoutez plus de genres ({formData.genres.length}/3)</li>}
-                          {Object.values(formData.socialLinks).filter(Boolean).length < 2 && <li>• Ajoutez des liens vers vos réseaux</li>}
-                          {formData.portfolioPhotos.length < 3 && <li>• Ajoutez plus de photos portfolio ({formData.portfolioPhotos.length}/3)</li>}
-                          {!formData.demoVideo && <li>• Ajoutez une vidéo démo</li>}
-                          {!formData.priceRange && <li>• Indiquez vos tarifs</li>}
+                          {!formData.mainPhoto && (
+                            <li>• Ajoutez une photo de profil</li>
+                          )}
+                          {formData.artistDescription.length < 50 && (
+                            <li>
+                              • Complétez votre description (50+ caractères)
+                            </li>
+                          )}
+                          {formData.genres.length < 3 && (
+                            <li>
+                              • Ajoutez plus de genres ({formData.genres.length}
+                              /3)
+                            </li>
+                          )}
+                          {Object.values(formData.socialLinks).filter(Boolean)
+                            .length < 2 && (
+                            <li>• Ajoutez des liens vers vos réseaux</li>
+                          )}
+                          {formData.portfolioPhotos.length < 3 && (
+                            <li>
+                              • Ajoutez plus de photos portfolio (
+                              {formData.portfolioPhotos.length}/3)
+                            </li>
+                          )}
+                          {!formData.demoVideo && (
+                            <li>• Ajoutez une vidéo démo</li>
+                          )}
+                          {!formData.priceRange && (
+                            <li>• Indiquez vos tarifs</li>
+                          )}
                         </ul>
                       </div>
                     )}
@@ -565,7 +718,18 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                 </div>
 
                 {/* Aperçu du profil */}
-                <div className="card bg-base-100 border">
+                <PublicOverview
+                  artistName={formData.artistName}
+                  baseLocation={formData.baseLocation}
+                  genres={formData.genres}
+                  mainPhoto={formData.mainPhoto}
+                  artistDescription={formData.artistDescription}
+                  socialLinks={formData.socialLinks}
+                  portfolioPhotos={formData.portfolioPhotos}
+                  demoVideo={formData.demoVideo}
+                  priceRange={formData.priceRange}
+                />
+                {/* <div className="card bg-base-100 border">
                   <div className="card-body">
                     <h4 className="font-semibold mb-4">Aperçu de votre profil public</h4>
 
@@ -595,7 +759,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       {formData.artistDescription || "Description de l'artiste..."}
                     </p>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Options de publication */}
                 <div className="form-control">
@@ -604,7 +768,9 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       type="checkbox"
                       className="checkbox checkbox-primary"
                       checked={formData.isPublic}
-                      onChange={(e) => updateFormData('isPublic', e.target.checked)}
+                      onChange={(e) =>
+                        updateFormData("isPublic", e.target.checked)
+                      }
                     />
                     <div>
                       <span className="label-text font-medium">
@@ -623,8 +789,8 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                     <div>
                       <p className="font-medium">Profil incomplet</p>
                       <p className="text-sm">
-                        Un score plus élevé améliore votre visibilité.
-                        Revenez aux étapes précédentes pour compléter votre profil.
+                        Un score plus élevé améliore votre visibilité. Revenez
+                        aux étapes précédentes pour compléter votre profil.
                       </p>
                     </div>
                   </div>
@@ -641,24 +807,20 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
             className="btn btn-outline gap-2"
           >
             <ArrowLeftIcon className="w-4 h-4" />
-            {currentStep === 1 ? 'Annuler' : 'Précédent'}
+            {currentStep === 1 ? "Annuler" : "Précédent"}
           </button>
 
           {currentStep < 3 ? (
-            <button
-              onClick={nextStep}
-              className="btn btn-primary gap-2"
-            >
+            <button onClick={nextStep} className="btn btn-primary gap-2">
               Suivant
               <ArrowRightIcon className="w-4 h-4" />
             </button>
           ) : (
-            <button
-              onClick={handleComplete}
-              className="btn btn-primary gap-2"
-            >
+            <button onClick={handleComplete} className="btn btn-primary gap-2">
               <CheckIcon className="w-4 h-4" />
-              {formData.isPublic ? 'Publier le profil' : 'Sauvegarder en brouillon'}
+              {formData.isPublic
+                ? "Publier le profil"
+                : "Sauvegarder en brouillon"}
             </button>
           )}
         </div>

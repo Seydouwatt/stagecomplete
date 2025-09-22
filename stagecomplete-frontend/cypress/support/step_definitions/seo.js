@@ -104,9 +104,7 @@ Then('the page should be indexable by search engines', () => {
   cy.get('head meta[name="googlebot"]').should('not.have.attr', 'content', 'noindex');
 });
 
-Given('I visit {string}', (url) => {
-  cy.visit(url);
-});
+// Removed duplicate - using definition in public-profiles.js
 
 Then('the page should have genre-specific SEO:', (dataTable) => {
   const expectedSEO = dataTable.hashes();
@@ -194,9 +192,7 @@ Then('the page should be indexed for local searches', () => {
     .or('contain', 'location');
 });
 
-Given('I visit {string}', (url) => {
-  cy.visit(url);
-});
+// Removed duplicate - using definition in public-profiles.js
 
 Then('the page should have search-specific SEO:', (dataTable) => {
   const expectedSEO = dataTable.hashes();

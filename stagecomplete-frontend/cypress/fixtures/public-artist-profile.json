@@ -1,0 +1,103 @@
+{
+  "id": 1,
+  "publicSlug": "jazz-virtuoso-paris",
+  "genres": ["Jazz", "Blues", "Fusion"],
+  "instruments": ["Piano", "Saxophone", "Contrebasse"],
+  "yearsActive": 15,
+  "memberCount": 3,
+  "artistType": "GROUP",
+  "artisticBio": "Groupe de jazz parisien formé en 2008, spécialisé dans le jazz moderne et la fusion. Nous combinons virtuosité technique et créativité musicale pour offrir des performances uniques qui captivent les audiences les plus exigeantes.",
+  "technicalSheet": "Formation complète avec piano acoustique, saxophone alto/ténor, contrebasse électro-acoustique. Matériel de sonorisation fourni. Besoin d'une scène minimum 4x3m.",
+  "equipment": ["Piano acoustique", "Amplification", "Éclairage scénique"],
+  "priceRange": "1500-3000",
+  "conditions": "Transport inclus région parisienne. Déplacements province sur devis.",
+  "coverPhoto": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
+  "portfolio": {
+    "photos": [
+      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400",
+      "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=400",
+      "https://images.unsplash.com/photo-1556074421-b8c4c67ab4ea?w=400"
+    ],
+    "videos": [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    ],
+    "audio": [
+      "https://soundcloud.com/example/jazz-performance"
+    ]
+  },
+  "socialLinks": {
+    "youtube": "https://youtube.com/@jazzvirtusosisparis",
+    "instagram": "https://instagram.com/jazzvirtusosisparis",
+    "facebook": "https://facebook.com/jazzvirtusosisparis",
+    "soundcloud": "https://soundcloud.com/jazzvirtusosisparis",
+    "spotify": "https://open.spotify.com/artist/example"
+  },
+  "members": [
+    {
+      "id": 1,
+      "name": "Marie Dubois",
+      "role": "Pianiste & Leader",
+      "instruments": ["Piano"],
+      "bio": "Diplômée du Conservatoire de Paris, Marie apporte 20 ans d'expérience en jazz et musique classique.",
+      "yearsExperience": 20,
+      "photo": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200",
+      "isFounder": true,
+      "joinDate": "2008-03-15",
+      "contact": {
+        "email": "marie@jazzvirtusosisparis.com",
+        "phone": "+33 6 12 34 56 78"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Jean Martin",
+      "role": "Saxophoniste",
+      "instruments": ["Saxophone Alto", "Saxophone Ténor"],
+      "bio": "Saxophoniste jazz reconnu, Jean a joué avec les plus grands noms de la scène européenne.",
+      "yearsExperience": 18,
+      "photo": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200",
+      "isFounder": true,
+      "joinDate": "2008-03-15",
+      "contact": {
+        "email": "jean@jazzvirtusosisparis.com"
+      }
+    },
+    {
+      "id": 3,
+      "name": "Pierre Legrand",
+      "role": "Contrebassiste",
+      "instruments": ["Contrebasse", "Basse électrique"],
+      "bio": "Virtuose de la contrebasse, Pierre apporte groove et profondeur aux compositions du groupe.",
+      "yearsExperience": 12,
+      "photo": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200",
+      "isFounder": false,
+      "joinDate": "2012-09-01",
+      "contact": {
+        "email": "pierre@jazzvirtusosisparis.com"
+      }
+    }
+  ],
+  "profile": {
+    "id": 1,
+    "name": "Les Virtuoses de Paris",
+    "location": "Paris, France",
+    "avatar": "https://images.unsplash.com/photo-1471478331149-c72f17e33c73?w=200",
+    "bio": "Groupe de jazz parisien passionné par l'excellence musicale",
+    "website": "https://jazzvirtusosisparis.com",
+    "user": {
+      "id": 1,
+      "email": "contact@jazzvirtusosisparis.com",
+      "role": "ARTIST"
+    }
+  },
+  "stats": {
+    "views": 1247,
+    "monthlyViews": 89,
+    "profileCompleteness": 95
+  },
+  "isPublic": true,
+  "isVerified": true,
+  "badges": ["verified", "premium"],
+  "createdAt": "2024-03-15T10:00:00Z",
+  "updatedAt": "2024-09-20T15:30:00Z"
+}

@@ -28,6 +28,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ artistProfile }) => 
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
         onClick={onClose}
+        data-cy="lightbox"
       >
         <motion.div
           initial={{ scale: 0.8 }}
@@ -92,7 +93,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ artistProfile }) => 
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-cy="portfolio-section">
       {/* Filtres de catégorie */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -128,7 +129,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ artistProfile }) => 
               Galerie photos ({artistProfile.portfolio.photos.length})
             </h3>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" data-cy="portfolio-photos">
               {artistProfile.portfolio.photos.map((photo, index) => (
                 <motion.div
                   key={index}
@@ -136,6 +137,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ artistProfile }) => 
                   whileTap={{ scale: 0.95 }}
                   className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
                   onClick={() => setSelectedImage(photo)}
+                  data-cy="portfolio-photo"
                 >
                   <img
                     src={photo}

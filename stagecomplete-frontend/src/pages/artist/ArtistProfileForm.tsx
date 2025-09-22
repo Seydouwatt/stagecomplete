@@ -20,7 +20,6 @@ import type {
   ArtistType,
   ArtistProfile,
 } from "../../types";
-import { MemberManagement } from "../../components/artist";
 import { ImageUpload } from "../../components/forms/ImageUpload";
 import { LoadingOverlay } from "../../components/ui/LoadingOverlay";
 import ArtisticProfileTab from "../../components/artist/tabs/ArtisticProfileTab";
@@ -29,6 +28,8 @@ import {
   PublicationWizard,
   type PublicationData,
 } from "../../components/artist/PublicationWizard";
+import { MembersTab } from "../../components/artist/tabs/MembersTab";
+import { PublicProfileTab } from "../../components/artist/tabs/PublicProfileTab";
 
 const PRICE_RANGE_OPTIONS = [
   "0-200",
@@ -443,7 +444,6 @@ export const ArtistProfileForm: React.FC = () => {
               formData={formData}
               updateFormData={updateFormData}
               onGenerateSlug={handleGenerateSlug}
-              // artistData={_artistData}
             />
           )}
         </div>
@@ -476,7 +476,7 @@ export const ArtistProfileForm: React.FC = () => {
 
 // Composants pour chaque onglet (à définir dans la suite...)
 
-const ARTIST_TYPE_OPTIONS: { value: ArtistType; label: string }[] = [
+export const ARTIST_TYPE_OPTIONS: { value: ArtistType; label: string }[] = [
   { value: "SOLO", label: "Artiste solo" },
   { value: "BAND", label: "Groupe / Band" },
   { value: "THEATER_GROUP", label: "Troupe de théâtre" },
@@ -485,105 +485,6 @@ const ARTIST_TYPE_OPTIONS: { value: ArtistType; label: string }[] = [
   { value: "CHOIR", label: "Chorale" },
   { value: "OTHER", label: "Autre" },
 ];
-
-const MembersTab: React.FC<{
-  formData: UpdateArtistProfileData;
-  updateFormData: (field: keyof UpdateArtistProfileData, value: any) => void;
-}> = ({ formData, updateFormData }) => {
-  return (
-    <div className="space-y-8" data-testid="members-tab">
-      <div>
-        <h3 className="text-xl font-semibold mb-6">Configuration du groupe</h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-medium">Type d'artiste</span>
-              <span className="label-text-alt">Solo ou groupe</span>
-            </label>
-            <select
-              name="artistType"
-              data-testid="artist-type-select"
-              className="select select-bordered"
-              value={formData.artistType || "SOLO"}
-              onChange={(e) =>
-                updateFormData("artistType", e.target.value as ArtistType)
-              }
-            >
-              {ARTIST_TYPE_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-medium">Nombre de membres</span>
-              <span className="label-text-alt">
-                {formData.artistType === "SOLO"
-                  ? "Toujours 1 pour un solo"
-                  : "Maximum autorisé"}
-              </span>
-            </label>
-            <input
-              type="number"
-              className="input input-bordered w-full"
-              placeholder="Ex: 4"
-              min="1"
-              max="20"
-              value={
-                formData.memberCount ||
-                (formData.artistType === "SOLO" ? 1 : "")
-              }
-              onChange={(e) =>
-                updateFormData("memberCount", parseInt(e.target.value) || 1)
-              }
-              disabled={formData.artistType === "SOLO"}
-            />
-          </div>
-        </div>
-
-        {formData.artistType && formData.memberCount && (
-          <div className="alert alert-info mb-6">
-            <div>
-              <h4 className="font-medium">Configuration du groupe</h4>
-              <p className="text-sm">
-                {formData.artistType === "SOLO"
-                  ? "En tant qu'artiste solo, vous aurez un profil personnel dans la section membres."
-                  : `Votre ${ARTIST_TYPE_OPTIONS.find(
-                      (opt) => opt.value === formData.artistType
-                    )?.label.toLowerCase()} peut avoir jusqu'à ${
-                      formData.memberCount
-                    } membres.`}
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Gestion des membres */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h4 className="text-lg font-medium">Gestion des membres</h4>
-          <span className="badge badge-primary">
-            {formData.artistType === "SOLO"
-              ? "Profil personnel"
-              : "Profils du groupe"}
-          </span>
-        </div>
-
-        <div className="bg-base-50 rounded-lg p-6">
-          <MemberManagement
-            className="bg-transparent shadow-none p-0"
-            artistType={formData.artistType}
-          />
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const PricingTab: React.FC<{
   formData: UpdateArtistProfileData;
@@ -783,99 +684,6 @@ const PortfolioTab: React.FC<{
           </div>
         </div>
       </div>
-    </div>
-  );
-};
-
-const PublicProfileTab: React.FC<{
-  formData: UpdateArtistProfileData;
-  updateFormData: (field: keyof UpdateArtistProfileData, value: any) => void;
-  onGenerateSlug: () => void;
-  // artistData: ArtistProfile | null;
-}> = ({
-  formData,
-  updateFormData,
-  onGenerateSlug,
-  // artistData: _artistData,
-}) => {
-  console.log(formData);
-
-  return (
-    <div className="space-y-6">
-      <h3 className="text-xl font-semibold">Profil public</h3>
-
-      <div className="form-control">
-        <label className="cursor-pointer label justify-start gap-4">
-          <input
-            type="checkbox"
-            className="checkbox checkbox-primary"
-            checked={formData?.isPublic || false}
-            onChange={(e) => updateFormData("isPublic", e.target.checked)}
-          />
-          <div>
-            <span className="label-text font-medium">
-              Rendre mon profil public
-            </span>
-            <p className="text-sm text-base-content/60">
-              Permettre aux venues de découvrir votre profil et vous contacter
-            </p>
-          </div>
-        </label>
-      </div>
-
-      {formData?.isPublic && (
-        <>
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-medium">URL personnalisée</span>
-              <span className="label-text-alt">Pour partager votre profil</span>
-            </label>
-            <div className="flex gap-2">
-              <div className="flex-1 flex">
-                <span className="bg-base-200 border border-r-0 border-base-300 rounded-l-lg px-3 py-2 text-sm">
-                  stagecomplete.com/artist/
-                </span>
-                <input
-                  type="text"
-                  className="input input-bordered rounded-l-none flex-1"
-                  placeholder="votre-nom-artiste"
-                  value={formData?.publicSlug || ""}
-                  onChange={(e) => updateFormData("publicSlug", e.target.value)}
-                />
-              </div>
-
-              {formData?.publicSlug === "" && (
-                <button
-                  type="button"
-                  onClick={onGenerateSlug}
-                  className="btn btn-outline"
-                >
-                  Générer
-                </button>
-              )}
-            </div>
-            {formData.publicSlug && (
-              <label className="label">
-                <span className="label-text-alt text-success">
-                  ✓ Votre profil sera accessible sur: stagecomplete.com/artist/
-                  {formData.publicSlug}
-                </span>
-              </label>
-            )}
-          </div>
-
-          <div className="alert alert-info">
-            <div>
-              <h4 className="font-medium">Profil public activé !</h4>
-              <p className="text-sm">
-                Les venues pourront découvrir votre profil, voir vos
-                informations artistiques et vous contacter pour des
-                opportunités.
-              </p>
-            </div>
-          </div>
-        </>
-      )}
     </div>
   );
 };

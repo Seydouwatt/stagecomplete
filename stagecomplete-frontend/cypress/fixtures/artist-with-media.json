@@ -1,0 +1,48 @@
+{
+  "id": 2,
+  "publicSlug": "jazz-virtuoso-paris",
+  "genres": ["Jazz", "Blues", "Fusion"],
+  "instruments": ["Piano", "Saxophone", "Contrebasse"],
+  "yearsActive": 15,
+  "memberCount": 3,
+  "artistType": "GROUP",
+  "artisticBio": "Groupe de jazz parisien avec un portfolio riche en médias visuels et audio.",
+  "portfolio": {
+    "photos": [
+      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800",
+      "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800",
+      "https://images.unsplash.com/photo-1556074421-b8c4c67ab4ea?w=800",
+      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800",
+      "https://images.unsplash.com/photo-1520166012956-add9ba0835cb?w=800"
+    ],
+    "videos": [
+      "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "https://www.youtube.com/embed/ScMzIvxBSi4"
+    ],
+    "audio": [
+      "https://soundcloud.com/example/jazz-performance-live",
+      "https://soundcloud.com/example/studio-recording"
+    ]
+  },
+  "socialLinks": {
+    "youtube": "https://youtube.com/@jazzvirtusosisparis",
+    "instagram": "https://instagram.com/jazzvirtusosisparis",
+    "facebook": "https://facebook.com/jazzvirtusosisparis",
+    "soundcloud": "https://soundcloud.com/jazzvirtusosisparis",
+    "spotify": "https://open.spotify.com/artist/example"
+  },
+  "profile": {
+    "id": 2,
+    "name": "Les Virtuoses de Paris",
+    "location": "Paris, France",
+    "avatar": "https://images.unsplash.com/photo-1471478331149-c72f17e33c73?w=200",
+    "bio": "Groupe de jazz parisien avec portfolio média complet",
+    "user": {
+      "id": 2,
+      "email": "media@jazzvirtusosisparis.com",
+      "role": "ARTIST"
+    }
+  },
+  "isPublic": true,
+  "isVerified": true
+}

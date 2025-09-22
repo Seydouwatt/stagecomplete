@@ -108,7 +108,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ artistProfile }) => {
             <Palette className="w-6 h-6 text-primary" />À propos de &nbsp;
             {artistProfile.profile.name}
           </h2>
-          <p className="text-base-content/80 text-lg leading-relaxed">
+          <p className="text-base-content/80 text-lg leading-relaxed" data-cy="artist-bio">
             {artistProfile.artistDescription ||
               "Descrition simple bientôt disponible."}
           </p>
@@ -188,7 +188,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ artistProfile }) => {
               <h3 className="font-semibold">Type d'artiste</h3>
             </div>
             <div className="space-y-2">
-              <div className="badge badge-info badge-outline">
+              <div className="badge badge-info badge-outline" data-cy="artist-type">
                 {getArtistTypeLabel(artistProfile.artistType || "SOLO")} -{" "}
                 {getArtistCategriesLabel(artistProfile.artistDiscipline || "")}
               </div>

@@ -172,14 +172,17 @@ export const MemberManagement: React.FC<MemberManagementProps> = ({
       </div>
 
       {/* Grille des membres */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div
+        className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+        data-testid="member-list"
+      >
         <AnimatePresence>
           {members.map((member, index) => {
             const formattedMember = formatMember(member);
             return (
               <motion.div
                 key={member.id}
-                className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow"
+                className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow member-item"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
@@ -300,6 +303,7 @@ export const MemberManagement: React.FC<MemberManagementProps> = ({
                   {/* Actions */}
                   <div className="card-actions justify-end">
                     <button
+                      data-testid="edit-member-btn"
                       className="btn btn-ghost btn-sm"
                       onClick={() => setEditingMember(member)}
                     >
@@ -308,6 +312,7 @@ export const MemberManagement: React.FC<MemberManagementProps> = ({
 
                     {!isSoloArtist && (
                       <LoadingButton
+                        data-testid="delete-member-btn"
                         className="btn btn-ghost btn-sm text-error hover:bg-error/10"
                         onClick={() => handleDeleteMember(member.id)}
                         loadingText="Suppression en cours..."

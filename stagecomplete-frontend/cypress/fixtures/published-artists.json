@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "publicSlug": "jazz-virtuoso-paris",
+    "profile": {
+      "name": "Les Virtuoses de Paris",
+      "avatar": "https://images.unsplash.com/photo-1471478331149-c72f17e33c73?w=200"
+    },
+    "genres": ["Jazz", "Blues"],
+    "isPublic": true
+  },
+  {
+    "id": 2,
+    "publicSlug": "rock-legends-lyon",
+    "profile": {
+      "name": "Rock Legends Lyon",
+      "avatar": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200"
+    },
+    "genres": ["Rock", "Alternative"],
+    "isPublic": true
+  },
+  {
+    "id": 3,
+    "publicSlug": "classical-ensemble-bordeaux",
+    "profile": {
+      "name": "Ensemble Classique Bordeaux",
+      "avatar": "https://images.unsplash.com/photo-1465821185615-20b3c2fbf41b?w=200"
+    },
+    "genres": ["Classique", "Chambre"],
+    "isPublic": true
+  }
+]

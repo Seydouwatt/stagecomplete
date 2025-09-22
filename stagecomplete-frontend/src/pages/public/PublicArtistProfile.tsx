@@ -187,6 +187,12 @@ export const PublicArtistProfile: React.FC = () => {
         `${artistName} - Artiste ${profile.genres.join(", ")}`
       );
     }
+
+    // OpenGraph type
+    const ogType = document.querySelector('meta[property="og:type"]');
+    if (ogType) {
+      ogType.setAttribute("content", "profile");
+    }
   };
 
   // Partage du profil
@@ -271,7 +277,7 @@ export const PublicArtistProfile: React.FC = () => {
   const seoData = SEO_TEMPLATES.artist(artistProfile);
 
   return (
-    <div className="min-h-screen bg-base-200">
+    <div className="min-h-screen bg-base-200" data-cy="public-artist-profile">
       <SEOHead
         title={seoData.title}
         description={seoData.description}
@@ -282,7 +288,7 @@ export const PublicArtistProfile: React.FC = () => {
         schemaData={generateArtistSchema(artistProfile)}
       />
       {/* Header avec photo de couverture */}
-      <div className="relative h-64 bg-gradient-to-r from-primary to-secondary overflow-hidden">
+      <div className="relative h-64 bg-gradient-to-r from-primary to-secondary overflow-hidden" data-cy="profile-header">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative h-full flex items-end">
           <div className="container mx-auto px-4 pb-6">
@@ -306,21 +312,21 @@ export const PublicArtistProfile: React.FC = () => {
 
               {/* Infos principales */}
               <div className="flex-1 text-white">
-                <h1 className="text-3xl font-bold mb-2">
+                <h1 className="text-3xl font-bold mb-2" data-cy="artist-name">
                   {artistProfile.profile.name || "Artiste"}
                 </h1>
                 <div className="flex flex-wrap gap-4 text-white/90 text-sm">
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1" data-cy="artist-genres">
                     <Music className="w-4 h-4" />
                     {artistProfile.genres.join(", ")}
                   </div>
                   {artistProfile.profile.location && (
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1" data-cy="artist-location">
                       <MapPin className="w-4 h-4" />
                       {artistProfile.profile.location}
                     </div>
                   )}
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1" data-cy="artist-experience">
                     <Calendar className="w-4 h-4" />
                     {artistProfile.yearsActive} ans d'expérience
                   </div>
@@ -328,10 +334,11 @@ export const PublicArtistProfile: React.FC = () => {
               </div>
 
               {/* Actions */}
-              <div className="flex gap-2">
+              <div className="flex gap-2" data-cy="social-sharing">
                 <button
                   onClick={handleShare}
                   className="btn btn-outline btn-sm text-white border-white/50 hover:bg-white hover:text-primary"
+                  data-cy="share-button"
                 >
                   <Share2 className="w-4 h-4" />
                   Partager
@@ -340,6 +347,7 @@ export const PublicArtistProfile: React.FC = () => {
                   <button
                     onClick={handleContact}
                     className="btn btn-primary btn-sm"
+                    data-cy="contact-cta"
                   >
                     <Mail className="w-4 h-4" />
                     Contacter

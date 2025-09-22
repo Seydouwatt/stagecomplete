@@ -2,12 +2,7 @@ import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 
 // Public Search Step Definitions
 
-Given('there are published artist profiles available', () => {
-  // Mock API response or seed database with test data
-  cy.intercept('GET', '**/api/public/artists/search*', {
-    fixture: 'published-artists.json'
-  }).as('getPublicArtists');
-});
+// Removed duplicate - using definition in public-profiles.js
 
 Given('the search API is responding', () => {
   cy.intercept('GET', '**/api/public/artists/search*', {
@@ -143,9 +138,7 @@ Then('each result should show approximate distance', () => {
   });
 });
 
-Given('I visit {string}', (url) => {
-  cy.visit(url);
-});
+// Removed duplicate - using definition in public-profiles.js
 
 Then('I should see all jazz artists', () => {
   cy.get('[data-cy="directory-page"]').should('be.visible');
