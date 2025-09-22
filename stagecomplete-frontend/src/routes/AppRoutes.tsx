@@ -8,35 +8,45 @@ import { publicRoutes } from "./public/publicRoutes";
 import { artistRoutes } from "./artist/artistRoutes";
 import { venueRoutes } from "./venue/venueRoutes";
 import { sharedRoutes } from "./shared/sharedRoutes";
+import { useDebugLog } from "../hooks/useDebugLog";
 
 const DashboardRedirect: React.FC = () => {
   // TODO : compléter avec useAuthStore comme avant
   return <Navigate to="/artist/dashboard" replace />;
 };
 
-export const AppRoutes = () => (
-  <Routes>
-    {/* Routes publiques */}
-    {publicRoutes}
+export const AppRoutes = () => {
+  useDebugLog('ROUTES', 'AppRoutes component rendering...', { publicRoutesCount: publicRoutes.length })
 
-    {/* Routes protégées */}
-    <Route
-      path="/"
-      element={
-        <ProtectedRoute>
-          <MainLayout />
-        </ProtectedRoute>
-      }
-    >
-      <Route path={ROUTES.DASHBOARD} element={<DashboardRedirect />} />
-      <Route path="/browse" element={<Browse />} />
+  try {
+    return (
+      <Routes>
+        {/* Routes publiques */}
+        {publicRoutes}
 
-      {artistRoutes}
-      {venueRoutes}
-      {sharedRoutes}
-    </Route>
+        {/* Routes protégées */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path={ROUTES.DASHBOARD} element={<DashboardRedirect />} />
+          <Route path="/browse" element={<Browse />} />
 
-    {/* Fallbacks */}
-    <Route path="*" element={<Navigate to="/" replace />} />
-  </Routes>
-);
+          {artistRoutes}
+          {venueRoutes}
+          {sharedRoutes}
+        </Route>
+
+        {/* Fallbacks */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    )
+  } catch (error) {
+    console.error('❌ [ROUTES] Error in AppRoutes:', error)
+    return <div>Error loading routes</div>
+  }
+};

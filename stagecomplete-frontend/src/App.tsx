@@ -219,16 +219,24 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import ToastContainer from "./components/ui/Toast";
 import { AppRoutes } from "./routes/AppRoutes";
+import { useDebugLog } from "./hooks/useDebugLog";
 
 function App() {
-  return (
-    <div data-theme="stagecomplete">
-      <Router>
-        <AppRoutes />
-        <ToastContainer />
-      </Router>
-    </div>
-  );
+  useDebugLog('APP', 'App component rendering...')
+
+  try {
+    return (
+      <div data-theme="stagecomplete">
+        <Router>
+          <AppRoutes />
+          <ToastContainer />
+        </Router>
+      </div>
+    );
+  } catch (error) {
+    console.error('❌ [APP] Error in App component:', error)
+    return <div>Error loading application</div>
+  }
 }
 
 export default App;

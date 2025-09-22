@@ -12,11 +12,15 @@ import { PublicSearchBar } from '../components/public/PublicSearchBar';
 import { FeaturedArtists } from '../components/public/FeaturedArtists';
 import { PublicStats } from '../components/public/PublicStats';
 import { SEOHead, SEO_TEMPLATES, generateOrganizationSchema } from '../components/seo/SEOHead';
+import { useDebugLog } from '../hooks/useDebugLog';
 
 const Home: React.FC = () => {
-  return (
-    <div className="min-h-screen">
-      <SEOHead
+  useDebugLog('HOME', 'Home component rendering...')
+
+  try {
+    return (
+      <div className="min-h-screen">
+        <SEOHead
         title={SEO_TEMPLATES.home.title}
         description={SEO_TEMPLATES.home.description}
         keywords={SEO_TEMPLATES.home.keywords}
@@ -244,7 +248,16 @@ const Home: React.FC = () => {
         </div>
       </section>
     </div>
-  );
+    );
+  } catch (error) {
+    console.error('❌ [HOME] Error in Home component:', error)
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold mb-4">Erreur de chargement</h1>
+        <p>Une erreur s'est produite lors du chargement de la page d'accueil.</p>
+      </div>
+    </div>
+  }
 };
 
 export default Home;
