@@ -1,17 +1,9 @@
-import { Suspense, lazy } from "react";
 import { Route } from "react-router-dom";
 import { ProtectedRoute } from "../../components";
 
-// Lazy loading des pages artistes
-const ArtistDashboard = lazy(() => import("../../pages/dashboard").then(module => ({ default: module.ArtistDashboard })));
-const ArtistProfileForm = lazy(() => import("../../pages/artist/ArtistProfileForm").then(module => ({ default: module.ArtistProfileForm })));
-
-// Composant de loading
-const PageLoader = () => (
-  <div className="min-h-[60vh] flex items-center justify-center">
-    <div className="loading loading-spinner loading-lg text-primary"></div>
-  </div>
-);
+// Import direct des pages artistes
+import { ArtistDashboard } from "../../pages/dashboard";
+import { ArtistProfileForm } from "../../pages/artist/ArtistProfileForm";
 const ComingSoon: React.FC<{ title: string }> = ({ title }) => (
   <div className="min-h-[60vh] flex items-center justify-center">
     <h1 className="text-4xl font-bold mb-4">🚧 {title}</h1>
@@ -25,9 +17,7 @@ export const artistRoutes = [
     path="/artist/dashboard"
     element={
       <ProtectedRoute requiredRole="ARTIST">
-        <Suspense fallback={<PageLoader />}>
-          <ArtistDashboard />
-        </Suspense>
+        <ArtistDashboard />
       </ProtectedRoute>
     }
   />,
@@ -36,9 +26,7 @@ export const artistRoutes = [
     path="/artist/portfolio"
     element={
       <ProtectedRoute requiredRole="ARTIST">
-        <Suspense fallback={<PageLoader />}>
-          <ArtistProfileForm />
-        </Suspense>
+        <ArtistProfileForm />
       </ProtectedRoute>
     }
   />,
