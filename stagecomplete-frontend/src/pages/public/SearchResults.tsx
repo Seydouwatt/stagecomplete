@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { useSearchParams, Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   MagnifyingGlassIcon,
   MapPinIcon,
   AdjustmentsHorizontalIcon,
-} from '@heroicons/react/24/outline';
-import { PublicSearchBar } from '../../components/public/PublicSearchBar';
-import { FeaturedArtists } from '../../components/public/FeaturedArtists';
-import { artistService } from '../../services/artistService';
-import { SEOHead, SEO_TEMPLATES, generateSearchSchema } from '../../components/seo/SEOHead';
-import type { PublicArtistProfile, ArtistSearchFilters } from '../../types';
+} from "@heroicons/react/24/outline";
+import { PublicSearchBar } from "../../components/public/PublicSearchBar";
+import { FeaturedArtists } from "../../components/public/FeaturedArtists";
+import { artistService } from "../../services/artistService";
+import {
+  SEOHead,
+  SEO_TEMPLATES,
+  generateSearchSchema,
+} from "../../components/seo/SEOHead";
+import type { PublicArtistProfile, ArtistSearchFilters } from "../../types";
 
 export const SearchResults: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -22,9 +26,9 @@ export const SearchResults: React.FC = () => {
   const [hasMore, setHasMore] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
-  const query = searchParams.get('q') || '';
-  const location = searchParams.get('location') || '';
-  const genres = searchParams.get('genres')?.split(',') || [];
+  const query = searchParams.get("q") || "";
+  const location = searchParams.get("location") || "";
+  const genres = searchParams.get("genres")?.split(",") || [];
   const limit = 12;
 
   useEffect(() => {
@@ -47,9 +51,13 @@ export const SearchResults: React.FC = () => {
       if (query) {
         // Pour l'instant, on utilise les genres comme approximation
         // TODO: Implémenter la recherche full-text côté backend
-        const possibleGenres = query.split(' ').filter(term =>
-          ['jazz', 'rock', 'pop', 'blues', 'folk', 'classical'].includes(term.toLowerCase())
-        );
+        const possibleGenres = query
+          .split(" ")
+          .filter((term) =>
+            ["jazz", "rock", "pop", "blues", "folk", "classical"].includes(
+              term.toLowerCase()
+            )
+          );
         if (possibleGenres.length > 0) {
           filters.genres = possibleGenres;
         }
@@ -68,10 +76,9 @@ export const SearchResults: React.FC = () => {
       setArtists(response.artists);
       setTotalResults(response.total);
       setHasMore(response.hasMore);
-
     } catch (err) {
-      console.error('Search error:', err);
-      setError('Erreur lors de la recherche');
+      console.error("Search error:", err);
+      setError("Erreur lors de la recherche");
     } finally {
       setLoading(false);
     }
@@ -79,16 +86,20 @@ export const SearchResults: React.FC = () => {
 
   const handleSearch = (newQuery: string, newLocation?: string) => {
     const newSearchParams = new URLSearchParams();
-    if (newQuery) newSearchParams.set('q', newQuery);
-    if (newLocation) newSearchParams.set('location', newLocation);
+    if (newQuery) newSearchParams.set("q", newQuery);
+    if (newLocation) newSearchParams.set("location", newLocation);
 
-    window.history.pushState({}, '', `${window.location.pathname}?${newSearchParams.toString()}`);
+    window.history.pushState(
+      {},
+      "",
+      `${window.location.pathname}?${newSearchParams.toString()}`
+    );
     setCurrentPage(1);
     performSearch();
   };
 
   const loadMore = () => {
-    setCurrentPage(prev => prev + 1);
+    setCurrentPage((prev) => prev + 1);
   };
 
   // Si pas de query, afficher la page de découverte
@@ -104,13 +115,34 @@ export const SearchResults: React.FC = () => {
         title={seoData.title}
         description={seoData.description}
         keywords={seoData.keywords.filter((k): k is string => Boolean(k))}
-        url={`/search?q=${encodeURIComponent(query)}${location ? `&location=${encodeURIComponent(location)}` : ''}`}
+        url={`/search?q=${encodeURIComponent(query)}${
+          location ? `&location=${encodeURIComponent(location)}` : ""
+        }`}
         schemaData={generateSearchSchema(query, totalResults)}
       />
       {/* Header avec recherche */}
       <section className="bg-white border-b sticky top-0 z-10 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+            <div>
+              <Link
+                to="/directory"
+                className="text-2xl font-bold text-gray-900 gap-2"
+              >
+                <motion.div
+                  initial={{ scale: 0.5 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
+                  className="flex gap-2 p-2 bg-primary/10 rounded-lg"
+                >
+                  <div className="text-4xl">🎭</div>
+                  <span>
+                    <span className="text-primary">Stage</span>Complete
+                  </span>
+                </motion.div>
+              </Link>
+            </div>
+
             <div className="flex-1">
               <PublicSearchBar
                 placeholder={query}
@@ -121,11 +153,13 @@ export const SearchResults: React.FC = () => {
 
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="btn btn-outline gap-2 lg:btn-sm"
+              className="btn btn-neutral btn-outline gap-2 lg:btn-sm"
             >
               <AdjustmentsHorizontalIcon className="w-4 h-4" />
               Filtres
-              {showFilters && <span className="badge badge-primary badge-sm">ON</span>}
+              {showFilters && (
+                <span className="badge badge-primary badge-sm">ON</span>
+              )}
             </button>
           </div>
         </div>
@@ -153,7 +187,9 @@ export const SearchResults: React.FC = () => {
             )}
           </h1>
           <p className="text-gray-600">
-            {loading ? 'Recherche en cours...' : `${totalResults} artiste(s) trouvé(s)`}
+            {loading
+              ? "Recherche en cours..."
+              : `${totalResults} artiste(s) trouvé(s)`}
           </p>
         </div>
 
@@ -195,14 +231,20 @@ export const SearchResults: React.FC = () => {
               Aucun résultat trouvé
             </h3>
             <p className="text-gray-600 mb-6">
-              Essayez avec d'autres termes de recherche ou élargissez votre zone géographique
+              Essayez avec d'autres termes de recherche ou élargissez votre zone
+              géographique
             </p>
 
             <div className="space-y-2 max-w-md mx-auto text-left">
-              <p className="text-sm text-gray-600"><strong>Suggestions :</strong></p>
+              <p className="text-sm text-gray-600">
+                <strong>Suggestions :</strong>
+              </p>
               <ul className="text-sm text-gray-600 space-y-1">
                 <li>• Vérifiez l'orthographe</li>
-                <li>• Utilisez des termes plus généraux (ex: "rock" au lieu de "rock progressif")</li>
+                <li>
+                  • Utilisez des termes plus généraux (ex: "rock" au lieu de
+                  "rock progressif")
+                </li>
                 <li>• Essayez sans spécifier de ville</li>
               </ul>
             </div>
@@ -220,7 +262,7 @@ export const SearchResults: React.FC = () => {
               {loading ? (
                 <span className="loading loading-spinner loading-sm"></span>
               ) : (
-                'Charger plus d\'artistes'
+                "Charger plus d'artistes"
               )}
             </button>
           </div>
@@ -231,7 +273,9 @@ export const SearchResults: React.FC = () => {
 };
 
 // Page de découverte quand pas de recherche
-const DiscoveryPage: React.FC<{ onSearch: (query: string, location?: string) => void }> = ({ onSearch }) => {
+const DiscoveryPage: React.FC<{
+  onSearch: (query: string, location?: string) => void;
+}> = ({ onSearch }) => {
   return (
     <div className="min-h-screen">
       <SEOHead
@@ -243,6 +287,17 @@ const DiscoveryPage: React.FC<{ onSearch: (query: string, location?: string) => 
       {/* Hero de recherche */}
       <section className="bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 py-20">
         <div className="container mx-auto px-4 text-center">
+          <Link
+            to="/"
+            className="text-2xl flex items-center gap-2 justify-center"
+          >
+            <div className="text-2xl">🎭</div>
+            <span>
+              <span className=" text-secondary">Stage</span>
+              Complete
+            </span>
+            <div className="text-2xl">🎪</div>
+          </Link>
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
             Découvrez des artistes
             <span className="block text-purple-300">exceptionnels</span>
@@ -250,7 +305,6 @@ const DiscoveryPage: React.FC<{ onSearch: (query: string, location?: string) => 
           <p className="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
             Plus de 150 artistes professionnels vous attendent
           </p>
-
           <PublicSearchBar
             className="max-w-2xl mx-auto"
             onSearch={onSearch}
@@ -287,7 +341,7 @@ const ArtistCard: React.FC<{ artist: PublicArtistProfile }> = ({ artist }) => {
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <span className="text-white text-3xl font-bold">
-                {artist.profile.name?.[0]?.toUpperCase() || 'A'}
+                {artist.profile.name?.[0]?.toUpperCase() || "A"}
               </span>
             </div>
           )}
@@ -295,7 +349,7 @@ const ArtistCard: React.FC<{ artist: PublicArtistProfile }> = ({ artist }) => {
           {/* Type badge */}
           <div className="absolute top-2 left-2">
             <span className="bg-black/50 backdrop-blur-sm text-white px-2 py-1 rounded text-xs">
-              {artist.artistType === 'SOLO' ? 'Solo' : 'Groupe'}
+              {artist.artistType === "SOLO" ? "Solo" : "Groupe"}
             </span>
           </div>
         </div>

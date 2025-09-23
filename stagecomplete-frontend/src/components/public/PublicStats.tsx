@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
   UserGroupIcon,
   BuildingStorefrontIcon,
   GlobeAltIcon,
-  ChartBarIcon
-} from '@heroicons/react/24/outline';
-import { artistService } from '../../services/artistService';
+  ChartBarIcon,
+} from "@heroicons/react/24/outline";
+import { artistService } from "../../services/artistService";
 
 interface PublicStatsProps {
   className?: string;
@@ -20,25 +20,25 @@ interface Stats {
 
 const STATS_CONFIG = [
   {
-    key: 'totalArtists',
-    label: 'Artistes inscrits',
+    key: "totalArtists",
+    label: "Artistes inscrits",
     icon: UserGroupIcon,
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-100',
+    color: "text-blue-600",
+    bgColor: "bg-blue-100",
   },
   {
-    key: 'publicProfiles',
-    label: 'Profils publics',
+    key: "publicProfiles",
+    label: "Profils publics",
     icon: GlobeAltIcon,
-    color: 'text-green-600',
-    bgColor: 'bg-green-100',
+    color: "text-green-600",
+    bgColor: "bg-green-100",
   },
   {
-    key: 'totalVenues',
-    label: 'Venues partenaires',
+    key: "totalVenues",
+    label: "Venues partenaires",
     icon: BuildingStorefrontIcon,
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-100',
+    color: "text-purple-600",
+    bgColor: "bg-purple-100",
   },
 ];
 
@@ -56,7 +56,7 @@ export const PublicStats: React.FC<PublicStatsProps> = ({ className = "" }) => {
         const data = await artistService.getPublicStats();
         setStats(data);
       } catch (error) {
-        console.error('Error loading stats:', error);
+        console.error("Error loading stats:", error);
         // Valeurs par défaut en cas d'erreur
         setStats({
           totalArtists: 150,
@@ -106,7 +106,9 @@ export const PublicStats: React.FC<PublicStatsProps> = ({ className = "" }) => {
               transition={{ delay: index * 0.1 }}
               className="bg-white rounded-xl shadow-lg p-8 text-center hover:shadow-xl transition-shadow"
             >
-              <div className={`w-16 h-16 ${config.bgColor} rounded-full mx-auto mb-4 flex items-center justify-center`}>
+              <div
+                className={`w-16 h-16 ${config.bgColor} rounded-full mx-auto mb-4 flex items-center justify-center`}
+              >
                 <Icon className={`w-8 h-8 ${config.color}`} />
               </div>
 
@@ -123,7 +125,9 @@ export const PublicStats: React.FC<PublicStatsProps> = ({ className = "" }) => {
               {/* Indicateur de croissance */}
               <div className="mt-3 flex items-center justify-center gap-1 text-green-600">
                 <ChartBarIcon className="w-4 h-4" />
-                <span className="text-sm font-medium">+{Math.floor(Math.random() * 20 + 5)}% ce mois</span>
+                <span className="text-sm font-medium">
+                  +{Math.floor(Math.random() * 20 + 5)}% ce mois
+                </span>
               </div>
             </motion.div>
           );
@@ -145,7 +149,7 @@ export const PublicStats: React.FC<PublicStatsProps> = ({ className = "" }) => {
           </motion.a>
           <motion.a
             href="/directory"
-            className="btn btn-outline btn-lg gap-2"
+            className="btn btn-primary btn-outline btn-lg gap-2"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -167,7 +171,7 @@ interface CountUpAnimationProps {
 const CountUpAnimation: React.FC<CountUpAnimationProps> = ({
   end,
   duration,
-  className = ""
+  className = "",
 }) => {
   const [count, setCount] = useState(0);
 

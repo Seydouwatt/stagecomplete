@@ -308,3 +308,5 @@ export interface ArtistSearchResponse {
   total: number;
   hasMore: boolean;
 }
+
+export { type ArtistCardSmallProps } from "./ArtistCardSmallProps";

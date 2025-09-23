@@ -11,8 +11,13 @@ import {
 } from "@heroicons/react/24/outline";
 import { MultiSelect } from "../forms/MultiSelect";
 import { ImageUpload } from "../forms/ImageUpload";
-import type { ArtistType, ArtistDiscipline } from "../../types";
-import PublicOverview from "./PublicOverview";
+import type {
+  ArtistType,
+  ArtistDiscipline,
+  ArtistCardSmallProps,
+} from "../../types";
+import ArtistCard from "./ArtistCard";
+import { useAuthStore } from "../../stores/authStore";
 
 interface PublicationWizardProps {
   isOpen: boolean;
@@ -123,6 +128,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
     qualityScore: 0,
     ...initialData,
   });
+  const { user } = useAuthStore();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -251,6 +257,59 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
     if (score >= 80) return "Excellent profil !";
     if (score >= 60) return "Bon profil, quelques améliorations possibles";
     return "Profil à compléter pour une meilleure visibilité";
+  };
+
+  // Génération de données pour l'artiste
+  const getArtistData = (data: PublicationData): ArtistCardSmallProps => {
+    if (!user) return {} as ArtistCardSmallProps;
+    const artistData: ArtistCardSmallProps = {
+      // id: user.id,
+      // artistDescription: data.artistDescription,
+      // baseLocation: data.baseLocation,
+      // genres: data.genres,
+
+      // artistType: data.artistType,
+      // artistDiscipline: data.artistDiscipline,
+      // profileId: user.profile.id,
+      // updatedAt: user.updatedAt,
+      // createdAt: user.createdAt,
+
+      coverPhoto: data.mainPhoto,
+      // portfolio: data.portfolioPhotos
+      artistType: data.artistType || "",
+      profile: { name: data.artistName },
+      publicSlug: "Non généré",
+      baseLocation: data.baseLocation,
+      artistDescription: data.artistDescription,
+      genres: data.genres,
+      priceRange: data?.priceRange || "Non renseigné",
+    };
+
+    return artistData;
+
+    // };
+    // return {
+    //   profile: {
+    //     id: data.artistName,
+    //     name: data.artistName,
+    //     coverPhoto: data.mainPhoto,
+    //     location: data.baseLocation,
+    //     // foundedYear: data.foundedYear,
+    //     genres: data.genres,
+    //     // instruments: data.instruments,
+    //     priceRange: data.priceRange,
+    //     // experience: data.experience,
+    //     // yearsActive: data.yearsActive,
+    //   },
+    //   artisticBio: data.artistDescription,
+    //   artistType: data.artistType,
+    //   artistDiscipline: data.artistDiscipline,
+    //   artistDescription: data.artistDescription,
+
+    //   socialLinks: data.socialLinks,
+
+    //   isPublic: data.isPublic,
+    // };
   };
 
   if (!isOpen) return null;
@@ -718,7 +777,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                 </div>
 
                 {/* Aperçu du profil */}
-                <PublicOverview
+                {/* <PublicOverview
                   artistName={formData.artistName}
                   baseLocation={formData.baseLocation}
                   genres={formData.genres}
@@ -728,10 +787,12 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                   portfolioPhotos={formData.portfolioPhotos}
                   demoVideo={formData.demoVideo}
                   priceRange={formData.priceRange}
-                />
+                /> */}
                 {/* <div className="card bg-base-100 border">
                   <div className="card-body">
-                    <h4 className="font-semibold mb-4">Aperçu de votre profil public</h4>
+                    <h4 className="font-semibold mb-4">
+                      Aperçu de votre profil public
+                    </h4>
 
                     <div className="flex gap-4">
                       {formData.mainPhoto && (
@@ -743,11 +804,18 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       )}
 
                       <div className="flex-1">
-                        <h5 className="font-bold text-lg">{formData.artistName || "Nom de l'artiste"}</h5>
-                        <p className="text-base-content/60">{formData.baseLocation}</p>
+                        <h5 className="font-bold text-lg">
+                          {formData.artistName || "Nom de l'artiste"}
+                        </h5>
+                        <p className="text-base-content/60">
+                          {formData.baseLocation}
+                        </p>
                         <div className="flex flex-wrap gap-1 mt-2">
                           {formData.genres.slice(0, 3).map((genre) => (
-                            <span key={genre} className="badge badge-primary badge-sm">
+                            <span
+                              key={genre}
+                              className="badge badge-primary badge-sm"
+                            >
                               {genre}
                             </span>
                           ))}
@@ -756,10 +824,14 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                     </div>
 
                     <p className="mt-4 text-sm">
-                      {formData.artistDescription || "Description de l'artiste..."}
+                      {formData.artistDescription ||
+                        "Description de l'artiste..."}
                     </p>
                   </div>
                 </div> */}
+                <motion.div>
+                  <ArtistCard artist={getArtistData(formData)} />
+                </motion.div>
 
                 {/* Options de publication */}
                 <div className="form-control">

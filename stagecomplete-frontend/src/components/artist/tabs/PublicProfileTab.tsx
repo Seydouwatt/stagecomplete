@@ -2,6 +2,7 @@ import type React from "react";
 import type { UpdateArtistProfileData } from "../../../types";
 import { useAuthStore } from "../../../stores/authStore";
 import PublicOverview from "../PublicOverview";
+import { AnimatePresence, motion } from "framer-motion";
 
 export const PublicProfileTab: React.FC<{
   formData: UpdateArtistProfileData;
@@ -94,19 +95,27 @@ export const PublicProfileTab: React.FC<{
             <h4 className="text-lg font-medium mb-4">
               Aperçu du profil public
             </h4>
-            <div className="mockup-browser border-primary">
-              <PublicOverview
-                artistName={user?.profile?.name || "Nom de l'artiste"}
-                baseLocation={user?.profile?.location || "Votre ville, Pays"}
-                genres={formData.genres || []}
-                mainPhoto={formData.portfolio?.photos?.[0]}
-                artistDescription={formData.artistDescription}
-                socialLinks={formData.socialLinks || {}}
-                portfolioPhotos={formData.portfolio?.photos || []}
-                demoVideo={formData.portfolio?.videos?.[0]}
-                priceRange={formData.priceRange}
-              />
-            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key="step3"
+                initial={{ x: 20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -20, opacity: 0 }}
+                className="space-y-6"
+              >
+                <PublicOverview
+                  artistName={user?.profile?.name || "Nom de l'artiste"}
+                  baseLocation={user?.profile?.location || "Votre ville, Pays"}
+                  genres={formData.genres || []}
+                  mainPhoto={formData.portfolio?.photos?.[0]}
+                  artistDescription={formData.artistDescription}
+                  socialLinks={formData.socialLinks || {}}
+                  portfolioPhotos={formData.portfolio?.photos || []}
+                  demoVideo={formData.portfolio?.videos?.[0]}
+                  priceRange={formData.priceRange}
+                />
+              </motion.div>
+            </AnimatePresence>
           </div>
         </>
       )}

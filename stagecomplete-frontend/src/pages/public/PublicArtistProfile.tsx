@@ -18,7 +18,11 @@ import {
 import { useAuthStore } from "../../stores/authStore";
 import { toast } from "../../stores/useToastStore";
 import { artistService } from "../../services/artistService";
-import { SEOHead, SEO_TEMPLATES, generateArtistSchema } from "../../components/seo/SEOHead";
+import {
+  SEOHead,
+  SEO_TEMPLATES,
+  generateArtistSchema,
+} from "../../components/seo/SEOHead";
 import type { PublicArtistProfile as PublicArtistProfileType } from "../../types";
 
 // Sous-composants des onglets
@@ -288,7 +292,10 @@ export const PublicArtistProfile: React.FC = () => {
         schemaData={generateArtistSchema(artistProfile)}
       />
       {/* Header avec photo de couverture */}
-      <div className="relative h-64 bg-gradient-to-r from-primary to-secondary overflow-hidden" data-cy="profile-header">
+      <div
+        className="relative h-64 bg-gradient-to-r from-primary to-secondary overflow-hidden"
+        data-cy="profile-header"
+      >
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative h-full flex items-end">
           <div className="container mx-auto px-4 pb-6">
@@ -302,8 +309,9 @@ export const PublicArtistProfile: React.FC = () => {
                 <div className="w-24 h-24 rounded-full ring ring-white ring-offset-base-100 ring-offset-2">
                   <img
                     src={
-                      artistProfile.profile.avatar ||
-                      "https://via.placeholder.com/96x96/1f2937/white?text=Artist"
+                      artistProfile.coverPhoto ||
+                      artistProfile.portfolio?.photos?.[0]
+                      // "https://via.placeholder.com/96x96/1f2937/white?text=Artist"
                     }
                     alt={artistProfile.profile.name}
                   />
@@ -316,17 +324,26 @@ export const PublicArtistProfile: React.FC = () => {
                   {artistProfile.profile.name || "Artiste"}
                 </h1>
                 <div className="flex flex-wrap gap-4 text-white/90 text-sm">
-                  <div className="flex items-center gap-1" data-cy="artist-genres">
+                  <div
+                    className="flex items-center gap-1"
+                    data-cy="artist-genres"
+                  >
                     <Music className="w-4 h-4" />
                     {artistProfile.genres.join(", ")}
                   </div>
                   {artistProfile.profile.location && (
-                    <div className="flex items-center gap-1" data-cy="artist-location">
+                    <div
+                      className="flex items-center gap-1"
+                      data-cy="artist-location"
+                    >
                       <MapPin className="w-4 h-4" />
                       {artistProfile.profile.location}
                     </div>
                   )}
-                  <div className="flex items-center gap-1" data-cy="artist-experience">
+                  <div
+                    className="flex items-center gap-1"
+                    data-cy="artist-experience"
+                  >
                     <Calendar className="w-4 h-4" />
                     {artistProfile.yearsActive} ans d'expérience
                   </div>
