@@ -1,5 +1,3 @@
-import { de } from "date-fns/locale";
-
 export const PublicOverview: React.FC<{
   artistName: string;
   baseLocation: string;
@@ -15,17 +13,7 @@ export const PublicOverview: React.FC<{
   demoVideo?: string;
   priceRange?: string;
   artistDescription?: string;
-}> = ({
-  artistName,
-  baseLocation,
-  genres,
-  mainPhoto,
-  artistDescription,
-  socialLinks,
-  portfolioPhotos,
-  demoVideo,
-  priceRange,
-}) => {
+}> = ({ artistName, baseLocation, genres, mainPhoto, artistDescription }) => {
   return (
     <div className="card bg-base-100 border">
       <div className="card-body">
