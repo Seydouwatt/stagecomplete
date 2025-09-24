@@ -37,12 +37,41 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   const [apiError, setApiError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // États pour la preview instantanée
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
   // Mode legacy : gestion base64 direct
   const isLegacyMode = Boolean(value && !artistPageId);
 
   const handleLegacyFileSelect = async (files: File[]) => {
     if (!value || !onChange) return;
 
+    // Si une seule image est sélectionnée, créer une preview pour le mode legacy aussi
+    if (files.length === 1) {
+      const file = files[0];
+
+      // Vérifications
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+        setApiError("Formats acceptés: JPG, PNG, WebP");
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        setApiError("La taille du fichier ne doit pas dépasser 5MB");
+        return;
+      }
+
+      if (value.length >= maxImages) {
+        alert(`Vous ne pouvez télécharger que ${maxImages} images maximum`);
+        return;
+      }
+
+      createPreview(file);
+      return;
+    }
+
+    // Multi-sélection : traitement immédiat comme avant
     // Vérifier la limite d'images
     if (value.length + files.length > maxImages) {
       alert(`Vous ne pouvez télécharger que ${maxImages} images maximum`);
@@ -78,6 +107,29 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     }
   };
 
+  // Confirmer l'ajout en mode legacy
+  const confirmLegacyUpload = async () => {
+    if (!selectedFile || !value || !onChange) return;
+
+    try {
+      setIsUploading(true);
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(selectedFile);
+      });
+
+      onChange([...value, base64] as string[]);
+      cancelPreview();
+    } catch (error) {
+      console.error("Error converting image:", error);
+      setApiError("Erreur lors du traitement de l'image");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const removeLegacyImage = (index: number) => {
     if (!value || !onChange) return;
     const newImages = value.filter((_, i) => i !== index);
@@ -90,6 +142,25 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     const [removed] = newImages.splice(fromIndex, 1);
     newImages.splice(toIndex, 0, removed);
     onChange(newImages as string[]);
+  };
+
+  // Fonction pour créer une preview instantanée
+  const createPreview = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPreviewUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+    setSelectedFile(file);
+  };
+
+  // Fonction pour annuler la preview
+  const cancelPreview = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const toAbsolute = (maybeUrl?: string | null) => {
@@ -150,13 +221,33 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       return;
     }
 
+    // Vérifier le type de fichier
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setApiError("Formats acceptés: JPG, PNG, WebP");
+      return;
+    }
+
+    // Vérifier la taille (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setApiError("La taille du fichier ne doit pas dépasser 5MB");
+      return;
+    }
+
+    // Créer la preview au lieu d'uploader immédiatement
+    createPreview(file);
+  };
+
+  // Nouvelle fonction pour confirmer l'upload après preview
+  const confirmUpload = async () => {
+    if (!selectedFile || !artistPageId) return;
+
     try {
       setApiError(null);
       setIsUploading(true);
 
       // 1) Upload binaire → /files
       const fd = new FormData();
-      fd.append("file", file);
+      fd.append("file", selectedFile);
       const uploadRes = await fetch(`${API}/files?gallery=1`, {
         method: "POST",
         headers: { Authorization: `Bearer ${auth}` },
@@ -180,7 +271,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         body: JSON.stringify({
           type: "PHOTO",
           url: fileUrl,
-          title: file.name,
+          title: selectedFile.name,
           isPublic: true,
         }),
       });
@@ -194,7 +285,8 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       setPhotos(newPhotos);
       onChange?.(newPhotos);
 
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      // Nettoyer la preview
+      cancelPreview();
     } catch (err: any) {
       setApiError(err.message || "Erreur pendant l'upload");
     } finally {
@@ -332,20 +424,64 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
         {/* Uploader */}
         {!isLegacyMode && (
-          <div className="flex items-center gap-3">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="file-input file-input-bordered"
-              disabled={!canAdd || isUploading}
-              onChange={handleFileSelect}
-            />
-            <span className="text-sm opacity-70">
-              {canAdd
-                ? `Vous pouvez ajouter ${maxImages - currentImages.length} photo${maxImages - currentImages.length > 1 ? "s" : ""}.`
-                : "Limite atteinte."}
-            </span>
+          <div className="space-y-4">
+            {/* Preview zone */}
+            {selectedFile && previewUrl && (
+              <div className="bg-base-200 rounded-lg p-4 space-y-4">
+                <h4 className="font-medium">Aperçu de l'image sélectionnée</h4>
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0">
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="w-32 h-32 object-cover rounded-lg border-2 border-primary"
+                    />
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <div className="text-sm">
+                      <p><strong>Nom:</strong> {selectedFile.name}</p>
+                      <p><strong>Taille:</strong> {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                      <p><strong>Type:</strong> {selectedFile.type}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        className={`btn btn-primary btn-sm ${isUploading ? "loading" : ""}`}
+                        onClick={confirmUpload}
+                        disabled={isUploading}
+                      >
+                        {isUploading ? "Upload en cours..." : "Confirmer l'ajout"}
+                      </button>
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={cancelPreview}
+                        disabled={isUploading}
+                      >
+                        Annuler
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Upload input - caché si preview active */}
+            {!selectedFile && (
+              <div className="flex items-center gap-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="file-input file-input-bordered"
+                  disabled={!canAdd || isUploading}
+                  onChange={handleFileSelect}
+                />
+                <span className="text-sm opacity-70">
+                  {canAdd
+                    ? `Vous pouvez ajouter ${maxImages - currentImages.length} photo${maxImages - currentImages.length > 1 ? "s" : ""}.`
+                    : "Limite atteinte."}
+                </span>
+              </div>
+            )}
           </div>
         )}
 
@@ -495,16 +631,58 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           )}
         </div>
 
-        {/* Input file caché pour mode legacy */}
+        {/* Zone de preview et upload pour mode legacy */}
         {isLegacyMode && (
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            multiple
-            onChange={handleFileSelect}
-            className="hidden"
-          />
+          <div className="space-y-4">
+            {/* Preview zone pour legacy */}
+            {selectedFile && previewUrl && (
+              <div className="bg-base-200 rounded-lg p-4 space-y-4">
+                <h4 className="font-medium">Aperçu de l'image sélectionnée</h4>
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0">
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="w-32 h-32 object-cover rounded-lg border-2 border-primary"
+                    />
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <div className="text-sm">
+                      <p><strong>Nom:</strong> {selectedFile.name}</p>
+                      <p><strong>Taille:</strong> {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                      <p><strong>Type:</strong> {selectedFile.type}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        className={`btn btn-primary btn-sm ${isUploading ? "loading" : ""}`}
+                        onClick={confirmLegacyUpload}
+                        disabled={isUploading}
+                      >
+                        {isUploading ? "Traitement..." : "Confirmer l'ajout"}
+                      </button>
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={cancelPreview}
+                        disabled={isUploading}
+                      >
+                        Annuler
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Input file caché pour mode legacy */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+          </div>
         )}
 
         {/* Instructions */}
