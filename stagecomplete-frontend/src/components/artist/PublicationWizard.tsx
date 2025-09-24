@@ -274,7 +274,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
       // updatedAt: user.updatedAt,
       // createdAt: user.createdAt,
 
-      coverPhoto: data.mainPhoto,
+      coverPhoto: data.portfolioPhotos[0] || "",
       // portfolio: data.portfolioPhotos
       artistType: data.artistType || "",
       profile: { name: data.artistName },

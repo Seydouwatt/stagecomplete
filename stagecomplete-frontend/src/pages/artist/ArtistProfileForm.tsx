@@ -495,14 +495,14 @@ const PricingTab: React.FC<{
     <div className="space-y-6">
       <h3 className="text-xl font-semibold">Tarifs et conditions</h3>
 
-      <div className="form-control">
+      <div className="form-control flex flex-col">
         <label className="label">
           <span className="label-text font-medium">
             Fourchette de prix générale
           </span>
         </label>
         <select
-          className="select select-bordered"
+          className="select select-bordered w-full"
           value={formData.priceRange || ""}
           onChange={(e) => updateFormData("priceRange", e.target.value)}
         >
@@ -515,69 +515,67 @@ const PricingTab: React.FC<{
         </select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text font-medium">Prix concert (€)</span>
-          </label>
-          <input
-            type="number"
-            className="input input-bordered w-full"
-            placeholder="500"
-            min="0"
-            value={formData.priceDetails?.concert || ""}
-            onChange={(e) =>
-              updateNestedFormData(
-                "priceDetails",
-                "concert",
-                parseInt(e.target.value) || undefined
-              )
-            }
-          />
-        </div>
+      <div className="form-control flex flex-col">
+        <label className="label">
+          <span className="label-text font-medium">Prix concert (€)</span>
+        </label>
+        <input
+          type="number"
+          className="input input-bordered w-full"
+          placeholder="500"
+          min="0"
+          value={formData.priceDetails?.concert || ""}
+          onChange={(e) =>
+            updateNestedFormData(
+              "priceDetails",
+              "concert",
+              parseInt(e.target.value) || undefined
+            )
+          }
+        />
+      </div>
 
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text font-medium">Prix mariage (€)</span>
-          </label>
-          <input
-            type="number"
-            className="input input-bordered w-full"
-            placeholder="800"
-            min="0"
-            value={formData.priceDetails?.wedding || ""}
-            onChange={(e) =>
-              updateNestedFormData(
-                "priceDetails",
-                "wedding",
-                parseInt(e.target.value) || undefined
-              )
-            }
-          />
-        </div>
-
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text font-medium">Prix privé (€)</span>
-          </label>
-          <input
-            type="number"
-            className="input input-bordered w-full"
-            placeholder="600"
-            min="0"
-            value={formData.priceDetails?.private || ""}
-            onChange={(e) =>
-              updateNestedFormData(
-                "priceDetails",
-                "private",
-                parseInt(e.target.value) || undefined
-              )
-            }
-          />
-        </div>
+      <div className="form-control flex flex-col">
+        <label className="label">
+          <span className="label-text font-medium">Prix mariage (€)</span>
+        </label>
+        <input
+          type="number"
+          className="input input-bordered w-full"
+          placeholder="800"
+          min="0"
+          value={formData.priceDetails?.wedding || ""}
+          onChange={(e) =>
+            updateNestedFormData(
+              "priceDetails",
+              "wedding",
+              parseInt(e.target.value) || undefined
+            )
+          }
+        />
       </div>
 
       <div className="form-control">
+        <label className="label">
+          <span className="label-text font-medium">Prix privé (€)</span>
+        </label>
+        <input
+          type="number"
+          className="input input-bordered w-full"
+          placeholder="600"
+          min="0"
+          value={formData.priceDetails?.private || ""}
+          onChange={(e) =>
+            updateNestedFormData(
+              "priceDetails",
+              "private",
+              parseInt(e.target.value) || undefined
+            )
+          }
+        />
+      </div>
+
+      <div className="form-control flex flex-col">
         <label className="label">
           <span className="label-text font-medium">Conditions et détails</span>
           <span className="label-text-alt">
@@ -585,7 +583,7 @@ const PricingTab: React.FC<{
           </span>
         </label>
         <textarea
-          className="textarea textarea-bordered h-24"
+          className="textarea textarea-bordered h-24 w-full"
           placeholder="Ex: Transport inclus dans un rayon de 50km, setup 1h avant..."
           value={formData.priceDetails?.conditions || ""}
           onChange={(e) =>

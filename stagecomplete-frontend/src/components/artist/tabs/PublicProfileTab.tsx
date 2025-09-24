@@ -1,8 +1,10 @@
 import type React from "react";
-import type { UpdateArtistProfileData } from "../../../types";
+import type {
+  ArtistCardSmallProps,
+  UpdateArtistProfileData,
+} from "../../../types";
 import { useAuthStore } from "../../../stores/authStore";
-import PublicOverview from "../PublicOverview";
-import { AnimatePresence, motion } from "framer-motion";
+import ArtistCard from "../ArtistCard";
 
 export const PublicProfileTab: React.FC<{
   formData: UpdateArtistProfileData;
@@ -15,6 +17,22 @@ export const PublicProfileTab: React.FC<{
   // artistData: _artistData,
 }) => {
   const { user } = useAuthStore();
+
+  const getDataArtist = (
+    formData: UpdateArtistProfileData
+  ): ArtistCardSmallProps => {
+    const artist: ArtistCardSmallProps = {
+      artistDescription: formData.artistDescription || "",
+      baseLocation: user?.profile?.location || "Votre ville, Pays",
+      genres: formData.genres || [],
+      coverPhoto: formData.portfolio?.photos?.[0] || "",
+      artistType: formData.artistType,
+      priceRange: formData.priceRange || "",
+      publicSlug: formData.publicSlug || "",
+      profile: { name: user?.profile?.name || "Nom de l'artiste" },
+    };
+    return artist;
+  };
 
   return (
     <div className="space-y-6">
@@ -95,7 +113,8 @@ export const PublicProfileTab: React.FC<{
             <h4 className="text-lg font-medium mb-4">
               Aperçu du profil public
             </h4>
-            <AnimatePresence mode="wait">
+            <ArtistCard artist={getDataArtist(formData)} />
+            {/* <AnimatePresence mode="wait">
               <motion.div
                 key="step3"
                 initial={{ x: 20, opacity: 0 }}
@@ -115,7 +134,7 @@ export const PublicProfileTab: React.FC<{
                   priceRange={formData.priceRange}
                 />
               </motion.div>
-            </AnimatePresence>
+            </AnimatePresence> */}
           </div>
         </>
       )}

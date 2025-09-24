@@ -14,28 +14,28 @@
 
 **Critères d'acceptation :**
 
-- [ ] URL publique type `/artist/nom-artiste` avec slug personnalisable
-- [ ] Fiche publique responsive et professionnelle
-- [ ] Affichage complet : photos, bio, genres, expérience, membres
-- [ ] Portfolio média (photos + liens YouTube/SoundCloud)
-- [ ] Liens vers plateformes musicales et réseaux sociaux
-- [ ] SEO optimisé (meta tags, OpenGraph pour réseaux sociaux)
-- [ ] Option public/privé (profil visible ou non)
+- [x] URL publique type `/artist/nom-artiste` avec slug personnalisable
+- [x] Fiche publique responsive et professionnelle
+- [x] Affichage complet : photos, bio, genres, expérience, membres
+- [x] Portfolio média (photos + liens YouTube/SoundCloud)
+- [x] Liens vers plateformes musicales et réseaux sociaux
+- [x] SEO optimisé (meta tags, OpenGraph pour réseaux sociaux)
+- [x] Option public/privé (profil visible ou non)
 - [ ] Statistiques de vues (pour l'artiste uniquement)
-- [ ] Partage réseaux sociaux intégré
-- [ ] Tarifs masqués (visibles uniquement venues connectées)
+- [x] Partage réseaux sociaux intégré
+- [x] Tarifs masqués (visibles uniquement venues connectées)
 
 **Issues techniques :**
 
-- [ ] **PUBLIC-001**: Route publique `/artist/:slug` avec gestion 404
-- [ ] **PUBLIC-002**: Composant PublicArtistProfile responsive
-- [ ] **PUBLIC-003**: SEO meta tags et OpenGraph automatiques
-- [ ] **PUBLIC-004**: Système de slug personnalisé avec validation unicité
-- [ ] **PUBLIC-005**: Gallery photos/portfolio avec lightbox
-- [ ] **PUBLIC-006**: Intégration YouTube/SoundCloud players
+- [x] **PUBLIC-001**: Route publique `/artist/:slug` avec gestion 404
+- [x] **PUBLIC-002**: Composant PublicArtistProfile responsive
+- [x] **PUBLIC-003**: SEO meta tags et OpenGraph automatiques
+- [x] **PUBLIC-004**: Système de slug personnalisé avec validation unicité
+- [x] **PUBLIC-005**: Gallery photos/portfolio avec lightbox
+- [x] **PUBLIC-006**: Intégration YouTube/SoundCloud players
 - [ ] **PUBLIC-007**: Statistiques de vues avec analytics
-- [ ] **PUBLIC-008**: Système de partage réseaux sociaux
-- [ ] **PUBLIC-009**: Gestion permissions tarifs (venues uniquement)
+- [x] **PUBLIC-008**: Système de partage réseaux sociaux
+- [x] **PUBLIC-009**: Gestion permissions tarifs (venues uniquement)
 
 ---
 
@@ -47,27 +47,27 @@
 
 **Critères d'acceptation :**
 
-- [ ] Upload multiple de photos portfolio (max 20 photos)
-- [ ] Support formats : JPG, PNG, WebP avec optimisation auto
-- [ ] Ajout liens externes : YouTube, SoundCloud, Spotify, Deezer
-- [ ] Gestion ordre d'affichage portfolio (drag & drop)
-- [ ] Compression et redimensionnement automatique
-- [ ] Preview avant publication sur fiche publique
-- [ ] Suppression/modification médias
+- [x] Upload multiple de photos portfolio (max 20 photos)
+- [x] Support formats : JPG, PNG, WebP avec optimisation auto
+- [x] Ajout liens externes : YouTube, SoundCloud, Spotify, Deezer
+- [x] Gestion ordre d'affichage portfolio (drag & drop)
+- [x] Compression et redimensionnement automatique
+- [x] Preview avant publication sur fiche publique
+- [x] Suppression/modification médias
 - [ ] Organisation par catégories (Live, Studio, Promo, etc.)
-- [ ] Stockage local optimisé avec CDN
+- [x] Stockage local optimisé avec CDN
 - [ ] Limites de stockage et alertes (500MB par artiste)
 
 **Issues techniques :**
 
-- [ ] **MEDIA-001**: Service upload fichiers optimisé (backend)
-- [ ] **MEDIA-002**: Compression et redimensionnement automatique
-- [ ] **MEDIA-003**: Composant PortfolioManager React avec drag & drop
-- [ ] **MEDIA-004**: Players intégrés YouTube/SoundCloud
+- [x] **MEDIA-001**: Service upload fichiers optimisé (backend)
+- [x] **MEDIA-002**: Compression et redimensionnement automatique
+- [x] **MEDIA-003**: Composant PortfolioManager React avec drag & drop
+- [x] **MEDIA-004**: Players intégrés YouTube/SoundCloud
 - [ ] **MEDIA-005**: Système de catégorisation média
-- [ ] **MEDIA-006**: CDN local avec optimisation images
+- [x] **MEDIA-006**: CDN local avec optimisation images
 - [ ] **MEDIA-007**: Gestion quotas et limites stockage
-- [ ] **MEDIA-008**: Lightbox gallery pour fiche publique
+- [x] **MEDIA-008**: Lightbox gallery pour fiche publique
 
 ---
 
@@ -79,27 +79,27 @@
 
 **Critères d'acceptation :**
 
-- [ ] Génération automatique slug à partir du nom artiste
-- [ ] Possibilité de personnaliser le slug (ex: `/artist/the-amazing-band`)
-- [ ] Validation unicité des slugs en temps réel
-- [ ] Suggestions alternatives si slug déjà pris
+- [x] Génération automatique slug à partir du nom artiste
+- [x] Possibilité de personnaliser le slug (ex: `/artist/the-amazing-band`)
+- [x] Validation unicité des slugs en temps réel
+- [x] Suggestions alternatives si slug déjà pris
 - [ ] Redirection automatique ancien slug vers nouveau
-- [ ] Prévisualisation de l'URL finale
-- [ ] Caractères autorisés : lettres, chiffres, tirets
-- [ ] Meta description personnalisable pour SEO
-- [ ] Mots-clés SEO basés sur genres et instruments
-- [ ] OpenGraph image automatique (photo profil ou portfolio)
+- [x] Prévisualisation de l'URL finale
+- [x] Caractères autorisés : lettres, chiffres, tirets
+- [x] Meta description personnalisable pour SEO
+- [x] Mots-clés SEO basés sur genres et instruments
+- [x] OpenGraph image automatique (photo profil ou portfolio)
 
 **Issues techniques :**
 
-- [ ] **SEO-001**: API endpoint génération/validation slugs
+- [x] **SEO-001**: API endpoint génération/validation slugs
 - [ ] **SEO-002**: Système de redirection slug historique
-- [ ] **SEO-003**: Composant SlugEditor avec validation temps réel
-- [ ] **SEO-004**: Génération automatique meta tags SEO
-- [ ] **SEO-005**: OpenGraph tags dynamiques par profil
+- [x] **SEO-003**: Composant SlugEditor avec validation temps réel
+- [x] **SEO-004**: Génération automatique meta tags SEO
+- [x] **SEO-005**: OpenGraph tags dynamiques par profil
 - [ ] **SEO-006**: Sitemap.xml automatique avec profils publics
-- [ ] **SEO-007**: Schema.org markup pour artistes
-- [ ] **SEO-008**: Canonical URLs et gestion duplicatas
+- [x] **SEO-007**: Schema.org markup pour artistes
+- [x] **SEO-008**: Canonical URLs et gestion duplicatas
 
 ---
 
@@ -179,27 +179,27 @@
 
 **Critères d'acceptation :**
 
-- [ ] Frontend déployé sur Vercel avec domaine personnalisé
-- [ ] Variables d'environnement production configurées
-- [ ] HTTPS et certificats SSL fonctionnels
-- [ ] Connexion frontend ↔ backend API sécurisée
-- [ ] Performance optimisée (Lighthouse 90+)
-- [ ] Cache et CDN configurés pour médias
-- [ ] URLs SEO friendly et clean
-- [ ] Erreurs 404 customisées avec suggestions
+- [x] Frontend déployé sur Netlify avec domaine personnalisé
+- [x] Variables d'environnement production configurées
+- [x] HTTPS et certificats SSL fonctionnels
+- [x] Connexion frontend ↔ backend API sécurisée
+- [x] Performance optimisée (Lighthouse 90+)
+- [x] Cache et CDN configurés pour médias
+- [x] URLs SEO friendly et clean
+- [x] Erreurs 404 customisées avec suggestions
 - [ ] Monitoring uptime et erreurs (Sentry)
 - [ ] Backup automatiques base de données
 
 **Issues techniques :**
 
-- [ ] **DEPLOY-013**: Déploiement Vercel avec CI/CD
-- [ ] **DEPLOY-014**: Configuration domaine et SSL
-- [ ] **DEPLOY-015**: Optimisation bundle et performance
-- [ ] **DEPLOY-016**: Setup CDN pour médias statiques
+- [x] **DEPLOY-013**: Déploiement Netlify avec CI/CD
+- [x] **DEPLOY-014**: Configuration domaine et SSL
+- [x] **DEPLOY-015**: Optimisation bundle et performance
+- [x] **DEPLOY-016**: Setup CDN pour médias statiques
 - [ ] **DEPLOY-017**: Monitoring et alerting
-- [ ] **DEPLOY-018**: Pages d'erreur personnalisées
+- [x] **DEPLOY-018**: Pages d'erreur personnalisées
 - [ ] **DEPLOY-019**: Backup et disaster recovery
-- [ ] **DEPLOY-020**: Security headers et protections
+- [x] **DEPLOY-020**: Security headers et protections
 
 ---
 
@@ -239,21 +239,21 @@
 
 ### **Critères globaux :**
 
-- [ ] **Fonctionnel**: Artiste peut créer profil complet → fiche publique SEO → visible par venues
-- [ ] **Qualité**: Système de vérification fonctionnel → profils de qualité → confiance utilisateurs
-- [ ] **Performance**: Application rapide → SEO optimisé → partage social fluide
-- [ ] **Déployé**: Application complète accessible en production avec domaine
-- [ ] **Testé**: Scénarios complets avec données réelles → E2E validation
+- [x] **Fonctionnel**: Artiste peut créer profil complet → fiche publique SEO → visible par venues
+- [x] **Qualité**: Système de vérification fonctionnel → profils de qualité → confiance utilisateurs
+- [x] **Performance**: Application rapide → SEO optimisé → partage social fluide
+- [x] **Déployé**: Application complète accessible en production avec domaine
+- [x] **Testé**: Scénarios complets avec données réelles → E2E validation
 - [ ] **Monitored**: Métriques de qualité → analytics utilisation → alertes erreurs
 
 ### **User Acceptance Testing :**
 
-- [ ] Un artiste peut créer et publier sa fiche publique
-- [ ] Une venue peut découvrir la fiche publique d'un artiste
-- [ ] Les fiches sont bien référencées et partageables
-- [ ] Le système de badges fonctionne et inspire confiance
-- [ ] Les performances sont optimales sur mobile et desktop
-- [ ] La modération maintient la qualité de l'annuaire
+- [x] Un artiste peut créer et publier sa fiche publique
+- [x] Une venue peut découvrir la fiche publique d'un artiste
+- [x] Les fiches sont bien référencées et partageables
+- [x] Le système de badges fonctionne et inspire confiance
+- [x] Les performances sont optimales sur mobile et desktop
+- [x] La modération maintient la qualité de l'annuaire
 
 ---
 
@@ -467,10 +467,24 @@
 ---
 
 ### **📊 PROGRESSION SPRINT 3:**
-**30h complétées** ✅ sur 64h planifiées
+**55h complétées** ✅ sur 64h planifiées *(~86% de complétion)*
 - Profile Management: 4h ✅
 - Member Management: 8h ✅
 - Build Optimization: 12h ✅
 - Landing Page: 6h ✅
+- Public Artist Profiles: 14h ✅
+- Portfolio Management: 8h ✅
+- SEO & Slug System: 3h ✅
 
 **🎯 Sprint 3 - PRODUCTION READY ! Application stable et déployée avec succès 🚀**
+
+### **📋 TÂCHES RESTANTES (9h estimées):**
+- [ ] Statistiques de vues avec analytics (3h)
+- [ ] Système de redirection slug historique (2h)
+- [ ] Organisation médias par catégories (2h)
+- [ ] Monitoring uptime et erreurs (Sentry) (2h)
+
+### **🆕 COMPOSANTS AJOUTÉS RÉCEMMENT:**
+- **ArtistCard.tsx** - Composant réutilisable pour cartes d'artistes ✅
+- **ArtistCardSmallProps.ts** - Interface TypeScript pour props ✅
+- **Refactorisation UI** - Extraction code dupliqué et amélioration cohérence ✅
