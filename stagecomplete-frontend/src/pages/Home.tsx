@@ -75,9 +75,9 @@ const Home: React.FC = () => {
                 transition={{ delay: 0.1 }}
                 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight"
               >
-                Découvrez l'artiste
+                Artistes, créez votre
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
-                  parfait pour vous
+                  fiche gratuite
                 </span>
               </motion.h1>
 
@@ -88,9 +88,9 @@ const Home: React.FC = () => {
                 transition={{ delay: 0.2 }}
                 className="text-xl text-gray-200 mb-12 max-w-3xl mx-auto leading-relaxed"
               >
-                La plus grande communauté d'artistes professionnels. Trouvez le
-                talent idéal près de chez vous ou partagez votre passion avec le
-                monde entier.
+                Rejoignez la plus grande communauté d'artistes professionnels.
+                Créez votre vitrine en 5 minutes : portfolio, URL personnalisée,
+                partage réseaux sociaux - 100% gratuit !
               </motion.p>
 
               {/* Barre de recherche */}
@@ -142,11 +142,11 @@ const Home: React.FC = () => {
                 className="flex flex-col sm:flex-row gap-4 justify-center items-center"
               >
                 <Link
-                  to="/register"
+                  to="/artistes"
                   className="bg-white text-purple-900 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center gap-2"
                 >
-                  <UserGroupIcon className="w-5 h-5" />
-                  Créer mon profil d'artiste
+                  <SparklesIcon className="w-5 h-5" />
+                  Créer ma fiche artiste gratuite
                 </Link>
 
                 <Link
@@ -257,25 +257,29 @@ const Home: React.FC = () => {
         <section className="bg-gradient-to-r from-purple-600 to-blue-600 py-20">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-4xl font-bold text-white mb-4">
-              Prêt à partager votre talent ?
+              Plus de 500 artistes nous font déjà confiance
             </h2>
             <p className="text-purple-100 text-xl mb-8 max-w-2xl mx-auto">
-              Rejoignez des centaines d'artistes qui utilisent déjà
-              StageComplete pour développer leur carrière musicale.
+              Créez votre fiche artiste professionnelle en quelques minutes.
+              URL personnalisée, portfolio illimité, SEO optimisé - le tout gratuitement !
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                to="/register"
-                className="bg-white text-purple-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                to="/artistes"
+                className="bg-white text-purple-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center gap-2"
               >
-                Créer mon profil gratuitement
+                <SparklesIcon className="w-5 h-5" />
+                Créer ma fiche artiste gratuite
               </Link>
 
-              <button className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-purple-600 transition-all duration-200 flex items-center justify-center gap-2">
+              <Link
+                to="/directory"
+                className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-purple-600 transition-all duration-200 flex items-center justify-center gap-2"
+              >
                 <PlayCircleIcon className="w-5 h-5" />
-                Voir la démo
-              </button>
+                Voir les artistes
+              </Link>
             </div>
           </div>
         </section>

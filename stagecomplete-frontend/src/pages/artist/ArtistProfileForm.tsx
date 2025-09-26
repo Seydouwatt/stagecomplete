@@ -611,6 +611,9 @@ const PortfolioTab: React.FC<{
         value={formData.portfolio?.photos || []}
         onChange={(value) => updateNestedFormData("portfolio", "photos", value)}
         maxImages={8}
+        isPremiumFeature={true}
+        freeLimit={4}
+        premiumLimit={10}
       />
 
       {/* Liens sociaux et plateformes */}

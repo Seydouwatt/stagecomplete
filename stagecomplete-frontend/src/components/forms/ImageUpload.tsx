@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { ArtistMedia } from "../../types";
+import { useAuthStore } from "../../stores/authStore";
 
 interface ImageUploadProps {
   label: string;
@@ -16,6 +17,10 @@ interface ImageUploadProps {
   apiBase?: string;
   token?: string;
   onChange?: (photos: ArtistMedia[] | string[]) => void;
+  // Nouvelles props pour limitation freemium
+  isPremiumFeature?: boolean; // Si true, utilise la logique freemium
+  freeLimit?: number; // Limite en version gratuite (défaut: 4)
+  premiumLimit?: number; // Limite en version premium (défaut: 10)
 }
 
 export const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -29,6 +34,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   apiBase,
   token,
   onChange,
+  isPremiumFeature = false,
+  freeLimit = 4,
+  premiumLimit = 10,
 }) => {
   const API = apiBase ?? import.meta.env.VITE_API_URL;
   const auth = token ?? localStorage.getItem("token") ?? "";
@@ -40,6 +48,25 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   // États pour la preview instantanée
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  // Logique freemium - récupération plan utilisateur
+  const { user } = useAuthStore();
+
+  // Calcul de la limite effective selon le plan
+  const getEffectiveMaxImages = () => {
+    if (!isPremiumFeature) {
+      return maxImages; // Utilise la limite classique si pas de freemium
+    }
+
+    // TODO: Vérifier le plan utilisateur quand le système premium sera implémenté
+    // Pour l'instant, tous les utilisateurs sont en gratuit
+    const isUserPremium = false; // user?.plan === 'PREMIUM'
+
+    return isUserPremium ? premiumLimit : freeLimit;
+  };
+
+  const effectiveMaxImages = getEffectiveMaxImages();
+  const isFreePlan = isPremiumFeature && effectiveMaxImages === freeLimit;
 
   // Mode legacy : gestion base64 direct
   const isLegacyMode = Boolean(value && !artistPageId);
@@ -62,8 +89,11 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         return;
       }
 
-      if (value.length >= maxImages) {
-        alert(`Vous ne pouvez télécharger que ${maxImages} images maximum`);
+      if (value.length >= effectiveMaxImages) {
+        const message = isFreePlan
+          ? `Limite gratuite atteinte (${freeLimit} photos). Passez à Premium pour ${premiumLimit} photos !`
+          : `Vous ne pouvez télécharger que ${effectiveMaxImages} images maximum`;
+        alert(message);
         return;
       }
 
@@ -73,8 +103,11 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
     // Multi-sélection : traitement immédiat comme avant
     // Vérifier la limite d'images
-    if (value.length + files.length > maxImages) {
-      alert(`Vous ne pouvez télécharger que ${maxImages} images maximum`);
+    if (value.length + files.length > effectiveMaxImages) {
+      const message = isFreePlan
+        ? `Limite gratuite atteinte (${freeLimit} photos). Passez à Premium pour ${premiumLimit} photos !`
+        : `Vous ne pouvez télécharger que ${effectiveMaxImages} images maximum`;
+      alert(message);
       return;
     }
 
@@ -216,8 +249,11 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     if (!artistPageId) return;
 
     // Vérifier la limite d'images
-    if (photos.length >= maxImages) {
-      alert(`Vous ne pouvez télécharger que ${maxImages} images maximum`);
+    if (photos.length >= effectiveMaxImages) {
+      const message = isFreePlan
+        ? `Limite gratuite atteinte (${freeLimit} photos). Passez à Premium pour ${premiumLimit} photos !`
+        : `Vous ne pouvez télécharger que ${effectiveMaxImages} images maximum`;
+      alert(message);
       return;
     }
 
@@ -379,7 +415,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   };
 
   const currentImages = isLegacyMode ? (value || []) : photos;
-  const canAdd = currentImages.length < maxImages;
+  const canAdd = currentImages.length < effectiveMaxImages;
 
   return (
     <div className={`${isLegacyMode ? 'form-control w-full' : 'card bg-base-100 shadow'} ${className}`}>
@@ -390,15 +426,20 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               <label className="label">
                 <span className="label-text font-medium">{label}</span>
                 <span className="label-text-alt text-base-content/60">
-                  {currentImages.length}/{maxImages}
+                  {currentImages.length}/{effectiveMaxImages}
+                  {isFreePlan && (
+                    <span className="text-warning ml-1">(gratuit)</span>
+                  )}
                 </span>
               </label>
             ) : (
               <>
                 <h2 className="card-title">{label}</h2>
                 <p className="text-sm opacity-70">
-                  {currentImages.length}/{maxImages} photo{maxImages > 1 ? "s" : ""} • Ordre
-                  personnalisable
+                  {currentImages.length}/{effectiveMaxImages} photo{effectiveMaxImages > 1 ? "s" : ""}
+                  {isFreePlan && (
+                    <span className="text-warning"> (gratuit - passez à Premium pour {premiumLimit})</span>
+                  )} • Ordre personnalisable
                 </p>
               </>
             )}
@@ -477,7 +518,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                 />
                 <span className="text-sm opacity-70">
                   {canAdd
-                    ? `Vous pouvez ajouter ${maxImages - currentImages.length} photo${maxImages - currentImages.length > 1 ? "s" : ""}.`
+                    ? `Vous pouvez ajouter ${effectiveMaxImages - currentImages.length} photo${effectiveMaxImages - currentImages.length > 1 ? "s" : ""}.`
+                    : isFreePlan
+                    ? `Limite gratuite atteinte. Passez à Premium pour ${premiumLimit - freeLimit} photos supplémentaires !`
                     : "Limite atteinte."}
                 </span>
               </div>
@@ -689,9 +732,12 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         <div className="text-sm text-base-content/60 space-y-1">
           <p>• Formats supportés: JPG, PNG, WebP</p>
           <p>• Taille maximum: 5MB par image</p>
-          {maxImages > 1 && isLegacyMode && <p>• Glissez-déposez pour réorganiser</p>}
-          {maxImages > 1 && !isLegacyMode && <p>• Utilisez les boutons ↑/↓ pour réorganiser</p>}
-          {maxImages > 1 && (
+          {isFreePlan && (
+            <p className="text-warning">• Plan gratuit: maximum {freeLimit} photos (Premium: {premiumLimit} photos)</p>
+          )}
+          {effectiveMaxImages > 1 && isLegacyMode && <p>• Glissez-déposez pour réorganiser</p>}
+          {effectiveMaxImages > 1 && !isLegacyMode && <p>• Utilisez les boutons ↑/↓ pour réorganiser</p>}
+          {effectiveMaxImages > 1 && (
             <p>• La première image sera votre photo principale</p>
           )}
           {isLegacyMode && (value || []).length > 0 && (

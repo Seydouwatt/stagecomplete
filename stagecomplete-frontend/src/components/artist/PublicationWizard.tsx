@@ -581,6 +581,9 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                   value={formData.portfolioPhotos}
                   onChange={(value) => updateFormData("portfolioPhotos", value)}
                   maxImages={8}
+                  isPremiumFeature={true}
+                  freeLimit={4}
+                  premiumLimit={10}
                 />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -9,6 +9,12 @@ import type { PublicArtistProfile, ArtistSearchFilters } from "../../types";
 import { MapPinIcon, MusicalNoteIcon } from "@heroicons/react/24/outline";
 import ArtistCard from "../../components/artist/ArtistCard";
 
+// Composants landing
+import ArtistLandingHero from "../../components/landing/ArtistLandingHero";
+import ArtistValueProps from "../../components/landing/ArtistValueProps";
+import ArtistTestimonials from "../../components/landing/ArtistTestimonials";
+import QuickSignup from "../../components/landing/QuickSignup";
+
 // Mapping des genres pour URLs SEO-friendly
 const GENRE_MAPPING: Record<
   string,
@@ -113,6 +119,9 @@ export const GenreDirectory: React.FC = () => {
   const genreInfo = genre ? GENRE_MAPPING[genre.toLowerCase()] : null;
   const cityInfo = city ? CITY_MAPPING[city.toLowerCase()] : null;
 
+  // Détection de la landing page artistes (route /artistes sans paramètres)
+  const isArtistLandingPage = !genre && !city;
+
   // Rediriger si le genre/ville n'existe pas dans notre mapping
   useEffect(() => {
     if (genre && !genreInfo) {
@@ -207,6 +216,24 @@ export const GenreDirectory: React.FC = () => {
         ]
       : []),
   ];
+
+  // Si c'est la landing page artistes, afficher les composants landing
+  if (isArtistLandingPage) {
+    return (
+      <div className="min-h-screen">
+        <SEOHead
+          title="Créer sa Fiche Artiste Gratuite | StageComplete"
+          description="Créez votre fiche artiste professionnelle en 5 minutes. Portfolio, URL personnalisée, partage facile - 100% gratuit pour tous les artistes."
+          keywords={["fiche artiste", "portfolio artiste", "profil musicien", "vitrine artistique", "gratuit"]}
+          url="/artistes"
+        />
+        <ArtistLandingHero />
+        <ArtistValueProps />
+        <ArtistTestimonials />
+        <QuickSignup />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
