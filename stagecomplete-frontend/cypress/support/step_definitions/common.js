@@ -1,4 +1,4 @@
-import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { Given, When, Then, And } from '@badeball/cypress-cucumber-preprocessor';
 
 // Common steps used across multiple features
 
@@ -568,7 +568,6 @@ When('I add a member with:', (dataTable) => {
 Then('I should see {int} member in the list', (count) => {
   cy.get('[data-testid="member-list"] .member-item').should('have.length', count);
 });
-
 Given('I have a band profile with {int} members', (memberCount) => {
   cy.createBandProfileWithMembers(memberCount);
 });

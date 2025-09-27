@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
@@ -12,11 +12,23 @@ import {
   TrendingUp,
   Users,
   LogOut,
+  Crown,
 } from "lucide-react";
 import { clsx } from "clsx";
 
 import { useAuthStore } from "../../stores/authStore";
 import { ROUTES } from "../../constants";
+import UpgradePrompt from "../premium/UpgradePrompt";
+
+
+interface NavigationItem {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  href: string;
+  badge?: number;
+  isPremium?: boolean;
+}
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -27,39 +39,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
   const { user, logout } = useAuthStore();
   const location = useLocation();
   const navigate = useNavigate();
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
 
-  // Navigation items based on role
-  const getNavigationItems = () => {
-    const baseItems = [
-      {
-        id: "dashboard",
-        label: "Dashboard",
-        icon: Home,
-        href: "/dashboard",
-      },
-      {
-        id: "messages",
-        label: "Messages",
-        icon: MessageSquare,
-        href: "/messages",
-        badge: 3,
-      },
-      {
-        id: "calendar",
-        label: "Calendrier",
-        icon: Calendar,
-        href: "/calendar",
-      },
-    ];
+  const isFreeArtist =
+    user?.role === "ARTIST" && (!user?.plan || user.plan === "FREE");
+
+  // Navigation items based on role and plan
+  const getNavigationItems = (): NavigationItem[] => {
+    const isPremium = user?.plan === "PREMIUM";
 
     if (user?.role === "ARTIST") {
-      return [
-        ...baseItems,
+      // Sections de base pour les artistes gratuits
+      const freeArtistItems: NavigationItem[] = [
         {
-          id: "browse-venues",
-          label: "Trouver des venues",
-          icon: Search,
-          href: "/browse/venues",
+          id: "dashboard",
+          label: "Dashboard",
+          icon: Home,
+          href: "/dashboard",
         },
         {
           id: "portfolio",
@@ -67,20 +63,77 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
           icon: Music,
           href: "/artist/portfolio",
         },
+      ];
+
+      // Sections premium pour les artistes
+      const premiumArtistItems: NavigationItem[] = [
+        {
+          id: "messages",
+          label: "Messages",
+          icon: MessageSquare,
+          href: "/messages",
+          badge: 3,
+          isPremium: true,
+        },
+        {
+          id: "calendar",
+          label: "Calendrier",
+          icon: Calendar,
+          href: "/calendar",
+          isPremium: true,
+        },
+        {
+          id: "browse-venues",
+          label: "Trouver des venues",
+          icon: Search,
+          href: "/browse/venues",
+          isPremium: true,
+        },
         {
           id: "bookings",
           label: "Mes Bookings",
           icon: Calendar,
           href: "/artist/bookings",
+          isPremium: true,
         },
         {
           id: "analytics",
           label: "Statistiques",
           icon: TrendingUp,
           href: "/artist/analytics",
+          isPremium: true,
         },
       ];
+
+      if (isPremium) {
+        return [...freeArtistItems, ...premiumArtistItems];
+      } else {
+        return freeArtistItems;
+      }
     } else if (user?.role === "VENUE") {
+      // Les venues ont accès à tout (pour l'instant)
+      const baseItems: NavigationItem[] = [
+        {
+          id: "dashboard",
+          label: "Dashboard",
+          icon: Home,
+          href: "/dashboard",
+        },
+        {
+          id: "messages",
+          label: "Messages",
+          icon: MessageSquare,
+          href: "/messages",
+          badge: 3,
+        },
+        {
+          id: "calendar",
+          label: "Calendrier",
+          icon: Calendar,
+          href: "/calendar",
+        },
+      ];
+
       return [
         ...baseItems,
         {
@@ -110,7 +163,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
       ];
     }
 
-    return baseItems;
+    // Default pour autres rôles
+    return [
+      {
+        id: "dashboard",
+        label: "Dashboard",
+        icon: Home,
+        href: "/dashboard",
+      },
+    ];
   };
 
   const navigationItems = getNavigationItems();
@@ -129,6 +190,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 
   return (
     <aside
+      data-testid="sidebar"
       className={clsx(
         "bg-base-200 border-r border-base-300 transition-all duration-300 h-[calc(100vh-64px)]",
         "lg:static lg:translate-x-0",
@@ -179,6 +241,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
               <li key={item.id}>
                 <Link
                   to={item.href}
+                  data-testid={`nav-${item.id}`}
                   className={clsx(
                     "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
                     isActive
@@ -198,11 +261,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
               </li>
             );
           })}
-          <Link to="/browse" className="btn btn-ghost">
-            {user?.role === "ARTIST"
-              ? "Découvrir les venues"
-              : "Découvrir les artistes"}
-          </Link>
+
+          {/* Lien Découvrir - seulement pour premium ou venues */}
+          {(user?.role === "VENUE" || user?.plan === "PREMIUM") && (
+            <Link to="/browse" className="btn btn-ghost">
+              {user?.role === "ARTIST"
+                ? "Découvrir les venues"
+                : "Découvrir les artistes"}
+            </Link>
+          )}
+
+          {/* Bouton upgrade pour artistes gratuits */}
+          {isFreeArtist && (
+            <button
+              onClick={() => setShowUpgradePrompt(!showUpgradePrompt)}
+              className="btn bg-gradient-to-r from-purple-500 to-blue-500 text-white border-none hover:from-purple-600 hover:to-blue-600 mt-4"
+            >
+              <Crown className="w-4 h-4" />
+              Passer à Premium
+            </button>
+          )}
         </ul>
 
         {/* Bottom section */}
@@ -211,6 +289,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
             <li>
               <Link
                 to="/user"
+                data-testid="nav-profile"
                 className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-base-300"
               >
                 <User className="w-5 h-5" />
@@ -220,6 +299,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
             <li>
               <Link
                 to="/settings"
+                data-testid="nav-settings"
                 className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-base-300"
               >
                 <Settings className="w-5 h-5" />
@@ -229,6 +309,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
             <li>
               <button
                 onClick={handleLogout}
+                data-testid="nav-logout"
                 className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-error/10 text-error w-full text-left"
               >
                 <LogOut className="w-5 h-5" />
@@ -255,13 +336,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                 <p className="text-sm font-medium truncate">
                   {user?.profile?.name}
                 </p>
-                <p className="text-xs text-base-content/60">Plan Premium</p>
+                <p className="text-xs text-base-content/60">
+                  Plan {user?.plan === "PREMIUM" ? "Premium" : "Gratuit"}
+                </p>
               </div>
               <div className="w-2 h-2 bg-success rounded-full"></div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Upgrade Prompt Modal pour artistes gratuits */}
+      {showUpgradePrompt && isFreeArtist && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="max-w-md w-full">
+            <UpgradePrompt
+              trigger="sidebar"
+              onClose={() => setShowUpgradePrompt(false)}
+            />
+          </div>
+        </div>
+      )}
     </aside>
   );
 };

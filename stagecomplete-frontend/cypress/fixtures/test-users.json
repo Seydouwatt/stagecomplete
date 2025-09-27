@@ -7,9 +7,71 @@
   },
   "testVenue": {
     "name": "Test Venue",
-    "email": "test-venue@stagecomplete.fr", 
+    "email": "test-venue@stagecomplete.fr",
     "password": "TestPass123!",
     "accountType": "VENUE"
+  },
+  "artists": {
+    "free": {
+      "name": "Free Artist",
+      "email": "free-artist@test.com",
+      "password": "TestPass123!",
+      "plan": "FREE"
+    },
+    "premium": {
+      "name": "Premium Artist",
+      "email": "premium-artist@test.com",
+      "password": "TestPass123!",
+      "plan": "PREMIUM"
+    },
+    "incomplete_25": {
+      "name": "Artist 25%",
+      "email": "artist25@test.com",
+      "password": "TestPass123!",
+      "plan": "FREE"
+    },
+    "incomplete_40": {
+      "name": "Artist 40%",
+      "email": "artist40@test.com",
+      "password": "TestPass123!",
+      "plan": "FREE"
+    },
+    "incomplete_50": {
+      "name": "Artist 50%",
+      "email": "artist50@test.com",
+      "password": "TestPass123!",
+      "plan": "FREE"
+    },
+    "incomplete_58": {
+      "name": "Artist 58%",
+      "email": "artist58@test.com",
+      "password": "TestPass123!",
+      "plan": "FREE"
+    },
+    "incomplete_70": {
+      "name": "Artist 70%",
+      "email": "artist70@test.com",
+      "password": "TestPass123!",
+      "plan": "FREE"
+    },
+    "complete_85": {
+      "name": "Artist 85%",
+      "email": "artist85@test.com",
+      "password": "TestPass123!",
+      "plan": "FREE"
+    },
+    "complete_90": {
+      "name": "Artist 90%",
+      "email": "artist90@test.com",
+      "password": "TestPass123!",
+      "plan": "FREE"
+    },
+    "fresh": {
+      "name": "Fresh Artist",
+      "email": "fresh@test.com",
+      "password": "TestPass123!",
+      "plan": "FREE"
+    }
   },
   "artistProfiles": {
     "soloArtist": {

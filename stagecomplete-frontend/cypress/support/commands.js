@@ -16,23 +16,31 @@ Cypress.Commands.add('loginAsArtist', (email = 'test-artist@stagecomplete.fr', p
  * Register a new artist account
  */
 Cypress.Commands.add('registerArtist', (userData = {}) => {
+  const timestamp = Date.now();
   const defaultUser = {
     name: 'Test Artist',
-    email: `test-${Date.now()}@stagecomplete.fr`,
+    email: `test-artist-${timestamp}@stagecomplete.fr`,
     password: 'TestPass123!',
-    accountType: 'ARTIST'
+    role: 'ARTIST'
   };
-  
+
   const user = { ...defaultUser, ...userData };
-  
+
+  // Ensure unique email if not provided
+  if (userData.email && !userData.email.includes(timestamp)) {
+    user.email = `${userData.email.split('@')[0]}-${timestamp}@${userData.email.split('@')[1]}`;
+  }
+
   cy.visit('/register');
-  cy.get('input[name="name"]').type(user.name);
-  cy.get('input[name="email"]').type(user.email);
-  cy.get('input[name="password"]').type(user.password);
-  cy.get('select[name="accountType"]').select(user.accountType);
-  cy.get('button[type="submit"]').click();
-  cy.wait('@register');
-  
+  cy.get('[data-cy="name"]').type(user.name);
+  cy.get('[data-cy="register-email"]').type(user.email);
+  cy.get('[data-cy="register-password"]').type(user.password);
+  cy.get('[data-cy="register-role-artist"]').check({ force: true });
+  cy.get('[data-cy="register-submit"]').click();
+
+  // Should be redirected to dashboard after successful registration
+  cy.url().should('include', '/dashboard', { timeout: 10000 });
+
   return cy.wrap(user);
 });
 
