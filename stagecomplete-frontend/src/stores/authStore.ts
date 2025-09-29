@@ -9,6 +9,7 @@ import type {
 } from "../types";
 import { authService } from "../services/authService";
 import { profileService } from "../services/profileService";
+import { userService } from "../services/userService";
 
 interface AuthState {
   // State
@@ -26,6 +27,7 @@ interface AuthState {
   setLoading: (loading: boolean) => void;
   updateProfile: (data: UpdateProfileData) => Promise<void>;
   refreshUser: () => Promise<void>;
+  deleteAccount: (currentPassword: string) => Promise<void>;
 
   // Utils
   getAuthHeader: () => string | null;
@@ -164,6 +166,33 @@ export const useAuthStore = create<AuthState>()(
           const errorMessage =
             error.response?.data?.message ||
             "Une erreur est survenue lors du rafraîchissement des données";
+          set({
+            error: Array.isArray(errorMessage) ? errorMessage[0] : errorMessage,
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+      // Delete account action
+      deleteAccount: async (currentPassword: string) => {
+        try {
+          set({ isLoading: true, error: null });
+
+          await userService.deleteAccount(currentPassword);
+
+          // Clear all auth data after successful deletion
+          set({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: null,
+          });
+        } catch (error: any) {
+          const errorMessage =
+            error.response?.data?.message ||
+            "Une erreur est survenue lors de la suppression du compte";
           set({
             error: Array.isArray(errorMessage) ? errorMessage[0] : errorMessage,
             isLoading: false,

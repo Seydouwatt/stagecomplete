@@ -20,9 +20,12 @@ import {
 } from "../../components/dashboard";
 import { LineChart, BarChart, DonutChart } from "../../components/charts";
 import MobileStatsCarousel from "./MobileStatsCarousel";
+import ProfileCompletionPrompt from "../../components/dashboard/ProfileCompletionPrompt";
+import { useProfileCompletion } from "../../hooks/useProfileCompletion";
 
 export const ArtistDashboard: React.FC = () => {
   const { user } = useAuthStore();
+  const { shouldShowAssistantPrompt, completionPercentage } = useProfileCompletion();
 
   // Données mockées pour les charts
   const revenueData = [
@@ -52,40 +55,84 @@ export const ArtistDashboard: React.FC = () => {
     { name: "Dim", value: 70 },
   ];
 
-  const quickActions = [
-    {
-      id: "new-event",
-      label: "Nouvel événement",
-      description: "Créer une nouvelle performance",
-      icon: Plus,
-      color: "bg-primary",
-      onClick: () => console.log("Nouvel événement"),
-    },
-    {
-      id: "find-venues",
-      label: "Trouver des venues",
-      description: "Explorer de nouveaux lieux",
-      icon: Search,
-      color: "bg-secondary",
-      onClick: () => console.log("Trouver venues"),
-    },
-    {
-      id: "upload-content",
-      label: "Upload contenu",
-      description: "Ajouter photos/vidéos",
-      icon: Upload,
-      color: "bg-success",
-      onClick: () => console.log("Upload contenu"),
-    },
-    {
-      id: "settings",
-      label: "Paramètres",
-      description: "Gérer votre profil",
-      icon: Settings,
-      color: "bg-info",
-      onClick: () => console.log("Paramètres"),
-    },
-  ];
+  // Actions adaptées selon la complétude du profil
+  const getQuickActions = () => {
+    if (shouldShowAssistantPrompt) {
+      // Actions prioritaires pour profil incomplet
+      return [
+        {
+          id: "complete-profile",
+          label: "Compléter le profil",
+          description: "Utiliser l'assistant guidé",
+          icon: Upload,
+          color: "bg-purple-500",
+          onClick: () => window.location.href = "/artist/profile-wizard",
+        },
+        {
+          id: "add-photos",
+          label: "Ajouter des photos",
+          description: "Portfolio et galerie",
+          icon: Upload,
+          color: "bg-success",
+          onClick: () => window.location.href = "/artist/portfolio",
+        },
+        {
+          id: "edit-profile",
+          label: "Éditer le profil",
+          description: "Informations de base",
+          icon: Settings,
+          color: "bg-info",
+          onClick: () => window.location.href = "/artist/portfolio",
+        },
+        {
+          id: "view-profile",
+          label: "Voir ma fiche publique",
+          description: "Comment les venues me voient",
+          icon: Search,
+          color: "bg-secondary",
+          onClick: () => console.log("Voir profil public"),
+        },
+      ];
+    } else {
+      // Actions standard pour profil complet
+      return [
+        {
+          id: "new-event",
+          label: "Nouvel événement",
+          description: "Créer une nouvelle performance",
+          icon: Plus,
+          color: "bg-primary",
+          onClick: () => console.log("Nouvel événement"),
+        },
+        {
+          id: "find-venues",
+          label: "Trouver des venues",
+          description: "Explorer de nouveaux lieux",
+          icon: Search,
+          color: "bg-secondary",
+          onClick: () => console.log("Trouver venues"),
+        },
+        {
+          id: "upload-content",
+          label: "Upload contenu",
+          description: "Ajouter photos/vidéos",
+          icon: Upload,
+          color: "bg-success",
+          onClick: () => console.log("Upload contenu"),
+        },
+        {
+          id: "settings",
+          label: "Paramètres",
+          description: "Gérer votre profil",
+          icon: Settings,
+          color: "bg-info",
+          onClick: () => console.log("Paramètres"),
+        },
+      ];
+    }
+  };
+
+  const quickActions = getQuickActions();
 
   const recentActivities = [
     {
@@ -125,36 +172,40 @@ export const ArtistDashboard: React.FC = () => {
       className="space-y-6"
     >
         {/* Welcome section */}
-        <div className="hero bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl">
-          <div className="hero-content text-center py-8">
-            <div className="max-w-md">
-              <motion.h1
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="text-3xl font-bold mb-4"
-              >
-                Bienvenue, {user?.profile?.name} ! 🎭
-              </motion.h1>
-              <motion.p
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="text-base-content/70 mb-6"
-              >
-                Votre carrière artistique en plein essor
-              </motion.p>
-              <motion.button
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="btn btn-primary"
-              >
-                Créer un nouvel événement
-              </motion.button>
+        {shouldShowAssistantPrompt ? (
+          <ProfileCompletionPrompt className="mb-6" />
+        ) : (
+          <div className="hero bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl">
+            <div className="hero-content text-center py-8">
+              <div className="max-w-md">
+                <motion.h1
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-3xl font-bold mb-4"
+                >
+                  Bienvenue, {user?.profile?.name} ! 🎭
+                </motion.h1>
+                <motion.p
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-base-content/70 mb-6"
+                >
+                  Votre profil est complet à {completionPercentage}% ! Prêt pour de nouveaux défis.
+                </motion.p>
+                <motion.button
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="btn btn-primary"
+                >
+                  Créer un nouvel événement
+                </motion.button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Stats cards */}
         <div className="hidden lg:grid lg:grid-cols-4 gap-6">

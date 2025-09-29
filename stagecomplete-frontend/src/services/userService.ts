@@ -77,6 +77,14 @@ export const userService = {
     const response = await api.put(API_ENDPOINTS.AUTH.USER_PASSWORD, data);
     return response.data;
   },
+
+  // Delete account (soft delete with cascade)
+  async deleteAccount(currentPassword: string): Promise<{ message: string; deletedAt: string }> {
+    const response = await api.delete(API_ENDPOINTS.AUTH.DELETE_ACCOUNT, {
+      data: { currentPassword }
+    });
+    return response.data;
+  },
 };
 
 export default userService;

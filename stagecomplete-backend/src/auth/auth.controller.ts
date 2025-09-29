@@ -4,6 +4,7 @@ import {
   Get,
   Post,
   Put,
+  Delete,
   UseGuards,
   BadRequestException,
   HttpStatus,
@@ -26,6 +27,8 @@ import {
   UpdateProfileDto,
   UpdateUserDto,
   ChangePasswordDto,
+  DeleteAccountDto,
+  DeleteAccountResponseDto,
 } from './dto';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -643,5 +646,35 @@ export class AuthController {
       user.userId,
       changePasswordDto,
     );
+  }
+
+  @Delete('user')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth('JWT-auth')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Supprimer le compte utilisateur',
+    description:
+      'Supprime définitivement le compte utilisateur et toutes ses données associées. Cette action est irréversible.',
+  })
+  @ApiBody({
+    type: DeleteAccountDto,
+    description: 'Mot de passe actuel requis pour confirmer la suppression'
+  })
+  @ApiOkResponse({
+    description: 'Compte supprimé avec succès',
+    type: DeleteAccountResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Données invalides',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token manquant ou invalide, ou mot de passe incorrect',
+  })
+  async deleteAccount(
+    @GetUser() user: AuthenticatedUser,
+    @Body() deleteAccountDto: DeleteAccountDto,
+  ): Promise<DeleteAccountResponseDto> {
+    return await this.authService.deleteAccount(user.userId, deleteAccountDto);
   }
 }

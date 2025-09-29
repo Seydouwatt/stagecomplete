@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { ArtistMedia } from "../../types";
-import { useAuthStore } from "../../stores/authStore";
+import { usePremiumFeatures } from "../../hooks/usePremiumFeatures";
 
 interface ImageUploadProps {
   label: string;
@@ -50,7 +50,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Logique freemium - récupération plan utilisateur
-  const { user } = useAuthStore();
+  const { isPremium } = usePremiumFeatures(); // canAccess
 
   // Calcul de la limite effective selon le plan
   const getEffectiveMaxImages = () => {
@@ -58,15 +58,11 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       return maxImages; // Utilise la limite classique si pas de freemium
     }
 
-    // TODO: Vérifier le plan utilisateur quand le système premium sera implémenté
-    // Pour l'instant, tous les utilisateurs sont en gratuit
-    const isUserPremium = false; // user?.plan === 'PREMIUM'
-
-    return isUserPremium ? premiumLimit : freeLimit;
+    return isPremium ? premiumLimit : freeLimit;
   };
 
   const effectiveMaxImages = getEffectiveMaxImages();
-  const isFreePlan = isPremiumFeature && effectiveMaxImages === freeLimit;
+  const isFreePlan = isPremiumFeature && !isPremium;
 
   // Mode legacy : gestion base64 direct
   const isLegacyMode = Boolean(value && !artistPageId);
@@ -290,7 +286,8 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         body: fd,
       });
       const uploadJson = await uploadRes.json().catch(() => null);
-      if (!uploadRes.ok) throw new Error(uploadJson?.message || "Upload impossible");
+      if (!uploadRes.ok)
+        throw new Error(uploadJson?.message || "Upload impossible");
 
       // L'API /files peut renvoyer { id, url }
       const fileUrl = toAbsolute(
@@ -298,19 +295,22 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       );
 
       // 2) Créer le media → POST /artist-page/:id/medias
-      const createRes = await fetch(`${API}/artist-page/${artistPageId}/medias`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${auth}`,
-        },
-        body: JSON.stringify({
-          type: "PHOTO",
-          url: fileUrl,
-          title: selectedFile.name,
-          isPublic: true,
-        }),
-      });
+      const createRes = await fetch(
+        `${API}/artist-page/${artistPageId}/medias`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${auth}`,
+          },
+          body: JSON.stringify({
+            type: "PHOTO",
+            url: fileUrl,
+            title: selectedFile.name,
+            isPublic: true,
+          }),
+        }
+      );
       const created = await createRes.json().catch(() => null);
       if (!createRes.ok)
         throw new Error(created?.message || "Création media échouée");
@@ -357,7 +357,10 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     const targetIndex = index + direction;
     if (targetIndex < 0 || targetIndex >= newPhotos.length) return;
 
-    [newPhotos[index], newPhotos[targetIndex]] = [newPhotos[targetIndex], newPhotos[index]];
+    [newPhotos[index], newPhotos[targetIndex]] = [
+      newPhotos[targetIndex],
+      newPhotos[index],
+    ];
     setPhotos(newPhotos);
     onChange?.(newPhotos);
   };
@@ -414,12 +417,16 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     }
   };
 
-  const currentImages = isLegacyMode ? (value || []) : photos;
+  const currentImages = isLegacyMode ? value || [] : photos;
   const canAdd = currentImages.length < effectiveMaxImages;
 
   return (
-    <div className={`${isLegacyMode ? 'form-control w-full' : 'card bg-base-100 shadow'} ${className}`}>
-      <div className={isLegacyMode ? '' : 'card-body gap-4'}>
+    <div
+      className={`${
+        isLegacyMode ? "form-control w-full" : "card bg-base-100 shadow"
+      } ${className}`}
+    >
+      <div className={isLegacyMode ? "" : "card-body gap-4"}>
         <div className="flex items-start justify-between gap-4">
           <div>
             {isLegacyMode ? (
@@ -436,10 +443,15 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               <>
                 <h2 className="card-title">{label}</h2>
                 <p className="text-sm opacity-70">
-                  {currentImages.length}/{effectiveMaxImages} photo{effectiveMaxImages > 1 ? "s" : ""}
+                  {currentImages.length}/{effectiveMaxImages} photo
+                  {effectiveMaxImages > 1 ? "s" : ""}
                   {isFreePlan && (
-                    <span className="text-warning"> (gratuit - passez à Premium pour {premiumLimit})</span>
-                  )} • Ordre personnalisable
+                    <span className="text-warning">
+                      {" "}
+                      (gratuit - passez à Premium pour {premiumLimit})
+                    </span>
+                  )}{" "}
+                  • Ordre personnalisable
                 </p>
               </>
             )}
@@ -480,17 +492,28 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                   </div>
                   <div className="flex-1 space-y-2">
                     <div className="text-sm">
-                      <p><strong>Nom:</strong> {selectedFile.name}</p>
-                      <p><strong>Taille:</strong> {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
-                      <p><strong>Type:</strong> {selectedFile.type}</p>
+                      <p>
+                        <strong>Nom:</strong> {selectedFile.name}
+                      </p>
+                      <p>
+                        <strong>Taille:</strong>{" "}
+                        {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
+                      <p>
+                        <strong>Type:</strong> {selectedFile.type}
+                      </p>
                     </div>
                     <div className="flex gap-2">
                       <button
-                        className={`btn btn-primary btn-sm ${isUploading ? "loading" : ""}`}
+                        className={`btn btn-primary btn-sm ${
+                          isUploading ? "loading" : ""
+                        }`}
                         onClick={confirmUpload}
                         disabled={isUploading}
                       >
-                        {isUploading ? "Upload en cours..." : "Confirmer l'ajout"}
+                        {isUploading
+                          ? "Upload en cours..."
+                          : "Confirmer l'ajout"}
                       </button>
                       <button
                         className="btn btn-ghost btn-sm"
@@ -518,9 +541,15 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                 />
                 <span className="text-sm opacity-70">
                   {canAdd
-                    ? `Vous pouvez ajouter ${effectiveMaxImages - currentImages.length} photo${effectiveMaxImages - currentImages.length > 1 ? "s" : ""}.`
+                    ? `Vous pouvez ajouter ${
+                        effectiveMaxImages - currentImages.length
+                      } photo${
+                        effectiveMaxImages - currentImages.length > 1 ? "s" : ""
+                      }.`
                     : isFreePlan
-                    ? `Limite gratuite atteinte. Passez à Premium pour ${premiumLimit - freeLimit} photos supplémentaires !`
+                    ? `Limite gratuite atteinte. Passez à Premium pour ${
+                        premiumLimit - freeLimit
+                      } photos supplémentaires !`
                     : "Limite atteinte."}
                 </span>
               </div>
@@ -529,7 +558,13 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         )}
 
         {/* Liste des photos */}
-        <div className={`grid gap-4 ${isLegacyMode ? 'grid-cols-2 md:grid-cols-3 mb-4' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'}`}>
+        <div
+          className={`grid gap-4 ${
+            isLegacyMode
+              ? "grid-cols-2 md:grid-cols-3 mb-4"
+              : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          }`}
+        >
           {isLegacyMode ? (
             // Mode legacy avec base64
             <>
@@ -546,7 +581,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                   }}
                   onDrop={(e) => {
                     e.preventDefault();
-                    const fromIndex = parseInt(e.dataTransfer.getData("text/plain"));
+                    const fromIndex = parseInt(
+                      e.dataTransfer.getData("text/plain")
+                    );
                     if (fromIndex !== index) {
                       reorderLegacyImages(fromIndex, index);
                     }
@@ -572,7 +609,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
                   {/* Badge de position */}
                   <div className="absolute top-2 left-2">
-                    <span className="badge badge-primary badge-sm">{index + 1}</span>
+                    <span className="badge badge-primary badge-sm">
+                      {index + 1}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -592,8 +631,18 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                     </>
                   ) : (
                     <>
-                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      <svg
+                        className="w-8 h-8"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 4v16m8-8H4"
+                        />
                       </svg>
                       <span className="text-sm">Ajouter</span>
                     </>
@@ -653,7 +702,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                       </label>
 
                       <button
-                        className={`btn btn-error btn-xs ${isUploading ? "loading" : ""}`}
+                        className={`btn btn-error btn-xs ${
+                          isUploading ? "loading" : ""
+                        }`}
                         onClick={() => removeImage(media.id)}
                         disabled={isUploading}
                       >
@@ -666,7 +717,8 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               {photos.length === 0 && (
                 <div className="col-span-full alert">
                   <span>
-                    Aucune photo pour l'instant. Ajoutez-en via le bouton ci-dessus.
+                    Aucune photo pour l'instant. Ajoutez-en via le bouton
+                    ci-dessus.
                   </span>
                 </div>
               )}
@@ -691,13 +743,22 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                   </div>
                   <div className="flex-1 space-y-2">
                     <div className="text-sm">
-                      <p><strong>Nom:</strong> {selectedFile.name}</p>
-                      <p><strong>Taille:</strong> {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
-                      <p><strong>Type:</strong> {selectedFile.type}</p>
+                      <p>
+                        <strong>Nom:</strong> {selectedFile.name}
+                      </p>
+                      <p>
+                        <strong>Taille:</strong>{" "}
+                        {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
+                      <p>
+                        <strong>Type:</strong> {selectedFile.type}
+                      </p>
                     </div>
                     <div className="flex gap-2">
                       <button
-                        className={`btn btn-primary btn-sm ${isUploading ? "loading" : ""}`}
+                        className={`btn btn-primary btn-sm ${
+                          isUploading ? "loading" : ""
+                        }`}
                         onClick={confirmLegacyUpload}
                         disabled={isUploading}
                       >
@@ -733,10 +794,17 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           <p>• Formats supportés: JPG, PNG, WebP</p>
           <p>• Taille maximum: 5MB par image</p>
           {isFreePlan && (
-            <p className="text-warning">• Plan gratuit: maximum {freeLimit} photos (Premium: {premiumLimit} photos)</p>
+            <p className="text-warning">
+              • Plan gratuit: maximum {freeLimit} photos (Premium:{" "}
+              {premiumLimit} photos)
+            </p>
           )}
-          {effectiveMaxImages > 1 && isLegacyMode && <p>• Glissez-déposez pour réorganiser</p>}
-          {effectiveMaxImages > 1 && !isLegacyMode && <p>• Utilisez les boutons ↑/↓ pour réorganiser</p>}
+          {effectiveMaxImages > 1 && isLegacyMode && (
+            <p>• Glissez-déposez pour réorganiser</p>
+          )}
+          {effectiveMaxImages > 1 && !isLegacyMode && (
+            <p>• Utilisez les boutons ↑/↓ pour réorganiser</p>
+          )}
           {effectiveMaxImages > 1 && (
             <p>• La première image sera votre photo principale</p>
           )}
@@ -744,7 +812,10 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             <p className="text-success">
               • {(value || []).length} image(s) •
               {Math.round(
-                (value || []).reduce((total, img) => total + img.length / 1024, 0)
+                (value || []).reduce(
+                  (total, img) => total + img.length / 1024,
+                  0
+                )
               )}{" "}
               KB total
             </p>

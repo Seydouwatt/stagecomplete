@@ -5,3 +5,4 @@ export * from './jwt-payload.dto';
 export * from './verify-token.dto';
 export * from './update-profile.dto';
 export * from './update-user.dto';
+export * from './delete-account.dto';

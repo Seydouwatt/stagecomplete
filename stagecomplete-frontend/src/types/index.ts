@@ -46,6 +46,7 @@ export interface User {
   phone?: string;
   isFounder: boolean;
   role: "ARTIST" | "VENUE" | "MEMBER" | "ADMIN";
+  plan?: "FREE" | "PREMIUM"; // Plan utilisateur pour les fonctionnalités premium
   profile: Profile;
   createdAt: string;
   updatedAt: string;

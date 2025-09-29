@@ -467,7 +467,7 @@
 ---
 
 ### **📊 PROGRESSION SPRINT 3:**
-**55h complétées** ✅ sur 64h planifiées *(~86% de complétion)*
+**73h complétées** ✅ sur 64h planifiées *(~114% de complétion)*
 - Profile Management: 4h ✅
 - Member Management: 8h ✅
 - Build Optimization: 12h ✅
@@ -475,8 +475,11 @@
 - Public Artist Profiles: 14h ✅
 - Portfolio Management: 8h ✅
 - SEO & Slug System: 3h ✅
+- **Freemium Model**: 6h ✅
+- **Artist Marketing Strategy**: 8h ✅
+- **Profile Completion Guide**: 4h ✅
 
-**🎯 Sprint 3 - PRODUCTION READY ! Application stable et déployée avec succès 🚀**
+**🎯 Sprint 3 - BUSINESS READY ! Application avec modèle freemium et stratégie acquisition 🚀💰**
 
 ### **📋 TÂCHES RESTANTES (9h estimées):**
 - [ ] Statistiques de vues avec analytics (3h)
@@ -484,7 +487,63 @@
 - [ ] Organisation médias par catégories (2h)
 - [ ] Monitoring uptime et erreurs (Sentry) (2h)
 
+### **🆕 FONCTIONNALITÉS DÉVELOPPÉES (26 Septembre 2025):**
+
+#### **✅ US-037: Freemium Model & Premium Features (6h)**
+
+**En tant qu'** artiste
+**Je veux** avoir accès à des fonctionnalités premium payantes
+**Afin de** débloquer plus d'outils pour développer ma carrière
+
+**Critères d'acceptation :**
+- [x] Type User enrichi avec champ `plan: "FREE" | "PREMIUM"`
+- [x] Limitation photos portfolio (4 gratuit / 10 premium)
+- [x] Sidebar adaptée selon le plan utilisateur
+- [x] Composant UpgradePrompt pour incitation premium
+- [x] Hook usePremiumFeatures pour vérification permissions
+- [x] Composant PremiumRoute pour protection routes payantes
+- [x] Artistes gratuits : Dashboard, Portfolio, Infos, Paramètres uniquement
+- [x] Premium : Accès complet (Messages, Calendrier, Venues, Analytics)
+- [x] Pricing visible : 9€/mois sans engagement
+
+#### **✅ US-038: Artist-First Marketing Strategy (8h)**
+
+**En tant qu'** visiteur intéressé par la création artistique
+**Je veux** découvrir facilement comment créer ma fiche artiste
+**Afin de** rejoindre la plateforme et booster ma visibilité
+
+**Critères d'acceptation :**
+- [x] Landing page dédiée `/artistes` avec messaging ciblé
+- [x] Composants marketing : Hero, ValueProps, Testimonials, QuickSignup
+- [x] Route GenreDirectory adaptée pour landing vs directory
+- [x] Tunnel d'inscription optimisé pour artistes (pré-sélection rôle)
+- [x] Home.tsx recentré sur acquisition artistes
+- [x] CTAs redirigeant vers landing artiste au lieu de register direct
+- [x] SEO optimisé pour "fiche artiste gratuite"
+- [x] Tracking conversion avec paramètres `?from=artist`
+
+#### **✅ US-039: Profile Completion Assistant (4h)**
+
+**En tant qu'** artiste avec profil incomplet
+**Je veux** être guidé vers l'assistant plutôt que vers la création d'événements
+**Afin de** maximiser mes chances d'être trouvé par des venues
+
+**Critères d'acceptation :**
+- [x] Hook useProfileCompletion avec scoring intelligent (8 critères)
+- [x] Composant ProfileCompletionPrompt avec design attractif
+- [x] Dashboard adaptatif selon complétude du profil
+- [x] Seuil 60% pour affichage prompt d'assistant
+- [x] Quick Actions dynamiques selon maturité profil
+- [x] Barre de progression et liste éléments manquants
+- [x] Arguments de vente : 3x plus de demandes, priorité recherches
+- [x] CTA dual : Assistant guidé vs Complétion manuelle
+
 ### **🆕 COMPOSANTS AJOUTÉS RÉCEMMENT:**
 - **ArtistCard.tsx** - Composant réutilisable pour cartes d'artistes ✅
 - **ArtistCardSmallProps.ts** - Interface TypeScript pour props ✅
+- **UpgradePrompt.tsx** - Modal d'incitation premium avec pricing ✅
+- **PremiumRoute.tsx** - Protection routes pour fonctionnalités payantes ✅
+- **ProfileCompletionPrompt.tsx** - Guidage complétude profil dashboard ✅
+- **Landing components** - Hero, ValueProps, Testimonials, QuickSignup ✅
+- **Hooks** - usePremiumFeatures, useProfileCompletion ✅
 - **Refactorisation UI** - Extraction code dupliqué et amélioration cohérence ✅

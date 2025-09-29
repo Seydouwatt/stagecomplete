@@ -31,6 +31,7 @@ export const API_ENDPOINTS = {
     CHECK_EMAIL: "/auth/check-email",
     USER: "/auth/user",
     USER_PASSWORD: "/auth/user/password",
+    DELETE_ACCOUNT: "/auth/user",
   },
   PROFILE: {
     GET: "/profile",

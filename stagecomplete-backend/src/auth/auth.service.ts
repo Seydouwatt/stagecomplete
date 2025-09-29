@@ -15,6 +15,8 @@ import {
   UpdateProfileDto,
   UpdateUserDto,
   ChangePasswordDto,
+  DeleteAccountDto,
+  DeleteAccountResponseDto,
 } from './dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
@@ -750,6 +752,77 @@ export class AuthService {
       console.error('Erreur lors du changement de mot de passe:', error);
       throw new InternalServerErrorException(
         'Erreur lors du changement de mot de passe',
+      );
+    }
+  }
+
+  /**
+   * Supprimer le compte utilisateur et toutes ses données associées
+   */
+  async deleteAccount(
+    userId: string,
+    deleteAccountDto: DeleteAccountDto,
+  ): Promise<DeleteAccountResponseDto> {
+    try {
+      // Récupérer l'utilisateur avec le mot de passe
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          password: true,
+          email: true,
+          profile: {
+            select: {
+              name: true
+            }
+          }
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException('Utilisateur non trouvé');
+      }
+
+      // Vérifier le mot de passe actuel
+      const isCurrentPasswordValid = await this.verifyPassword(
+        deleteAccountDto.currentPassword,
+        user.password,
+      );
+
+      if (!isCurrentPasswordValid) {
+        throw new UnauthorizedException('Mot de passe incorrect');
+      }
+
+      // Log de l'action pour audit
+      console.log(`Suppression du compte utilisateur: ${user.email} (${user.profile?.name || 'N/A'}) - ${new Date().toISOString()}`);
+
+      // Supprimer l'utilisateur (cascade automatique via Prisma)
+      // Les relations suivantes seront supprimées automatiquement :
+      // - Profile (et par cascade Artist/Venue)
+      // - ArtistMember
+      // - Messages
+      // - Événements
+      const deletedAt = new Date();
+
+      await this.prisma.user.delete({
+        where: { id: userId },
+      });
+
+      return {
+        message: 'Votre compte a été supprimé avec succès',
+        deletedAt: deletedAt.toISOString(),
+      };
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof UnauthorizedException
+      ) {
+        throw error;
+      }
+
+      console.error('Erreur lors de la suppression du compte:', error);
+      throw new InternalServerErrorException(
+        'Erreur lors de la suppression du compte',
       );
     }
   }

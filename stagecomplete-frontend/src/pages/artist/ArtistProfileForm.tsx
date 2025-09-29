@@ -381,6 +381,7 @@ export const ArtistProfileForm: React.FC = () => {
           return (
             <button
               key={tab.id}
+              data-testid={`tab-${tab.id}`}
               className={`tab gap-2 flex-nowrap whitespace-nowrap ${
                 activeTab === tab.id ? "tab-active" : ""
               }`}
@@ -606,15 +607,17 @@ const PortfolioTab: React.FC<{
       <h3 className="text-xl font-semibold">Portfolio multimédia</h3>
 
       {/* Photos */}
-      <ImageUpload
-        label="Photos"
-        value={formData.portfolio?.photos || []}
-        onChange={(value) => updateNestedFormData("portfolio", "photos", value)}
-        maxImages={8}
-        isPremiumFeature={true}
-        freeLimit={4}
-        premiumLimit={10}
-      />
+      <div data-testid="portfolio-photos-section">
+        <ImageUpload
+          label="Photos"
+          value={formData.portfolio?.photos || []}
+          onChange={(value) => updateNestedFormData("portfolio", "photos", value)}
+          maxImages={8}
+          isPremiumFeature={true}
+          freeLimit={4}
+          premiumLimit={10}
+        />
+      </div>
 
       {/* Liens sociaux et plateformes */}
       <div>

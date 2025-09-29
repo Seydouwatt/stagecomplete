@@ -60,6 +60,7 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({
 
   return (
     <motion.div
+      data-testid="upgrade-prompt"
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
@@ -93,7 +94,7 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({
         <div className="bg-white rounded-lg p-4 border border-purple-100 mb-6">
           <div className="text-center">
             <div className="flex items-baseline justify-center gap-1 mb-2">
-              <span className="text-3xl font-bold text-purple-600">9€</span>
+              <span className="text-3xl font-bold text-purple-600">€9/month</span>
               <span className="text-gray-500">/mois</span>
             </div>
             <p className="text-gray-600 text-sm">
@@ -103,7 +104,7 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({
         </div>
 
         {/* Features */}
-        <div className="space-y-3 mb-6">
+        <div className="space-y-3 mb-6" data-testid="premium-benefits">
           <h4 className="font-semibold text-gray-900 flex items-center gap-2">
             <SparklesIcon className="w-4 h-4 text-purple-600" />
             Fonctionnalités Premium :
@@ -116,6 +117,7 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
               className="flex items-start gap-3 p-3 bg-white rounded-lg border border-purple-100"
+              data-testid="benefit-item"
             >
               <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
                 <feature.icon className="w-4 h-4 text-purple-600" />
