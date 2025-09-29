@@ -260,8 +260,9 @@ const Home: React.FC = () => {
               Plus de 500 artistes nous font déjà confiance
             </h2>
             <p className="text-purple-100 text-xl mb-8 max-w-2xl mx-auto">
-              Créez votre fiche artiste professionnelle en quelques minutes.
-              URL personnalisée, portfolio illimité, SEO optimisé - le tout gratuitement !
+              Créez votre profil d'artiste professionnelle en quelques minutes.
+              URL personnalisée, portfolio , SEO optimisé - le tout gratuitement
+              !
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -270,7 +271,7 @@ const Home: React.FC = () => {
                 className="bg-white text-purple-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center gap-2"
               >
                 <SparklesIcon className="w-5 h-5" />
-                Créer ma fiche artiste gratuite
+                Créer votre profil d'artiste
               </Link>
 
               <Link
@@ -278,7 +279,7 @@ const Home: React.FC = () => {
                 className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-purple-600 transition-all duration-200 flex items-center justify-center gap-2"
               >
                 <PlayCircleIcon className="w-5 h-5" />
-                Voir les artistes
+                Voir la démo
               </Link>
             </div>
           </div>

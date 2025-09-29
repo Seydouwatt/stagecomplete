@@ -18,6 +18,7 @@ import type {
 } from "../../types";
 import ArtistCard from "./ArtistCard";
 import { useAuthStore } from "../../stores/authStore";
+import { useProfileCompletion } from "../../hooks/useProfileCompletion";
 
 interface PublicationWizardProps {
   isOpen: boolean;
@@ -129,13 +130,19 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
     ...initialData,
   });
   const { user } = useAuthStore();
+  const { completionPercentage, missingItems, completedItems } =
+    useProfileCompletion();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [initialCompletionPercentage] = useState(completionPercentage);
 
-  // Calculer le score de qualité en temps réel
+  // Calculer l'impact des modifications du wizard sur le score de complétion
   useEffect(() => {
-    const score = calculateQualityScore(formData);
-    setFormData((prev) => ({ ...prev, qualityScore: score }));
+    const estimatedScore = estimateCompletionAfterWizard(
+      formData,
+      missingItems
+    );
+    setFormData((prev) => ({ ...prev, qualityScore: estimatedScore }));
   }, [
     formData.artistName,
     formData.artistDescription,
@@ -146,43 +153,75 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
     formData.socialLinks,
     formData.demoVideo,
     formData.priceRange,
+    missingItems,
+    completionPercentage,
   ]);
 
-  const calculateQualityScore = (data: PublicationData): number => {
-    let score = 0;
+  // Helper pour afficher un badge si le champ correspond à un élément manquant
+  const getMissingItemBadge = (itemKey: string) => {
+    const missingItem = missingItems.find((item) => item.key === itemKey);
+    if (!missingItem) return null;
 
-    // Photo profil (20%)
-    if (data.mainPhoto) score += 20;
+    return <span className="badge badge-warning badge-sm ml-2">Manquant</span>;
+  };
 
-    // Bio complète (15%)
-    if (data.artistDescription && data.artistDescription.length >= 50)
-      score += 15;
+  // Estimer le pourcentage de complétion après les modifications du wizard
+  const estimateCompletionAfterWizard = (
+    data: PublicationData,
+    missing: typeof missingItems
+  ): number => {
+    // Calculer combien d'éléments manquants seraient complétés par les données du wizard
+    const totalItems = missing.length + completedItems.length;
+    if (totalItems === 0) return 100;
 
-    // 3+ genres (10%)
-    if (data.genres.length >= 3) score += 10;
-    else if (data.genres.length >= 1) score += 5;
+    let itemsWillBeCompleted = 0;
 
-    // Localisation (10%)
-    if (data.baseLocation) score += 10;
+    missing.forEach((item) => {
+      switch (item.key) {
+        case "basic_info":
+          if (data.artistName && data.artistDescription) {
+            itemsWillBeCompleted++;
+          }
+          break;
+        case "cover_photo":
+          if (data.mainPhoto) {
+            itemsWillBeCompleted++;
+          }
+          break;
+        case "genres":
+          if (data.genres.length > 0) {
+            itemsWillBeCompleted++;
+          }
+          break;
+        case "portfolio_photos":
+          if (data.portfolioPhotos.length >= 2) {
+            itemsWillBeCompleted++;
+          }
+          break;
+        case "location":
+          if (data.baseLocation) {
+            itemsWillBeCompleted++;
+          }
+          break;
+        case "artist_type":
+          if (data.artistType) {
+            itemsWillBeCompleted++;
+          }
+          break;
+        case "pricing":
+          if (data.priceRange) {
+            itemsWillBeCompleted++;
+          }
+          break;
+        // Les autres éléments (instruments) ne sont pas dans ce wizard
+        default:
+          break;
+      }
+    });
 
-    // Liens sociaux (15%)
-    const socialLinksCount = Object.values(data.socialLinks).filter(
-      (link) => link && link.trim()
-    ).length;
-    if (socialLinksCount >= 2) score += 15;
-    else if (socialLinksCount >= 1) score += 8;
-
-    // Photos portfolio (15%)
-    if (data.portfolioPhotos.length >= 3) score += 15;
-    else if (data.portfolioPhotos.length >= 1) score += 8;
-
-    // Vidéo (10%)
-    if (data.demoVideo) score += 10;
-
-    // Tarifs (5%)
-    if (data.priceRange) score += 5;
-
-    return Math.min(100, score);
+    // Calculer le nouveau pourcentage estimé
+    const itemsCompleted = completedItems.length + itemsWillBeCompleted;
+    return Math.round((itemsCompleted / totalItems) * 100);
   };
 
   const updateFormData = (field: keyof PublicationData, value: any) => {
@@ -286,30 +325,6 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
     };
 
     return artistData;
-
-    // };
-    // return {
-    //   profile: {
-    //     id: data.artistName,
-    //     name: data.artistName,
-    //     coverPhoto: data.mainPhoto,
-    //     location: data.baseLocation,
-    //     // foundedYear: data.foundedYear,
-    //     genres: data.genres,
-    //     // instruments: data.instruments,
-    //     priceRange: data.priceRange,
-    //     // experience: data.experience,
-    //     // yearsActive: data.yearsActive,
-    //   },
-    //   artisticBio: data.artistDescription,
-    //   artistType: data.artistType,
-    //   artistDiscipline: data.artistDiscipline,
-    //   artistDescription: data.artistDescription,
-
-    //   socialLinks: data.socialLinks,
-
-    //   isPublic: data.isPublic,
-    // };
   };
 
   if (!isOpen) return null;
@@ -380,10 +395,49 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
               );
             })}
           </div>
+
+          {/* Global Progress Bar */}
+          <div className="mt-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-primary-content/90">
+                Complétion du profil
+              </span>
+              <span className="text-sm font-bold text-primary-content">
+                {completionPercentage}%
+              </span>
+            </div>
+            <div className="w-full bg-primary-content/20 rounded-full h-2">
+              <motion.div
+                className="bg-primary-content h-2 rounded-full"
+                initial={{ width: `${completionPercentage}%` }}
+                animate={{ width: `${formData.qualityScore}%` }}
+                transition={{ duration: 0.5 }}
+              />
+            </div>
+          </div>
         </div>
 
+        {/* Missing Items Alert */}
+        {missingItems.length > 0 && currentStep === 1 && (
+          <div className="px-6 pt-4 pb-0">
+            <div className="alert alert-info bg-blue-50 border-blue-200">
+              <div className="flex-1">
+                <p className="font-medium text-blue-900">
+                  {missingItems.length} élément
+                  {missingItems.length > 1 ? "s" : ""} manquant
+                  {missingItems.length > 1 ? "s" : ""} dans votre profil
+                </p>
+                <p className="text-sm text-blue-700 mt-1">
+                  Cet assistant va vous aider à les compléter pour améliorer
+                  votre visibilité
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+        <div className="p-6 overflow-y-auto max-h-[calc(70vh-200px)]">
           <AnimatePresence mode="wait">
             {currentStep === 1 && (
               <motion.div
@@ -405,8 +459,8 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text font-medium">
-                        Nom artistique *
+                      <span className="label-text font-medium flex items-center">
+                        Nom artistique *{getMissingItemBadge("basic_info")}
                       </span>
                     </label>
                     <input
@@ -432,8 +486,8 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
 
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text font-medium">
-                        Localisation *
+                      <span className="label-text font-medium flex items-center">
+                        Localisation *{getMissingItemBadge("location")}
                       </span>
                     </label>
                     <input
@@ -460,8 +514,8 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text font-medium">
-                        Type d'artiste *
+                      <span className="label-text font-medium flex items-center">
+                        Type d'artiste *{getMissingItemBadge("artist_type")}
                       </span>
                     </label>
                     <select
@@ -507,16 +561,23 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                   </div>
                 </div>
 
-                <MultiSelect
-                  label="Genres / Styles *"
-                  options={MUSIC_GENRES}
-                  value={formData.genres}
-                  onChange={(value) => updateFormData("genres", value)}
-                  placeholder="Sélectionnez vos genres"
-                  maxSelections={5}
-                  allowCustom={true}
-                  error={errors.genres}
-                />
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text font-medium flex items-center">
+                      Genres / Styles *{getMissingItemBadge("genres")}
+                    </span>
+                  </label>
+                  <MultiSelect
+                    label=""
+                    options={MUSIC_GENRES}
+                    value={formData.genres}
+                    onChange={(value) => updateFormData("genres", value)}
+                    placeholder="Sélectionnez vos genres"
+                    maxSelections={5}
+                    allowCustom={true}
+                    error={errors.genres}
+                  />
+                </div>
 
                 <div className="form-control">
                   <label className="label">
@@ -547,15 +608,23 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                   )}
                 </div>
 
-                <ImageUpload
-                  label="Photo de profil principale *"
-                  value={formData.mainPhoto ? [formData.mainPhoto] : []}
-                  onChange={(value) =>
-                    updateFormData("mainPhoto", value[0] || "")
-                  }
-                  maxImages={1}
-                  error={errors.mainPhoto}
-                />
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text font-medium flex items-center">
+                      Photo de profil principale *
+                      {getMissingItemBadge("cover_photo")}
+                    </span>
+                  </label>
+                  <ImageUpload
+                    label=""
+                    value={formData.mainPhoto ? [formData.mainPhoto] : []}
+                    onChange={(value) =>
+                      updateFormData("mainPhoto", value[0] || "")
+                    }
+                    maxImages={1}
+                    error={errors.mainPhoto}
+                  />
+                </div>
               </motion.div>
             )}
 
@@ -576,15 +645,25 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                   </p>
                 </div>
 
-                <ImageUpload
-                  label="Photos du portfolio (3-5 recommandées)"
-                  value={formData.portfolioPhotos}
-                  onChange={(value) => updateFormData("portfolioPhotos", value)}
-                  maxImages={8}
-                  isPremiumFeature={true}
-                  freeLimit={4}
-                  premiumLimit={10}
-                />
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text font-medium flex items-center">
+                      Photos du portfolio (3-5 recommandées)
+                      {getMissingItemBadge("portfolio_photos")}
+                    </span>
+                  </label>
+                  <ImageUpload
+                    label=""
+                    value={formData.portfolioPhotos}
+                    onChange={(value) =>
+                      updateFormData("portfolioPhotos", value)
+                    }
+                    maxImages={8}
+                    isPremiumFeature={true}
+                    freeLimit={4}
+                    premiumLimit={10}
+                  />
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="form-control">
@@ -666,8 +745,9 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
 
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text font-medium">
+                    <span className="label-text font-medium flex items-center">
                       Fourchette de tarifs
+                      {getMissingItemBadge("pricing")}
                     </span>
                   </label>
                   <select
@@ -705,75 +785,137 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                   </p>
                 </div>
 
-                {/* Score de qualité */}
-                <div className="card bg-base-200 border">
+                {/* Progress Comparison */}
+                <div className="card bg-gradient-to-br from-primary/5 to-secondary/5 border-2 border-primary/20">
                   <div className="card-body">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-semibold">Score de qualité</h4>
-                        <p
-                          className={`text-lg font-bold ${getQualityColor(
-                            formData.qualityScore
-                          )}`}
-                        >
-                          {formData.qualityScore}/100
+                    <h4 className="font-semibold text-lg mb-4">
+                      Progression de votre profil
+                    </h4>
+
+                    <div className="grid grid-cols-2 gap-6">
+                      {/* Before */}
+                      <div className="text-center">
+                        <p className="text-sm text-base-content/60 mb-2">
+                          Avant
                         </p>
-                        <p className="text-sm text-base-content/60">
-                          {getQualityMessage(formData.qualityScore)}
+                        <div
+                          className="radial-progress text-base-content/60"
+                          style={
+                            {
+                              "--value": initialCompletionPercentage,
+                              "--size": "6rem",
+                              "--thickness": "4px",
+                            } as React.CSSProperties
+                          }
+                        >
+                          {initialCompletionPercentage}%
+                        </div>
+                        <p className="text-xs text-base-content/60 mt-2">
+                          Profil actuel
                         </p>
                       </div>
-                      <div
-                        className={`radial-progress ${getQualityColor(
-                          formData.qualityScore
-                        )}`}
-                        style={
-                          {
-                            "--value": formData.qualityScore,
-                            "--size": "4rem",
-                          } as React.CSSProperties
-                        }
-                      >
-                        {formData.qualityScore}%
+
+                      {/* After */}
+                      <div className="text-center">
+                        <p className="text-sm text-success font-medium mb-2">
+                          Après
+                        </p>
+                        <div
+                          className={`radial-progress ${getQualityColor(
+                            formData.qualityScore
+                          )}`}
+                          style={
+                            {
+                              "--value": formData.qualityScore,
+                              "--size": "6rem",
+                              "--thickness": "4px",
+                            } as React.CSSProperties
+                          }
+                        >
+                          {formData.qualityScore}%
+                        </div>
+                        <p className="text-xs text-success font-medium mt-2">
+                          Profil amélioré (+
+                          {formData.qualityScore - initialCompletionPercentage}
+                          %)
+                        </p>
                       </div>
                     </div>
 
-                    {formData.qualityScore < 80 && (
-                      <div className="mt-4 space-y-2">
-                        <p className="text-sm font-medium">
-                          Suggestions d'amélioration :
+                    <div className="divider"></div>
+
+                    <div className="text-center">
+                      <p
+                        className={`text-lg font-bold ${getQualityColor(
+                          formData.qualityScore
+                        )}`}
+                      >
+                        {getQualityMessage(formData.qualityScore)}
+                      </p>
+                    </div>
+
+                    {/* Éléments encore manquants */}
+                    {missingItems.length > 0 && (
+                      <div className="mt-4">
+                        <p className="text-sm font-medium mb-2">
+                          Éléments encore à compléter pour atteindre 100% :
                         </p>
-                        <ul className="text-sm space-y-1">
-                          {!formData.mainPhoto && (
-                            <li>• Ajoutez une photo de profil</li>
-                          )}
-                          {formData.artistDescription.length < 50 && (
-                            <li>
-                              • Complétez votre description (50+ caractères)
-                            </li>
-                          )}
-                          {formData.genres.length < 3 && (
-                            <li>
-                              • Ajoutez plus de genres ({formData.genres.length}
-                              /3)
-                            </li>
-                          )}
-                          {Object.values(formData.socialLinks).filter(Boolean)
-                            .length < 2 && (
-                            <li>• Ajoutez des liens vers vos réseaux</li>
-                          )}
-                          {formData.portfolioPhotos.length < 3 && (
-                            <li>
-                              • Ajoutez plus de photos portfolio (
-                              {formData.portfolioPhotos.length}/3)
-                            </li>
-                          )}
-                          {!formData.demoVideo && (
-                            <li>• Ajoutez une vidéo démo</li>
-                          )}
-                          {!formData.priceRange && (
-                            <li>• Indiquez vos tarifs</li>
-                          )}
-                        </ul>
+                        <div className="space-y-2">
+                          {missingItems.map((item) => {
+                            const canBeCompleted =
+                              (item.key === "basic_info" &&
+                                (!formData.artistName ||
+                                  !formData.artistDescription)) ||
+                              (item.key === "cover_photo" &&
+                                !formData.mainPhoto) ||
+                              (item.key === "genres" &&
+                                formData.genres.length === 0) ||
+                              (item.key === "portfolio_photos" &&
+                                formData.portfolioPhotos.length < 2) ||
+                              (item.key === "location" &&
+                                !formData.baseLocation) ||
+                              (item.key === "artist_type" &&
+                                !formData.artistType) ||
+                              (item.key === "pricing" &&
+                                !formData.priceRange) ||
+                              item.key === "instruments";
+
+                            return (
+                              <div
+                                key={item.key}
+                                className={`flex items-start gap-2 p-2 rounded ${
+                                  canBeCompleted
+                                    ? "bg-warning/10 border border-warning/30"
+                                    : "bg-base-200"
+                                }`}
+                              >
+                                <span
+                                  className={
+                                    canBeCompleted
+                                      ? "text-warning"
+                                      : "text-base-content/60"
+                                  }
+                                >
+                                  {canBeCompleted ? "⚠" : "•"}
+                                </span>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium">
+                                    {item.label}
+                                  </p>
+                                  <p className="text-xs text-base-content/60">
+                                    {item.description}
+                                  </p>
+                                  {item.key === "instruments" && (
+                                    <p className="text-xs text-info mt-1">
+                                      À compléter dans Mon Portfolio →
+                                      Informations générales
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     )}
                   </div>

@@ -80,8 +80,8 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         return;
       }
 
-      if (file.size > 5 * 1024 * 1024) {
-        setApiError("La taille du fichier ne doit pas dépasser 5MB");
+      if (file.size > 9 * 1024 * 1024) {
+        setApiError("La taille du fichier ne doit pas dépasser 9MB");
         return;
       }
 
@@ -259,9 +259,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       return;
     }
 
-    // Vérifier la taille (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setApiError("La taille du fichier ne doit pas dépasser 5MB");
+    // Vérifier la taille (max 9MB)
+    if (file.size > 9 * 1024 * 1024) {
+      setApiError("La taille du fichier ne doit pas dépasser 9MB");
       return;
     }
 
@@ -792,7 +792,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         {/* Instructions */}
         <div className="text-sm text-base-content/60 space-y-1">
           <p>• Formats supportés: JPG, PNG, WebP</p>
-          <p>• Taille maximum: 5MB par image</p>
+          <p>• Taille maximum: 9MB par image</p>
           {isFreePlan && (
             <p className="text-warning">
               • Plan gratuit: maximum {freeLimit} photos (Premium:{" "}

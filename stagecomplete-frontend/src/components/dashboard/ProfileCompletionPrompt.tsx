@@ -143,7 +143,7 @@ export const ProfileCompletionPrompt: React.FC<ProfileCompletionPromptProps> = (
         {/* CTA */}
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
-            to="/artist/profile-wizard"
+            to="/artist/portfolio?openWizard=true"
             className="btn bg-gradient-to-r from-purple-600 to-blue-600 text-white border-none hover:from-purple-700 hover:to-blue-700 flex-1 flex items-center justify-center gap-2"
           >
             <WandIcon className="w-5 h-5" />

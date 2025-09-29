@@ -1,5 +1,6 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useAuthStore } from "../stores/authStore";
+import { artistService } from "../services/artistService";
 import type { ArtistProfile, Profile } from "../types";
 
 interface ProfileCompletionItem {
@@ -21,8 +22,47 @@ interface ProfileCompletionResult {
 
 export const useProfileCompletion = (): ProfileCompletionResult => {
   const { user } = useAuthStore();
+  const [artistProfile, setArtistProfile] = useState<ArtistProfile | null>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Charger les données réelles de l'artist profile
+  useEffect(() => {
+    const loadArtistProfile = async () => {
+      if (!user || user.role !== "ARTIST") {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const profile = await artistService.getMyArtistProfile();
+        setArtistProfile(profile);
+      } catch (error) {
+        console.error("Error loading artist profile for completion:", error);
+        // En cas d'erreur, on continue avec null
+        setArtistProfile(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadArtistProfile();
+  }, [user]);
 
   const result = useMemo(() => {
+    // Pendant le chargement, retourner des valeurs par défaut
+    if (isLoading) {
+      return {
+        completionPercentage: 0,
+        isComplete: false,
+        missingItems: [],
+        completedItems: [],
+        allItems: [],
+        shouldShowAssistantPrompt: false,
+      };
+    }
+
     if (!user || user.role !== "ARTIST") {
       return {
         completionPercentage: 100,
@@ -35,19 +75,35 @@ export const useProfileCompletion = (): ProfileCompletionResult => {
     }
 
     const profile = user.profile as Profile;
-    const artistProfile = (profile as any)?.artist as ArtistProfile | undefined;
 
-    // Définir les éléments essentiels d'un profil artiste
+    // Définir les éléments essentiels d'un profil artiste basés sur Mon Portfolio
     const profileItems: ProfileCompletionItem[] = [
       {
         key: "basic_info",
         label: "Informations de base",
-        description: "Nom, bio, photo de profil",
-        isCompleted: Boolean(
-          profile.name &&
-          profile.bio &&
-          profile.avatar
-        ),
+        description: "Nom de l'artiste et description",
+        isCompleted: Boolean(profile.name && artistProfile?.artistDescription),
+        route: "/artist/portfolio",
+      },
+      {
+        key: "artist_type",
+        label: "Type d'artiste",
+        description: "Solo, groupe, duo, etc.",
+        isCompleted: Boolean(artistProfile?.artistType),
+        route: "/artist/portfolio",
+      },
+      {
+        key: "cover_photo",
+        label: "Photo de couverture",
+        description: "Image principale de votre profil",
+        isCompleted: Boolean(artistProfile?.coverPhoto),
+        route: "/artist/portfolio",
+      },
+      {
+        key: "location",
+        label: "Localisation",
+        description: "Votre ville ou région d'activité",
+        isCompleted: Boolean(artistProfile?.baseLocation),
         route: "/artist/portfolio",
       },
       {
@@ -69,35 +125,12 @@ export const useProfileCompletion = (): ProfileCompletionResult => {
         route: "/artist/portfolio",
       },
       {
-        key: "experience",
-        label: "Niveau d'expérience",
-        description: "Définir votre niveau d'expertise",
-        isCompleted: Boolean(artistProfile?.experience),
-        route: "/artist/portfolio",
-      },
-      {
         key: "portfolio_photos",
         label: "Photos de portfolio",
         description: "Au moins 2 photos de performance",
         isCompleted: Boolean(
           artistProfile?.portfolio?.photos &&
-          artistProfile.portfolio.photos.length >= 2
-        ),
-        route: "/artist/portfolio",
-      },
-      {
-        key: "artist_type",
-        label: "Type d'artiste",
-        description: "Solo, duo, groupe, etc.",
-        isCompleted: Boolean(artistProfile?.artistType),
-        route: "/artist/portfolio",
-      },
-      {
-        key: "location",
-        label: "Localisation",
-        description: "Votre ville ou région d'activité",
-        isCompleted: Boolean(
-          profile.location || artistProfile?.baseLocation
+            artistProfile.portfolio.photos.length >= 2
         ),
         route: "/artist/portfolio",
       },
@@ -105,24 +138,22 @@ export const useProfileCompletion = (): ProfileCompletionResult => {
         key: "pricing",
         label: "Tarification",
         description: "Fourchette de prix ou détails tarifaires",
-        isCompleted: Boolean(
-          artistProfile?.priceRange || artistProfile?.priceDetails
-        ),
+        isCompleted: Boolean(artistProfile?.priceRange),
         route: "/artist/portfolio",
       },
     ];
 
-    const completedItems = profileItems.filter(item => item.isCompleted);
-    const missingItems = profileItems.filter(item => !item.isCompleted);
+    const completedItems = profileItems.filter((item) => item.isCompleted);
+    const missingItems = profileItems.filter((item) => !item.isCompleted);
     const completionPercentage = Math.round(
       (completedItems.length / profileItems.length) * 100
     );
 
-    // Un profil est considéré comme complet s'il a au moins 80% des éléments
-    const isComplete = completionPercentage >= 80;
+    // Un profil est considéré comme complet s'il a au moins 100% des éléments
+    const isComplete = completionPercentage >= 100;
 
-    // Afficher le prompt d'assistant si le profil est moins de 60% complet
-    const shouldShowAssistantPrompt = completionPercentage < 60;
+    // Afficher le prompt d'assistant si le profil est moins de 100% complet
+    const shouldShowAssistantPrompt = completionPercentage < 100;
 
     return {
       completionPercentage,
@@ -132,7 +163,7 @@ export const useProfileCompletion = (): ProfileCompletionResult => {
       allItems: profileItems,
       shouldShowAssistantPrompt,
     };
-  }, [user]);
+  }, [user, artistProfile, isLoading]);
 
   return result;
 };

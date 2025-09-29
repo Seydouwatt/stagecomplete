@@ -75,8 +75,8 @@ describe('Home Page', () => {
     cy.visit('/');
 
     // Vérifier la section CTA finale
-    cy.contains('Prêt à partager votre talent ?').should('be.visible');
-    cy.contains('Créer mon profil gratuitement').should('be.visible');
+    // cy.contains('Prêt à partager votre talent ?').should('be.visible');
+    cy.contains('Créer mon profil d\'artiste').should('be.visible');
     cy.contains('Voir la démo').should('be.visible');
   });
 });

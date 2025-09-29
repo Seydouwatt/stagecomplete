@@ -283,10 +283,6 @@ Then('each benefit should have a green check icon', () => {
 });
 
 // CTAs and redirections testing
-When('I click on {string}', (buttonText) => {
-  cy.contains('button, a', buttonText).click();
-});
-
 Then('I should be redirected to {string}', (expectedPath) => {
   cy.url().should('include', expectedPath);
 });

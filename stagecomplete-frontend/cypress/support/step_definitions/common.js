@@ -353,6 +353,7 @@ Then('I should still be logged in', () => {
 Then('I should see my artist dashboard', () => {
   cy.url().should('include', '/dashboard');
   cy.contains('Bienvenue').should('be.visible');
+  cy.contains('Complétez votre profil avec l\'assistant').should('be.visible');
 });
 
 When('I click on my profile in the header', () => {

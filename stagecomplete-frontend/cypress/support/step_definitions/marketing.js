@@ -29,10 +29,6 @@ Then('I should see a primary CTA {string}', (ctaText) => {
     .should('be.visible');
 });
 
-When('I click on {string}', (buttonText) => {
-  cy.contains(buttonText).click();
-});
-
 Then('I should be redirected to {string}', (expectedPath) => {
   cy.url().should('include', expectedPath);
 });
@@ -205,10 +201,6 @@ When('I fill the form with:', (dataTable) => {
   cy.get('input[name="name"]').type(formData.Name);
   cy.get('input[name="email"]').type(formData.Email);
   cy.get('input[name="password"]').type(formData.Password);
-});
-
-When('I click on {string}', (buttonText) => {
-  cy.contains('button', buttonText).click();
 });
 
 Then('I should see a welcome message', () => {

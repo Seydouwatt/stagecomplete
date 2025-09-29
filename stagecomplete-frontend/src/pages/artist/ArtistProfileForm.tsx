@@ -11,7 +11,7 @@ import {
   UsersIcon,
   SparklesIcon,
 } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
 import { artistService } from "../../services/artistService";
 import { toast } from "../../stores/useToastStore";
@@ -49,6 +49,7 @@ type TabType =
 
 export const ArtistProfileForm: React.FC = () => {
   const { user, updateProfile } = useAuthStore();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabType>("general");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -141,6 +142,21 @@ export const ArtistProfileForm: React.FC = () => {
 
     loadArtistProfile();
   }, [user]);
+
+  // Détecter le paramètre URL pour ouvrir automatiquement l'assistant
+  useEffect(() => {
+    if (searchParams.get('openWizard') === 'true') {
+      // Ouvrir la modal après un court délai pour permettre au profil de se charger
+      setTimeout(() => {
+        setShowWizard(true);
+      }, 500);
+
+      // Nettoyer le paramètre de l'URL
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('openWizard');
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   // Sauvegarder le profil
   const handleSave = async () => {
