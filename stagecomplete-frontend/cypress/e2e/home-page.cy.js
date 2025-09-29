@@ -3,14 +3,14 @@ describe('Home Page', () => {
     cy.visit('/');
 
     // Vérifier le titre principal
-    cy.contains('Découvrez l\'artiste').should('be.visible');
-    cy.contains('parfait pour vous').should('be.visible');
+    cy.contains('Artistes, créez votre').should('be.visible');
+    cy.contains('fiche gratuite').should('be.visible');
 
     // Vérifier le badge
     cy.contains('La plateforme de découverte d\'artistes').should('be.visible');
 
     // Vérifier la description
-    cy.contains('La plus grande communauté d\'artistes professionnels').should('be.visible');
+    cy.contains('Rejoignez la plus grande communauté d\'artistes professionnels').should('be.visible');
 
     // Vérifier la barre de recherche
     cy.get('[data-cy="public-search-bar"]').should('be.visible');

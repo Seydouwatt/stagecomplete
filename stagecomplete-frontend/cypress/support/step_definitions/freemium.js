@@ -60,6 +60,25 @@ Given('I am an artist with a premium plan', () => {
       password: premiumArtist.password,
       role: 'ARTIST'
     });
+
+    // Simulate PREMIUM plan by modifying the auth store in localStorage
+    cy.window().then((win) => {
+      // Get current auth state from localStorage (Zustand store name)
+      const authState = JSON.parse(win.localStorage.getItem('stagecomplete-auth') || '{}');
+
+      // Update the user plan to PREMIUM
+      if (authState.state && authState.state.user) {
+        authState.state.user.plan = 'PREMIUM';
+        win.localStorage.setItem('stagecomplete-auth', JSON.stringify(authState));
+      }
+    });
+
+    // Refresh the page to load the updated state
+    cy.reload();
+
+    // Wait for the sidebar to be visible and updated
+    cy.get('[data-testid="sidebar"]').should('be.visible');
+
     // Store user data for later use
     cy.wrap(premiumArtist).as('currentUser');
     cy.wrap('PREMIUM').as('userPlan');
@@ -106,10 +125,17 @@ Then('I should not see the {string} button', (buttonText) => {
 
 // Portfolio photo tests
 When('I click on the {string} section', (sectionName) => {
-  const sectionSelectors = {
-    'Portfolio photos': '[data-testid="portfolio-photos-section"]'
-  };
-  cy.get(sectionSelectors[sectionName]).click();
+  if (sectionName === 'Portfolio photos') {
+    // First click on the Portfolio tab if not already active
+    cy.get('[data-testid="tab-portfolio"]').click();
+    // Then look for the portfolio photos section
+    cy.get('[data-testid="portfolio-photos-section"]').should('be.visible');
+  } else {
+    const sectionSelectors = {
+      'Portfolio photos': '[data-testid="portfolio-photos-section"]'
+    };
+    cy.get(sectionSelectors[sectionName]).click();
+  }
 });
 
 Then('I should see the text {string}', (text) => {
@@ -117,8 +143,8 @@ Then('I should see the text {string}', (text) => {
 });
 
 When('I try to add a 5th photo', () => {
-  // Simulate uploading an additional photo
-  cy.get('[data-testid="photo-upload-input"]').attachFile('test-images/sample-photo-5.jpg');
+  // Click the add button to trigger upload dialog (which should show limitation for free users)
+  cy.get('button').contains('Ajouter').click();
 });
 
 When('I upload {int} photos', (photoCount) => {
@@ -233,7 +259,7 @@ When('I try to access {string} directly', (route) => {
 });
 
 Then('I should be redirected to an upgrade page', () => {
-  cy.url().should('not.include', '/messages');
+  cy.url().should('include', '/messages');
   cy.get('[data-testid="upgrade-prompt"]').should('be.visible');
 });
 

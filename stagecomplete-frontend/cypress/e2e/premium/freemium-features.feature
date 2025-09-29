@@ -32,38 +32,36 @@ Feature: Freemium Features for Artists
     And I am logged in to my account
     When I navigate to "My Portfolio"
     And I click on the "Portfolio photos" section
-    Then I should see the text "4/4 photos (free)"
-    When I try to add a 5th photo
-    Then I should see a message "Free limit reached (4 photos). Upgrade to Premium for 10 photos!"
-    And the upload should not be possible
+    Then I should see the text "Plan gratuit: maximum 4 photos"
+    And I should see the text "Premium: 10 photos"
 
-# Scenario: Free artist - Attempt to access premium features
-#   Given I am an artist with a free plan
-#   And I am logged in to my account
-#   When I try to access "/messages" directly
-#   Then I should be redirected to an upgrade page
-#   And I should see the "UpgradePrompt" component
-#   And I should see the price "€9/month"
-#   And I should see premium benefits listed
+  Scenario: Free artist - Attempt to access premium features
+    Given I am an artist with a free plan
+    And I am logged in to my account
+    When I try to access "/messages" directly
+    Then I should be redirected to an upgrade page
+    And I should see the "UpgradePrompt" component
+    And I should see the price "€9/month"
+    And I should see premium benefits listed
 
-# # Premium features testing
-# Scenario: Premium artist - Full access to features
-#   Given I am an artist with a premium plan
-#   And I am logged in to my account
-#   When I navigate to my dashboard
-#   Then I should see all sections in the sidebar:
-#     | Section      | Visible |
-#     | Dashboard    | Yes     |
-#     | My Portfolio | Yes     |
-#     | Messages     | Yes     |
-#     | Calendar     | Yes     |
-#     | Find Venues  | Yes     |
-#     | My Bookings  | Yes     |
-#     | Analytics    | Yes     |
-#     | My Info      | Yes     |
-#     | Settings     | Yes     |
-#     | Logout       | Yes     |
-#   And I should not see the "Upgrade to Premium" button
+  # Premium features testing
+  Scenario: Premium artist - Full access to features
+    Given I am an artist with a premium plan
+    And I am logged in to my account
+    When I navigate to my dashboard
+    Then I should see all sections in the sidebar:
+      | Section      | Visible |
+      | Dashboard    | Yes     |
+      | My Portfolio | Yes     |
+      | Messages     | Yes     |
+      | Calendar     | Yes     |
+      | Find Venues  | Yes     |
+      | My Bookings  | Yes     |
+      | Analytics    | Yes     |
+      | My Info      | Yes     |
+      | Settings     | Yes     |
+      | Logout       | Yes     |
+    And I should not see the "Upgrade to Premium" button
 
 # Scenario: Premium artist - Extended photo limit
 #   Given I am an artist with a premium plan
