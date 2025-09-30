@@ -94,9 +94,12 @@ export const useProfileCompletion = (): ProfileCompletionResult => {
       },
       {
         key: "cover_photo",
-        label: "Photo de couverture",
-        description: "Image principale de votre profil",
-        isCompleted: Boolean(artistProfile?.coverPhoto),
+        label: "Photo principale",
+        description: "Première photo du portfolio (photo de profil)",
+        isCompleted: Boolean(
+          artistProfile?.portfolio?.photos &&
+            artistProfile.portfolio.photos.length > 0
+        ),
         route: "/artist/portfolio",
       },
       {

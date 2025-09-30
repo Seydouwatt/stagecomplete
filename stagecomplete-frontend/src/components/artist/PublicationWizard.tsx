@@ -148,7 +148,6 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
     formData.artistDescription,
     formData.genres,
     formData.baseLocation,
-    formData.mainPhoto,
     formData.portfolioPhotos,
     formData.socialLinks,
     formData.demoVideo,
@@ -184,7 +183,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
           }
           break;
         case "cover_photo":
-          if (data.mainPhoto) {
+          if (data.portfolioPhotos.length > 0) {
             itemsWillBeCompleted++;
           }
           break;
@@ -261,8 +260,11 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
       if (!formData.baseLocation.trim()) {
         newErrors.baseLocation = "La localisation est requise";
       }
-      if (!formData.mainPhoto) {
-        newErrors.mainPhoto = "Une photo de profil est requise";
+    }
+
+    if (step === 2) {
+      if (formData.portfolioPhotos.length === 0) {
+        newErrors.portfolioPhotos = "Au moins une photo de portfolio est requise (la première servira de photo principale)";
       }
     }
 
@@ -282,7 +284,12 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
 
   const handleComplete = () => {
     if (validateStep(currentStep)) {
-      onComplete(formData);
+      // Ensure mainPhoto is set to first portfolio photo
+      const dataToSubmit = {
+        ...formData,
+        mainPhoto: formData.portfolioPhotos[0] || "",
+      };
+      onComplete(dataToSubmit);
     }
   };
 
@@ -607,24 +614,6 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                     </label>
                   )}
                 </div>
-
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-medium flex items-center">
-                      Photo de profil principale *
-                      {getMissingItemBadge("cover_photo")}
-                    </span>
-                  </label>
-                  <ImageUpload
-                    label=""
-                    value={formData.mainPhoto ? [formData.mainPhoto] : []}
-                    onChange={(value) =>
-                      updateFormData("mainPhoto", value[0] || "")
-                    }
-                    maxImages={1}
-                    error={errors.mainPhoto}
-                  />
-                </div>
               </motion.div>
             )}
 
@@ -648,10 +637,16 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text font-medium flex items-center">
-                      Photos du portfolio (3-5 recommandées)
+                      Photos du portfolio (3-5 recommandées) *
                       {getMissingItemBadge("portfolio_photos")}
                     </span>
                   </label>
+                  <div className="alert alert-info mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span className="text-sm">
+                      <strong>La première photo</strong> sera automatiquement utilisée comme photo de profil principale dans vos cartes et profil public.
+                    </span>
+                  </div>
                   <ImageUpload
                     label=""
                     value={formData.portfolioPhotos}
@@ -662,6 +657,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                     isPremiumFeature={true}
                     freeLimit={4}
                     premiumLimit={10}
+                    error={errors.portfolioPhotos}
                   />
                 </div>
 
@@ -867,7 +863,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                                 (!formData.artistName ||
                                   !formData.artistDescription)) ||
                               (item.key === "cover_photo" &&
-                                !formData.mainPhoto) ||
+                                formData.portfolioPhotos.length === 0) ||
                               (item.key === "genres" &&
                                 formData.genres.length === 0) ||
                               (item.key === "portfolio_photos" &&
@@ -926,7 +922,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                   artistName={formData.artistName}
                   baseLocation={formData.baseLocation}
                   genres={formData.genres}
-                  mainPhoto={formData.mainPhoto}
+                  mainPhoto={formData.portfolioPhotos[0] || ""}
                   artistDescription={formData.artistDescription}
                   socialLinks={formData.socialLinks}
                   portfolioPhotos={formData.portfolioPhotos}
@@ -940,10 +936,10 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                     </h4>
 
                     <div className="flex gap-4">
-                      {formData.mainPhoto && (
+                      {formData.portfolioPhotos[0] && (
                         <div className="avatar">
                           <div className="w-16 h-16 rounded-full">
-                            <img src={formData.mainPhoto} alt="Profil" />
+                            <img src={formData.portfolioPhotos[0]} alt="Profil" />
                           </div>
                         </div>
                       )}

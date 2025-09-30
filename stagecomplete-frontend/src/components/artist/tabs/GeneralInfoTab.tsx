@@ -229,18 +229,16 @@ const GeneralInfoTab: React.FC<{
 
           {/* <div className="grid grid-cols-1 gap-6"> */}
           <div className="flex flex-col gap-4 m-4">
-            {/* Photo de couverture */}
-
-            <ImageUpload
-              label="Photo de couverture - Bannière principale (format paysage recommandé)"
-              value={formData.coverPhoto ? [formData.coverPhoto] : []}
-              onChange={(value) => updateFormData("coverPhoto", value[0] || "")}
-              maxImages={1}
-              className="aspect-auto bg-base-200 w-full"
-            />
+            {/* Info: Photo principale = première photo du portfolio */}
+            <div className="alert alert-info">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="stroke-current shrink-0 w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <div>
+                <h4 className="font-bold">Photo de profil principale</h4>
+                <p className="text-sm">La première photo de votre portfolio (onglet "Portfolio & Médias") sera automatiquement utilisée comme photo principale dans vos cartes et profil public.</p>
+              </div>
+            </div>
 
             {/* Logo */}
-
             <ImageUpload
               label="Logo ou image d'identité (format carré recommandé)"
               value={formData.logo ? [formData.logo] : []}

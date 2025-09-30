@@ -24,6 +24,7 @@ import {
   generateArtistSchema,
 } from "../../components/seo/SEOHead";
 import type { PublicArtistProfile as PublicArtistProfileType } from "../../types";
+import { getMainPhoto } from "../../types";
 
 // Sous-composants des onglets
 import { OverviewTab } from "../../components/public/artist/OverviewTab";
@@ -288,7 +289,7 @@ export const PublicArtistProfile: React.FC = () => {
         keywords={seoData.keywords}
         url={`/artist/${artistProfile.publicSlug}`}
         type="profile"
-        image={artistProfile.coverPhoto || artistProfile.portfolio?.photos?.[0]}
+        image={getMainPhoto(artistProfile) || undefined}
         schemaData={generateArtistSchema(artistProfile)}
       />
       {/* Header avec photo de couverture */}
@@ -306,15 +307,20 @@ export const PublicArtistProfile: React.FC = () => {
             >
               {/* Avatar */}
               <div className="avatar">
-                <div className="w-24 h-24 rounded-full ring ring-white ring-offset-base-100 ring-offset-2">
-                  <img
-                    src={
-                      artistProfile.coverPhoto ||
-                      artistProfile.portfolio?.photos?.[0]
-                      // "https://via.placeholder.com/96x96/1f2937/white?text=Artist"
-                    }
-                    alt={artistProfile.profile.name}
-                  />
+                <div className="w-24 h-24 rounded-full ring ring-white ring-offset-base-100 ring-offset-2 bg-gradient-to-br from-purple-400 to-blue-500">
+                  {getMainPhoto(artistProfile) ? (
+                    <img
+                      src={getMainPhoto(artistProfile)!}
+                      alt={artistProfile.profile.name}
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-white text-3xl font-bold">
+                        {artistProfile.profile.name?.[0]?.toUpperCase() || "A"}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -478,7 +478,7 @@ export const ArtistProfileForm: React.FC = () => {
           artistDiscipline: formData.artistDiscipline || "MUSIC",
           genres: formData.genres || [],
           baseLocation: formData.baseLocation || "",
-          mainPhoto: formData.coverPhoto || "",
+          mainPhoto: formData.portfolio?.photos?.[0] || formData.coverPhoto || "",
           portfolioPhotos: formData.portfolio?.photos || [],
           socialLinks: formData.socialLinks || {},
           demoVideo: "",

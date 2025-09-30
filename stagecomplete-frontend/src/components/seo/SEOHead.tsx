@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { getMainPhoto } from '../../types';
 
 interface SEOHeadProps {
   title?: string;
@@ -118,7 +119,7 @@ export const generateArtistSchema = (artist: any) => {
     "@type": "MusicGroup",
     "name": artist.artistName,
     "description": artist.artistDescription,
-    "image": artist.coverPhoto || artist.portfolio?.photos?.[0],
+    "image": getMainPhoto(artist),
     "genre": artist.genres,
     "url": `${SITE_URL}/artist/${artist.publicSlug}`,
     "location": {

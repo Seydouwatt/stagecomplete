@@ -255,6 +255,27 @@ export interface ExtendedUser extends User {
   };
 }
 
+/**
+ * Fonction utilitaire pour obtenir la photo principale d'un artiste
+ * RÈGLE: La première photo du portfolio est TOUJOURS la photo principale
+ * Fallback sur coverPhoto pour rétrocompatibilité
+ */
+export function getMainPhoto(artist: ArtistProfile | PublicArtistProfile | null | undefined): string | null {
+  if (!artist) return null;
+
+  // Priorité 1: Première photo du portfolio (nouvelle stratégie)
+  if (artist.portfolio?.photos && artist.portfolio.photos.length > 0) {
+    return artist.portfolio.photos[0];
+  }
+
+  // Fallback: ancien champ coverPhoto (rétrocompatibilité)
+  if (artist.coverPhoto) {
+    return artist.coverPhoto;
+  }
+
+  return null;
+}
+
 export interface UpdateArtistProfileData {
   // General information (identity) - artistName géré via Profile.name
   coverPhoto?: string;

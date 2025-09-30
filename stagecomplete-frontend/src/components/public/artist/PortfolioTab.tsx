@@ -8,6 +8,7 @@ import {
   X,
   ZoomIn,
   Volume2,
+  Star,
 } from "lucide-react";
 import type { PublicArtistProfile } from "../../../types";
 
@@ -147,6 +148,13 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ artistProfile }) => 
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
                     <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
+                  {/* Badge pour la photo principale (première photo) */}
+                  {index === 0 && (
+                    <div className="absolute top-2 left-2 flex items-center gap-1 bg-primary text-primary-content px-2 py-1 rounded-full shadow-lg text-xs font-semibold">
+                      <Star className="w-3 h-3 fill-current" />
+                      Photo principale
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </div>

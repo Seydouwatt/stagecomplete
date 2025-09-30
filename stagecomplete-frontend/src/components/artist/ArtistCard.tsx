@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { ArtistCardSmallProps, PublicArtistProfile } from "../../types";
+import { getMainPhoto } from "../../types";
 import { MapPinIcon } from "@heroicons/react/24/outline";
 import { StarIcon as StarSolidIcon } from "@heroicons/react/24/solid";
 
@@ -8,7 +9,8 @@ interface ArtistCardProps {
 }
 
 const ArtistCard: React.FC<ArtistCardProps> = ({ artist }) => {
-  const profilePhoto = artist.coverPhoto; //|| artist.portfolio?.photos?.[0];
+  // Utiliser la stratégie unifiée: première photo du portfolio = photo principale
+  const profilePhoto = getMainPhoto(artist);
   const rating = 4.5; // TODO: Implémenter système de rating
 
   return (

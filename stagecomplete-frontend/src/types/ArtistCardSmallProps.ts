@@ -1,6 +1,6 @@
 export interface ArtistCardSmallProps {
   coverPhoto?: string;
-  //   portfolio?: { photos?: string[] };
+  portfolio?: { photos?: string[] };
   artistType?:
     | "SOLO"
     | "BAND"

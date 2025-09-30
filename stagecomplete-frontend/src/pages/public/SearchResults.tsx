@@ -15,6 +15,7 @@ import {
   generateSearchSchema,
 } from "../../components/seo/SEOHead";
 import type { PublicArtistProfile, ArtistSearchFilters } from "../../types";
+import { getMainPhoto } from "../../types";
 
 export const SearchResults: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -325,7 +326,7 @@ const DiscoveryPage: React.FC<{
 
 // Composant carte artiste pour les résultats
 const ArtistCard: React.FC<{ artist: PublicArtistProfile }> = ({ artist }) => {
-  const profilePhoto = artist.coverPhoto || artist.portfolio?.photos?.[0];
+  const profilePhoto = getMainPhoto(artist);
 
   return (
     <Link to={`/artist/${artist.publicSlug}`} className="group">
