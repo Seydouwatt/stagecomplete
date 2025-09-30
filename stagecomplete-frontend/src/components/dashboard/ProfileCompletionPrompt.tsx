@@ -47,6 +47,7 @@ export const ProfileCompletionPrompt: React.FC<ProfileCompletionPromptProps> = (
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={`card bg-gradient-to-br from-purple-50 via-white to-blue-50 border-2 border-purple-200 shadow-xl ${className}`}
+      data-cy="profile-completion-prompt"
     >
       <div className="card-body p-6">
         {/* Header */}

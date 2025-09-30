@@ -29,6 +29,7 @@ Then('the score should be calculated based on:', (dataTable) => {
 
     switch(factor) {
       case 'Main photo uploaded':
+      case 'Portfolio photos (first photo)':
         cy.get('[data-cy="quality-factor-photo"]').should('contain', points);
         break;
       case 'Artist description >50 chars':
@@ -79,7 +80,7 @@ Then('I should see personalized improvement suggestions:', (dataTable) => {
     const suggestion = row['Suggestion'];
 
     if (currentScore === '0-20%') {
-      cy.get('[data-cy="suggestion-photo"]').should('contain', 'Ajoutez votre photo');
+      cy.get('[data-cy="suggestion-photo"]').should('contain', 'Ajoutez des photos');
     } else if (currentScore === '21-40%') {
       cy.get('[data-cy="suggestion-description"]').should('contain', 'Complétez votre description');
     }
@@ -97,14 +98,25 @@ Given('I am editing my profile', () => {
 });
 
 When('I upload a main photo', () => {
+  // Note: Main photo is now the first portfolio photo
   const fileName = 'test-artist-photo.jpg';
   cy.fixture(fileName, 'base64').then(fileContent => {
-    cy.get('[data-cy="main-photo-upload"] input[type="file"]').selectFile({
+    // Navigate to Portfolio tab if not already there
+    cy.get('body').then($body => {
+      if ($body.find('[data-cy="portfolio-tab"]').length > 0) {
+        cy.get('[data-cy="portfolio-tab"]').click();
+      }
+    });
+
+    cy.get('[data-cy="portfolio-photos-upload"] input[type="file"]').first().selectFile({
       contents: Cypress.Buffer.from(fileContent, 'base64'),
       fileName: fileName,
       mimeType: 'image/jpeg'
     }, { force: true });
   });
+
+  // Wait for image to be processed
+  cy.wait(500);
 });
 
 Then('the quality score should immediately increase by {int}%', (increase) => {
@@ -153,6 +165,7 @@ Then('I should see all quality factors with their status:', (dataTable) => {
 
     switch(factor) {
       case 'Photo principale':
+      case 'Portfolio photos (first photo)':
         cy.get('[data-cy="checklist-photo"]').should('be.visible');
         cy.get('[data-cy="checklist-photo"] .status').should('contain', status === '✅' ? 'Complété' : 'À faire');
         break;
@@ -288,6 +301,7 @@ Then('I should see contextual advice:', (dataTable) => {
     switch(section) {
       case 'Photo':
         cy.get('[data-cy="photo-tips"]').should('contain', 'high-quality');
+        cy.get('[data-cy="photo-tips"]').should('contain', 'portfolio');
         break;
       case 'Description':
         cy.get('[data-cy="description-tips"]').should('contain', 'musical journey');

@@ -171,6 +171,7 @@ export const ArtistDashboard: React.FC = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="space-y-6"
+      data-cy="artist-dashboard"
     >
       {/* Welcome section */}
       {shouldShowAssistantPrompt ? (
@@ -179,7 +180,9 @@ export const ArtistDashboard: React.FC = () => {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-3xl font-bold mb-4"
+            className="text-3xl font-bold mb-4 artist-name"
+            data-testid="artist-name"
+            data-cy="artist-name"
           >
             Bienvenue, {user?.profile?.name} ! 🎭
           </motion.h1>
@@ -193,7 +196,9 @@ export const ArtistDashboard: React.FC = () => {
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-3xl font-bold mb-4"
+                className="text-3xl font-bold mb-4 artist-name"
+                data-testid="artist-name"
+                data-cy="artist-name"
               >
                 Bienvenue, {user?.profile?.name} ! 🎭
               </motion.h1>
@@ -220,7 +225,8 @@ export const ArtistDashboard: React.FC = () => {
       )}
 
       {/* Stats cards */}
-      <div className="hidden lg:grid lg:grid-cols-4 gap-6">
+      <div className="hidden lg:grid lg:grid-cols-4 gap-6" data-cy="statistics-section">
+        <h2 className="sr-only">Statistics</h2>
         <StatCard
           title="Bookings ce mois"
           value="12"
@@ -282,7 +288,8 @@ export const ArtistDashboard: React.FC = () => {
       </MobileStatsCarousel>
 
       {/* Charts row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6" data-cy="charts-section">
+        <h2 className="sr-only">Charts</h2>
         <ChartCard
           title="Évolution des revenus"
           subtitle="Revenue mensuel en euros"
@@ -316,7 +323,10 @@ export const ArtistDashboard: React.FC = () => {
 
       {/* Bottom row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <QuickActions actions={quickActions} />
+        <div data-cy="quick-actions-section">
+          <h2 className="sr-only">Quick actions</h2>
+          <QuickActions actions={quickActions} />
+        </div>
         <RecentActivity activities={recentActivities} />
       </div>
     </motion.div>

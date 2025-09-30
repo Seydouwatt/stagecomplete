@@ -16,19 +16,18 @@ Feature: Artist Publication Wizard
 
   Scenario: Step 1 - Basic Information
     Given I am on the publication wizard step 1
-    When I upload a main photo
-    And I enter "Jazz Virtuoso" as artist name
+    When I enter "Jazz Virtuoso" as artist name
     And I enter a description of at least 50 characters
     And I select "Solo" as artist type
     And I select "Jazz" and "Blues" as genres
     And I enter "Paris" as base location
-    Then the quality score should increase to at least 40%
+    Then the quality score should increase to at least 30%
     And I should be able to proceed to step 2
 
   Scenario: Step 2 - Portfolio Creative
     Given I am on the publication wizard step 2
-    And I have existing portfolio photos
-    When I add additional portfolio photos
+    When I upload a main photo
+    And I add additional portfolio photos
     And I add YouTube links for videos
     And I add SoundCloud links for audio
     And I add Instagram and Facebook social links

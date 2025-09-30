@@ -32,15 +32,18 @@ Given('I am on the publication wizard step {int}', (stepNumber) => {
 });
 
 When('I upload a main photo', () => {
+  // Note: Main photo is now the first portfolio photo
   const fileName = 'test-artist-photo.jpg';
   cy.fixture(fileName, 'base64').then(fileContent => {
-    cy.get('[data-cy="main-photo-upload"] input[type="file"]').invoke('val', '');
-    cy.get('[data-cy="main-photo-upload"]').selectFile({
+    cy.get('[data-cy="portfolio-photos-upload"] input[type="file"]').first().selectFile({
       contents: Cypress.Buffer.from(fileContent, 'base64'),
       fileName: fileName,
       mimeType: 'image/jpeg'
     }, { force: true });
   });
+
+  // Wait for image to be processed and displayed
+  cy.wait(500);
 });
 
 When('I enter {string} as artist name', (artistName) => {
@@ -167,8 +170,9 @@ Given('I am in the publication wizard', () => {
 });
 
 When('I have no main photo', () => {
-  // Ensure no photo is uploaded
-  cy.get('[data-cy="main-photo-preview"]').should('not.exist');
+  // Note: Main photo is now the first portfolio photo
+  // Ensure no portfolio photos are uploaded
+  cy.get('[data-cy="portfolio-photo"]').should('not.exist');
 });
 
 Then('the quality score should show {int} points for missing photo', (points) => {

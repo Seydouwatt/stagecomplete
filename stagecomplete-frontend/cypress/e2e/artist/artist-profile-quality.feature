@@ -13,7 +13,7 @@ Feature: Artist Profile Quality Management
     Then I should see my current profile quality score (0-100%)
     And the score should be calculated based on:
       | Quality Factor | Points | Status |
-      | Main photo uploaded | 20 | Required |
+      | Portfolio photos (first photo) | 20 | Required |
       | Artist description >50 chars | 15 | Required |
       | Genres selected (3+) | 10 | Recommended |
       | Location specified | 5 | Recommended |
@@ -29,7 +29,7 @@ Feature: Artist Profile Quality Management
     When I view my profile dashboard
     Then I should see personalized improvement suggestions:
       | Current Score | Suggestion |
-      | 0-20% | "Ajoutez votre photo principale pour +20%" |
+      | 0-20% | "Ajoutez des photos à votre portfolio pour +20%" |
       | 21-40% | "Complétez votre description artistique pour +15%" |
       | 41-60% | "Ajoutez vos genres musicaux pour +10%" |
       | 61-80% | "Ajoutez vos liens sociaux pour +10%" |
@@ -49,7 +49,7 @@ Feature: Artist Profile Quality Management
     When I access the profile completion checklist
     Then I should see all quality factors with their status:
       | Factor | Status | Action |
-      | Photo principale | ✅/❌ | Upload/Change |
+      | Portfolio photos (first photo) | ✅/❌ | Upload/Change |
       | Description | ✅/❌ | Add/Edit |
       | Genres musicaux | ✅/❌ | Select genres |
       | Liens sociaux | ✅/❌ | Add social media |
@@ -82,7 +82,7 @@ Feature: Artist Profile Quality Management
     When I access the profile tips section
     Then I should see contextual advice:
       | Section | Tip |
-      | Photo | "Use high-quality, professional photos" |
+      | Photo | "Use high-quality, professional photos for your portfolio" |
       | Description | "Include your musical journey and style" |
       | Genres | "Be specific but not too niche" |
       | Social Links | "Keep your social media active" |
