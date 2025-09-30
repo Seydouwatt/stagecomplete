@@ -10,7 +10,11 @@ interface ArtistCardProps {
 
 const ArtistCard: React.FC<ArtistCardProps> = ({ artist }) => {
   // Utiliser la stratégie unifiée: première photo du portfolio = photo principale
-  const profilePhoto = getMainPhoto(artist);
+  const isProfile =
+    "portfolio" in artist && "profile" in artist && "artistType" in artist;
+  const profilePhoto = isProfile
+    ? getMainPhoto(artist as PublicArtistProfile)
+    : null;
   const rating = 4.5; // TODO: Implémenter système de rating
 
   return (

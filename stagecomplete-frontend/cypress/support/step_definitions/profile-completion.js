@@ -60,9 +60,9 @@ Then('I should see the standard hero section', () => {
   cy.get('[data-testid="dashboard-hero-standard"]').should('be.visible');
 });
 
-Then('I should see {string}', (text) => {
-  cy.contains(text).should('be.visible');
-});
+// Then('I should see {string}', (text) => {
+//   cy.contains(text).should('be.visible');
+// });
 
 Then('I should see the CTA {string}', (ctaText) => {
   cy.contains('button', ctaText).should('be.visible');
