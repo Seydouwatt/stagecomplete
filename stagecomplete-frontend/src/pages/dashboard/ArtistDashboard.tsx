@@ -79,7 +79,7 @@ export const ArtistDashboard: React.FC = () => {
         },
         {
           id: "edit-profile",
-          label: "Éditer le profil",
+          label: "Éditer mon profil",
           description: "Informations de base",
           icon: Settings,
           color: "bg-info",

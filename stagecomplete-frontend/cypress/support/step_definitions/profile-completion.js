@@ -60,9 +60,7 @@ Then('I should see the standard hero section', () => {
   cy.get('[data-testid="dashboard-hero-standard"]').should('be.visible');
 });
 
-// Then('I should see {string}', (text) => {
-//   cy.contains(text).should('be.visible');
-// });
+
 
 Then('I should see the CTA {string}', (ctaText) => {
   cy.contains('button', ctaText).should('be.visible');
@@ -283,9 +281,10 @@ Then('each benefit should have a green check icon', () => {
 });
 
 // CTAs and redirections testing
-Then('I should be redirected to {string}', (expectedPath) => {
-  cy.url().should('include', expectedPath);
-});
+// Moved to dashboard.js to avoid duplication
+// Then('I should be redirected to {string}', (expectedPath) => {
+//   cy.url().should('include', expectedPath);
+// });
 
 Then('I should be in the guided assistant process', () => {
   cy.get('[data-testid="profile-wizard"]').should('be.visible');

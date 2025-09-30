@@ -29,9 +29,10 @@ Then('I should see a primary CTA {string}', (ctaText) => {
     .should('be.visible');
 });
 
-Then('I should be redirected to {string}', (expectedPath) => {
-  cy.url().should('include', expectedPath);
-});
+// Moved to dashboard.js to avoid duplication
+// Then('I should be redirected to {string}', (expectedPath) => {
+//   cy.url().should('include', expectedPath);
+// });
 
 Then('I should see the artist-dedicated landing page', () => {
   cy.get('[data-testid="artist-landing-hero"]').should('be.visible');

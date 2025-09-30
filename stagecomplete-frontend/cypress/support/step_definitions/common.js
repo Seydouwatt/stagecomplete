@@ -49,9 +49,10 @@ Then('I should see the following quick actions:', (dataTable) => {
   });
 });
 
-Then('I should see a completion indicator', () => {
-  cy.get('[data-testid="profile-completion"]').should('be.visible');
-});
+// Moved to dashboard.js to avoid duplication
+// Then('I should see a completion indicator', () => {
+//   cy.get('[data-testid="profile-completion"]').should('be.visible');
+// });
 
 Then('I should see a {string} link', (linkText) => {
   cy.contains('a', linkText).should('be.visible');
@@ -213,16 +214,11 @@ Then('I should see an error {string}', (_errorMessage) => {
 });
 
 // URL verification
-Then('I should be redirected to {string}', (path) => {
-  cy.url().should('include', path);
-});
+// Note: 'I should be redirected to {string}' and 'I should be redirected to the artist profile page'
+// are now in dashboard.js to avoid duplication
 
 Then('I should be redirected to the artist dashboard', () => {
   cy.url().should('include', '/dashboard');
-});
-
-Then('I should be redirected to the artist profile page', () => {
-  cy.url().should('include', '/artist/portfolio');
 });
 
 Then('I should be redirected to the homepage', () => {
@@ -373,9 +369,7 @@ Then('my session should be cleared', () => {
 });
 
 // Profile management steps
-Given('my profile is not complete', () => {
-  cy.setIncompleteProfile();
-});
+// Note: 'my profile is not complete' step is defined in dashboard.js
 
 When('I fill the general information with:', (dataTable) => {
   const data = dataTable.rowsHash();
