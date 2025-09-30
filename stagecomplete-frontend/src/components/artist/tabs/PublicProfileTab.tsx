@@ -108,7 +108,7 @@ export const PublicProfileTab: React.FC<{
               </p>
             </div>
           </div>
-          <div>
+          <div data-testid="profile-preview">
             <div className="divider" />
             <h4 className="text-lg font-medium mb-4">
               Aperçu du profil public

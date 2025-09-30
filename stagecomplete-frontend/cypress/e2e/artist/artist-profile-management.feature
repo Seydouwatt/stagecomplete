@@ -176,6 +176,7 @@ Feature: Artist Profile Management
       | Pop  |
       | Rock |
     And I switch to the "Public" tab
+    And I click on "Rendre mon profil public"
     Then I should see a preview of my public profile
     And I should see all my information displayed correctly
     And I should see all my members listed
