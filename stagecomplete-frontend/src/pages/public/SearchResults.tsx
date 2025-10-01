@@ -9,6 +9,7 @@ import {
 import { PublicSearchBar } from "../../components/public/PublicSearchBar";
 import { FeaturedArtists } from "../../components/public/FeaturedArtists";
 import { artistService } from "../../services/artistService";
+import { trackSearchClick } from "../../services/metricsService";
 import {
   SEOHead,
   SEO_TEMPLATES,
@@ -328,8 +329,17 @@ const DiscoveryPage: React.FC<{
 const ArtistCard: React.FC<{ artist: PublicArtistProfile }> = ({ artist }) => {
   const profilePhoto = getMainPhoto(artist);
 
+  const handleClick = () => {
+    // Track click from search results
+    trackSearchClick(artist.id, window.location.pathname + window.location.search);
+  };
+
   return (
-    <Link to={`/artist/${artist.publicSlug}`} className="group">
+    <Link
+      to={`/artist/${artist.publicSlug}`}
+      className="group"
+      onClick={handleClick}
+    >
       <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group-hover:-translate-y-1">
         {/* Photo */}
         <div className="relative h-48 bg-gradient-to-br from-purple-400 to-blue-500">

@@ -18,6 +18,7 @@ import {
 import { useAuthStore } from "../../stores/authStore";
 import { toast } from "../../stores/useToastStore";
 import { artistService } from "../../services/artistService";
+import { trackProfileView } from "../../services/metricsService";
 import {
   SEOHead,
   SEO_TEMPLATES,
@@ -165,6 +166,13 @@ export const PublicArtistProfile: React.FC = () => {
 
     loadArtistProfile();
   }, [slug]);
+
+  // Track profile view
+  useEffect(() => {
+    if (slug && artistProfile) {
+      trackProfileView(slug);
+    }
+  }, [slug, artistProfile]);
 
   // Mise à jour des meta tags pour SEO
   const updateMetaTags = (profile: PublicArtistProfileType) => {

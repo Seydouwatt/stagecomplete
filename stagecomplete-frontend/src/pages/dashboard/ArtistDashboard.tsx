@@ -1,15 +1,16 @@
 import React from "react";
 import {
-  Calendar,
-  Music,
-  TrendingUp,
+  Eye,
+  MousePointer,
   MessageSquare,
   Plus,
   Search,
   Upload,
   Settings,
+  TrendingUp,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 
 import { useAuthStore } from "../../stores/authStore";
 import {
@@ -22,11 +23,21 @@ import { LineChart, BarChart, DonutChart } from "../../components/charts";
 import MobileStatsCarousel from "./MobileStatsCarousel";
 import ProfileCompletionPrompt from "../../components/dashboard/ProfileCompletionPrompt";
 import { useProfileCompletion } from "../../hooks/useProfileCompletion";
+import { getArtistMetrics } from "../../services/metricsService";
 
 export const ArtistDashboard: React.FC = () => {
-  const { user } = useAuthStore();
+  const { user, token } = useAuthStore();
   const { shouldShowAssistantPrompt, completionPercentage } =
     useProfileCompletion();
+
+  // Fetch real artist metrics
+  const { data: metricsData, isLoading: isLoadingMetrics } = useQuery({
+    queryKey: ["artist-metrics"],
+    queryFn: () => getArtistMetrics(token!),
+    enabled: !!token && user?.role === "ARTIST",
+  });
+
+  const metrics = metricsData?.metrics;
 
   // Données mockées pour les charts
   const revenueData = [
@@ -228,29 +239,29 @@ export const ArtistDashboard: React.FC = () => {
       <div className="hidden lg:grid lg:grid-cols-4 gap-6" data-cy="statistics-section">
         <h2 className="sr-only">Statistics</h2>
         <StatCard
-          title="Bookings ce mois"
-          value="12"
-          change={{ value: 25, type: "increase" }}
-          icon={Calendar}
+          title="Vues de profil"
+          value={isLoadingMetrics ? "..." : String(metrics?.profileViews || 0)}
+          change={metrics?.trends?.views}
+          icon={Eye}
           color="primary"
         />
         <StatCard
-          title="Venues partenaires"
-          value="8"
-          change={{ value: 12, type: "increase" }}
-          icon={Music}
+          title="Clics depuis recherche"
+          value={isLoadingMetrics ? "..." : String(metrics?.searchClicks || 0)}
+          change={metrics?.trends?.clicks}
+          icon={MousePointer}
           color="secondary"
         />
         <StatCard
-          title="Revenue total"
-          value="€2,400"
-          change={{ value: 8, type: "increase" }}
+          title="Demandes reçues"
+          value={isLoadingMetrics ? "..." : String(metrics?.venueRequests || 0)}
+          change={metrics?.trends?.requests}
           icon={TrendingUp}
           color="success"
         />
         <StatCard
           title="Messages non lus"
-          value="3"
+          value="0"
           icon={MessageSquare}
           color="warning"
         />
@@ -259,29 +270,29 @@ export const ArtistDashboard: React.FC = () => {
       {/* Mobile carousel */}
       <MobileStatsCarousel>
         <StatCard
-          title="Bookings ce mois"
-          value="12"
-          change={{ value: 25, type: "increase" }}
-          icon={Calendar}
+          title="Vues de profil"
+          value={isLoadingMetrics ? "..." : String(metrics?.profileViews || 0)}
+          change={metrics?.trends?.views}
+          icon={Eye}
           color="primary"
         />
         <StatCard
-          title="Venues partenaires"
-          value="8"
-          change={{ value: 12, type: "increase" }}
-          icon={Music}
+          title="Clics depuis recherche"
+          value={isLoadingMetrics ? "..." : String(metrics?.searchClicks || 0)}
+          change={metrics?.trends?.clicks}
+          icon={MousePointer}
           color="secondary"
         />
         <StatCard
-          title="Revenue total"
-          value="€2,400"
-          change={{ value: 8, type: "increase" }}
+          title="Demandes reçues"
+          value={isLoadingMetrics ? "..." : String(metrics?.venueRequests || 0)}
+          change={metrics?.trends?.requests}
           icon={TrendingUp}
           color="success"
         />
         <StatCard
           title="Messages non lus"
-          value="3"
+          value="0"
           icon={MessageSquare}
           color="warning"
         />
