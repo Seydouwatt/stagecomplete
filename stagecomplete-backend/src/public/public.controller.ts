@@ -1,8 +1,12 @@
 import {
   Controller,
   Get,
+  Post,
   Param,
   Query,
+  Body,
+  HttpCode,
+  HttpStatus,
   NotFoundException,
 } from '@nestjs/common';
 import {
@@ -12,13 +16,18 @@ import {
   ApiQuery,
   ApiOkResponse,
   ApiNotFoundResponse,
+  ApiNoContentResponse,
 } from '@nestjs/swagger';
 import { AuthService } from '../auth/auth.service';
+import { PublicService } from './public.service';
 
 @ApiTags('public')
 @Controller('public')
 export class PublicController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private publicService: PublicService,
+  ) {}
 
   @Get('artist/:identifier')
   @ApiOperation({
@@ -286,5 +295,44 @@ export class PublicController {
       message: 'Statistiques récupérées avec succès',
       stats,
     };
+  }
+
+  @Post('artist/:identifier/track-view')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Tracker une vue de profil artiste',
+    description: 'Endpoint public pour tracker les vues de profil artiste',
+  })
+  @ApiParam({
+    name: 'identifier',
+    description: 'Slug ou ID de l\'artiste',
+    example: 'jean-dupont-music',
+  })
+  @ApiNoContentResponse({
+    description: 'Vue trackée avec succès',
+  })
+  async trackProfileView(@Param('identifier') identifier: string) {
+    await this.publicService.trackArtistView(identifier);
+  }
+
+  @Post('artist/:id/track-click')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: 'Tracker un clic depuis la recherche',
+    description: 'Endpoint public pour tracker les clics vers un profil artiste depuis la recherche',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID de l\'artiste',
+    example: 'cklnwf8x40000h8l8e4q3z1p5',
+  })
+  @ApiNoContentResponse({
+    description: 'Clic tracké avec succès',
+  })
+  async trackSearchClick(
+    @Param('id') id: string,
+    @Body('source') source?: string,
+  ) {
+    await this.publicService.trackArtistClick(id, source);
   }
 }

@@ -96,7 +96,9 @@ model Artist {
   profile         Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
   events          Event[]
   members         ArtistMember[]
-  
+  metrics         ArtistMetrics? @relation("ArtistMetrics")
+  metricsEvents   ArtistMetricsEvent[] @relation("ArtistMetricsEvents")
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -137,6 +139,46 @@ model ArtistMember {
   updatedAt   DateTime @updatedAt
 
   @@map("artist_members")
+}
+
+model ArtistMetrics {
+  id        String   @id @default(cuid())
+  artistId  String   @unique
+  artist    Artist   @relation("ArtistMetrics", fields: [artistId], references: [id], onDelete: Cascade)
+
+  // Compteurs totaux
+  profileViews      Int @default(0)  // Total vues du profil
+  searchClicks      Int @default(0)  // Clics depuis la recherche
+  venueRequests     Int @default(0)  // Demandes reçues de venues
+
+  // Tendances mensuelles (pour calcul de variation %)
+  viewsThisMonth    Int @default(0)
+  viewsLastMonth    Int @default(0)
+  clicksThisMonth   Int @default(0)
+  clicksLastMonth   Int @default(0)
+  requestsThisMonth Int @default(0)
+  requestsLastMonth Int @default(0)
+
+  lastUpdated DateTime @updatedAt
+  createdAt   DateTime @default(now())
+
+  @@map("artist_metrics")
+}
+
+model ArtistMetricsEvent {
+  id          String   @id @default(cuid())
+  artistId    String
+  artist      Artist   @relation("ArtistMetricsEvents", fields: [artistId], references: [id], onDelete: Cascade)
+
+  eventType   MetricEventType
+  source      String?  // URL source (recherche, profil public, etc.)
+  venueId     String?  // Si c'est une demande de venue
+
+  metadata    Json?    // Données supplémentaires
+  createdAt   DateTime @default(now())
+
+  @@index([artistId, eventType, createdAt])
+  @@map("artist_metrics_events")
 }
 
 model Venue {
@@ -225,4 +267,10 @@ enum BookingStatus {
   CONFIRMED
   COMPLETED
   CANCELLED
+}
+
+enum MetricEventType {
+  PROFILE_VIEW
+  SEARCH_CLICK
+  VENUE_REQUEST
 }

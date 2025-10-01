@@ -359,4 +359,110 @@ export class ArtistController {
 
     return this.artistService.deleteArtistMember(artist.id, memberId);
   }
+
+  // ===============================
+  // ARTIST METRICS ENDPOINTS
+  // ===============================
+
+  @Get('metrics')
+  @ApiOperation({
+    summary: 'Récupérer les métriques de l\'artiste',
+    description: 'Retourne les statistiques de vues, clics et demandes pour l\'artiste authentifié',
+  })
+  @ApiOkResponse({
+    description: 'Métriques récupérées avec succès',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        metrics: {
+          type: 'object',
+          properties: {
+            profileViews: { type: 'number' },
+            searchClicks: { type: 'number' },
+            venueRequests: { type: 'number' },
+            trends: {
+              type: 'object',
+              properties: {
+                views: {
+                  type: 'object',
+                  properties: {
+                    value: { type: 'number' },
+                    type: { type: 'string', enum: ['increase', 'decrease', 'stable'] },
+                  },
+                },
+                clicks: {
+                  type: 'object',
+                  properties: {
+                    value: { type: 'number' },
+                    type: { type: 'string', enum: ['increase', 'decrease', 'stable'] },
+                  },
+                },
+                requests: {
+                  type: 'object',
+                  properties: {
+                    value: { type: 'number' },
+                    type: { type: 'string', enum: ['increase', 'decrease', 'stable'] },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({ description: 'Non autorisé - réservé aux artistes' })
+  async getMetrics(@GetUser() user: AuthenticatedUser) {
+    const metrics = await this.artistService.getArtistMetrics(user.userId);
+    return {
+      message: 'Métriques récupérées avec succès',
+      metrics,
+    };
+  }
+
+  @Get('metrics/history')
+  @ApiOperation({
+    summary: 'Historique des métriques',
+    description: 'Retourne l\'historique quotidien des métriques sur une période donnée',
+  })
+  @ApiOkResponse({
+    description: 'Historique récupéré avec succès',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        data: {
+          type: 'object',
+          properties: {
+            history: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  date: { type: 'string' },
+                  views: { type: 'number' },
+                  clicks: { type: 'number' },
+                  requests: { type: 'number' },
+                },
+              },
+            },
+            days: { type: 'number' },
+          },
+        },
+      },
+    },
+  })
+  @ApiUnauthorizedResponse({ description: 'Non autorisé - réservé aux artistes' })
+  async getMetricsHistory(
+    @GetUser() user: AuthenticatedUser,
+    @Param('days') days: string = '30',
+  ) {
+    const daysNumber = parseInt(days, 10) || 30;
+    const data = await this.artistService.getMetricsHistory(user.userId, daysNumber);
+    return {
+      message: 'Historique récupéré avec succès',
+      data,
+    };
+  }
 }

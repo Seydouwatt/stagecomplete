@@ -297,4 +297,131 @@ export class ArtistService {
       message: 'Membre supprimé avec succès',
     };
   }
+
+  // ===============================
+  // ARTIST METRICS METHODS
+  // ===============================
+
+  /**
+   * Get artist metrics (views, clicks, requests)
+   */
+  async getArtistMetrics(userId: string) {
+    const artist = await this.getArtistProfile(userId);
+
+    if (!artist) {
+      throw new NotFoundException('Profil artiste non trouvé');
+    }
+
+    // Ensure metrics exist
+    const metrics = await this.prisma.artistMetrics.upsert({
+      where: { artistId: artist.id },
+      create: { artistId: artist.id },
+      update: {},
+    });
+
+    // Calculate trends
+    const calculateTrend = (current: number, previous: number) => {
+      if (previous === 0) {
+        return { value: 0, type: 'stable' as const };
+      }
+
+      const percentChange = Math.round(
+        ((current - previous) / previous) * 100,
+      );
+
+      return {
+        value: Math.abs(percentChange),
+        type: percentChange > 0 ? ('increase' as const) : percentChange < 0 ? ('decrease' as const) : ('stable' as const),
+      };
+    };
+
+    return {
+      profileViews: metrics.profileViews,
+      searchClicks: metrics.searchClicks,
+      venueRequests: metrics.venueRequests,
+      trends: {
+        views: calculateTrend(
+          metrics.viewsThisMonth,
+          metrics.viewsLastMonth,
+        ),
+        clicks: calculateTrend(
+          metrics.clicksThisMonth,
+          metrics.clicksLastMonth,
+        ),
+        requests: calculateTrend(
+          metrics.requestsThisMonth,
+          metrics.requestsLastMonth,
+        ),
+      },
+    };
+  }
+
+  /**
+   * Get metrics history for the last N days
+   */
+  async getMetricsHistory(userId: string, days: number = 30) {
+    const artist = await this.getArtistProfile(userId);
+
+    if (!artist) {
+      throw new NotFoundException('Profil artiste non trouvé');
+    }
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    // Get all events in the time range
+    const events = await this.prisma.artistMetricsEvent.findMany({
+      where: {
+        artistId: artist.id,
+        createdAt: {
+          gte: startDate,
+        },
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    // Group by date
+    const dailyMetrics = new Map<string, { views: number; clicks: number; requests: number }>();
+
+    // Initialize all dates with zeros
+    for (let i = 0; i < days; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - (days - i - 1));
+      const dateStr = date.toISOString().split('T')[0];
+      dailyMetrics.set(dateStr, { views: 0, clicks: 0, requests: 0 });
+    }
+
+    // Count events per day
+    events.forEach((event) => {
+      const dateStr = event.createdAt.toISOString().split('T')[0];
+      const dayData = dailyMetrics.get(dateStr);
+
+      if (dayData) {
+        if (event.eventType === 'PROFILE_VIEW') {
+          dayData.views++;
+        } else if (event.eventType === 'SEARCH_CLICK') {
+          dayData.clicks++;
+        } else if (event.eventType === 'VENUE_REQUEST') {
+          dayData.requests++;
+        }
+      }
+    });
+
+    // Convert to array
+    const history = Array.from(dailyMetrics.entries()).map(
+      ([date, metrics]) => ({
+        date,
+        views: metrics.views,
+        clicks: metrics.clicks,
+        requests: metrics.requests,
+      }),
+    );
+
+    return {
+      history,
+      days,
+    };
+  }
 }
