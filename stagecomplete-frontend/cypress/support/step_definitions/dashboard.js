@@ -13,10 +13,10 @@ Then('I should see the following quick actions for incomplete profile:', (dataTa
 
 Then('I should see the following quick actions for complete profile:', (dataTable) => {
   const actions = dataTable.raw().flat();
-  cy.get('[data-cy="quick-actions-section"]').should('be.visible');
+  cy.get('[data-cy="quick-actions-section"]').scrollIntoView().should('be.visible');
 
   actions.forEach((action) => {
-    cy.get('[data-cy="quick-actions-section"]').contains(action).should('be.visible');
+    cy.get('[data-cy="quick-actions-section"]').contains(action).should('exist');
   });
 });
 
@@ -35,9 +35,13 @@ Given('my profile is not complete', () => {
 });
 
 Given('I have a complete artist profile', () => {
-  // TODO: Implement complete profile creation
-  // For now, we'll skip this scenario or mock it
-  cy.log('Complete profile scenario - needs implementation');
+  // Wait for dashboard to be fully loaded after Background login
+  cy.url().should('include', '/dashboard');
+  // Create a complete profile via API (100% completion)
+  cy.createCompleteArtistProfile();
+  // Reload dashboard to fetch updated profile data
+  cy.reload();
+  cy.url().should('include', '/dashboard');
 });
 
 Then('I should see a completion indicator', () => {

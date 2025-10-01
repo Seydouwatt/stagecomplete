@@ -176,46 +176,74 @@ Cypress.Commands.add('setIncompleteProfile', () => {
 });
 
 /**
- * Create a complete artist profile for testing
+ * Create a complete artist profile (100% completion) via API
+ * This creates an artist with all required fields to reach 100% profile completion:
+ * - Name + artistDescription (basic_info)
+ * - artistType
+ * - cover_photo (portfolio.photos[0])
+ * - baseLocation
+ * - genres (at least 1)
+ * - instruments (at least 1)
+ * - portfolio_photos (at least 2)
+ * - priceRange
  */
 Cypress.Commands.add('createCompleteArtistProfile', () => {
-  // Le profil est déjà créé dans le test précédent
-  // Il suffit de vérifier qu'on est sur la bonne page
-  cy.visit('/artist/portfolio');
-  cy.contains('Mon Profil Artiste').should('be.visible');
+  const completeProfileData = {
+    artistDescription: 'Artiste professionnel avec 10 ans d\'expérience en musique live et studio',
+    artistType: 'SOLO',
+    artistDiscipline: 'MUSIC',
+    baseLocation: 'Paris, France',
+    genres: ['Jazz', 'Blues', 'Soul'],
+    instruments: ['Piano', 'Chant'],
+    priceRange: '500-2000',
+    socialLinks: {
+      instagram: 'https://instagram.com/completeartist',
+      youtube: 'https://youtube.com/@completeartist'
+    },
+    portfolio: {
+      photos: [
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', // 1x1 red pixel
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', // 1x1 blue pixel
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==' // 1x1 green pixel
+      ],
+      videos: []
+    },
+    yearsActive: 10,
+    isPublic: false
+  };
 
-  // Remplir les informations générales
-  cy.fillArtistGeneralInfo({
-    stageName: 'The Testers',
-    bio: 'We are a test band for Cypress E2E testing.',
-    location: 'Test City, Test Country',
-    website: 'https://thetesters.com'
+  // Wait for auth token to be available in localStorage (with retry)
+  cy.window().should((win) => {
+    const authStore = JSON.parse(win.localStorage.getItem('stagecomplete-auth') || '{}');
+    const token = authStore?.state?.token;
+    expect(token).to.exist;
+  }).then((win) => {
+    const authStore = JSON.parse(win.localStorage.getItem('stagecomplete-auth') || '{}');
+    const token = authStore?.state?.token;
+
+    // Update artist profile via API
+    cy.request({
+      method: 'PUT',
+      url: 'http://localhost:3000/api/artist/profile',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: completeProfileData,
+      failOnStatusCode: false
+    }).then((response) => {
+      cy.log(`📡 API Response Status: ${response.status}`);
+      if (response.status === 200) {
+        cy.log('✅ Complete artist profile created (100% completion)');
+        cy.log(`Profile: ${completeProfileData.genres.length} genres, ${completeProfileData.instruments.length} instruments, ${completeProfileData.portfolio.photos.length} photos`);
+        cy.log(JSON.stringify(response.body));
+      } else {
+        cy.log(`⚠️ Profile update failed with status ${response.status}`);
+        cy.log(JSON.stringify(response.body));
+        throw new Error(`Profile update failed: ${response.status} - ${JSON.stringify(response.body)}`);
+      }
+    });
   });
-  
-  // Passer à l'onglet membres et ajouter un membre
-  cy.switchToTab('members');
-  cy.selectArtistType('BAND');
-  cy.addMember({
-    name: 'Alice',
-    role: 'Vocalist',
-    email: 'alice@test.com',
-    instruments: ['Vocals']
-  });
-  cy.addMember({
-    name: 'Bob',
-    role: 'Guitarist',
-    email: 'bob@test.com',
-    instruments: ['Guitare']
-  });
-  
-  // Passer à l'onglet tarifs et remplir les informations
-  cy.switchToTab('pricing');
-  cy.get('input[name="minimum_rate"]').type('100');
-  cy.get('input[name="maximum_rate"]').type('500');
-  cy.get('textarea[name="conditions"]').type('Travel expenses not included');
-  
-  // Passer à l'onglet public et remplir les informations
-  cy.switchToTab('public');
 });
 
 /**
