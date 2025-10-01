@@ -1,4 +1,4 @@
-import { API_URL } from "./config";
+import { API_URL } from "../constants";
 
 /**
  * Track a profile view (public endpoint)
