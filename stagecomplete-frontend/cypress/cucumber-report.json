@@ -4,6 +4,82 @@
     "elements": [
       {
         "description": "",
+        "id": "artist-dashboard;display-dashboard-with-incomplete-profile",
+        "keyword": "Scenario",
+        "line": 12,
+        "name": "Display dashboard with incomplete profile",
+        "steps": [
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 7,
+            "name": "I am logged in as an artist",
+            "match": {
+              "location": "not available:0"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 2529000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 13,
+            "name": "my profile is not complete",
+            "match": {
+              "location": "not available:0"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 38000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 14,
+            "name": "I go to the dashboard",
+            "match": {
+              "location": "not available:0"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 318000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 15,
+            "name": "I should see my artist name displayed",
+            "match": {
+              "location": "not available:0"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 318000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 16,
+            "name": "I should see a completion indicator",
+            "match": {
+              "location": "not available:0"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9000000
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      },
+      {
+        "description": "",
         "id": "artist-dashboard;display-dashboard-with-complete-profile",
         "keyword": "Scenario",
         "line": 18,
@@ -19,7 +95,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 2647000000
+              "duration": 2040000000
             }
           },
           {
@@ -32,7 +108,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 533000000
+              "duration": 519000000
             }
           },
           {
@@ -45,7 +121,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 319000000
+              "duration": 259000000
             }
           },
           {
@@ -58,7 +134,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 217000000
+              "duration": 228000000
             }
           },
           {
@@ -71,7 +147,7 @@
             },
             "result": {
               "status": "passed",
-              "duration": 11000000
+              "duration": 6000000
             }
           },
           {
@@ -109,7 +185,159 @@
             },
             "result": {
               "status": "passed",
-              "duration": 38000000
+              "duration": 35000000
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "artist-dashboard;navigate-to-artist-profile-from-incomplete-dashboard",
+        "keyword": "Scenario",
+        "line": 29,
+        "name": "Navigate to artist profile from incomplete dashboard",
+        "steps": [
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 7,
+            "name": "I am logged in as an artist",
+            "match": {
+              "location": "not available:0"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 1978000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 30,
+            "name": "my profile is not complete",
+            "match": {
+              "location": "not available:0"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 45000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 31,
+            "name": "I am on the dashboard",
+            "match": {
+              "location": "not available:0"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 267000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 32,
+            "name": "I click on \"Éditer mon profil\"",
+            "match": {
+              "location": "not available:0"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 400000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 33,
+            "name": "I should be redirected to the artist profile page",
+            "match": {
+              "location": "not available:0"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 27000000
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "artist-dashboard;use-profile-completion-assistant",
+        "keyword": "Scenario",
+        "line": 35,
+        "name": "Use profile completion assistant",
+        "steps": [
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 7,
+            "name": "I am logged in as an artist",
+            "match": {
+              "location": "not available:0"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 1975000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 36,
+            "name": "my profile is not complete",
+            "match": {
+              "location": "not available:0"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 44000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 37,
+            "name": "I am on the dashboard",
+            "match": {
+              "location": "not available:0"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 278000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 38,
+            "name": "I click on \"Utiliser l'assistant\"",
+            "match": {
+              "location": "not available:0"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 248000000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 39,
+            "name": "I should be redirected to \"/artist/portfolio\"",
+            "match": {
+              "location": "not available:0"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 27000000
             }
           }
         ],

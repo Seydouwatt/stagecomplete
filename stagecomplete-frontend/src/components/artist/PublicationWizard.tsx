@@ -343,6 +343,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         className="bg-base-100 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
+        data-cy="publication-wizard"
       >
         {/* Header */}
         <div className="bg-primary text-primary-content p-6">
@@ -356,6 +357,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
             <button
               onClick={onClose}
               className="btn btn-circle btn-ghost text-primary-content"
+              data-cy="close-wizard-btn"
             >
               ✕
             </button>
@@ -382,6 +384,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                         : ""
                     }
                   `}
+                    data-cy="step-indicator"
                   >
                     {isCompleted ? (
                       <CheckIcon className="w-5 h-5" />
@@ -409,7 +412,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
               <span className="text-sm font-medium text-primary-content/90">
                 Complétion du profil
               </span>
-              <span className="text-sm font-bold text-primary-content">
+              <span className="text-sm font-bold text-primary-content" data-cy="completion-percentage">
                 {completionPercentage}%
               </span>
             </div>
@@ -427,7 +430,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
         {/* Missing Items Alert */}
         {missingItems.length > 0 && currentStep === 1 && (
           <div className="px-6 pt-4 pb-0">
-            <div className="alert alert-info bg-blue-50 border-blue-200">
+            <div className="alert alert-info bg-blue-50 border-blue-200" data-cy="missing-items-alert">
               <div className="flex-1">
                 <p className="font-medium text-blue-900">
                   {missingItems.length} élément
@@ -453,6 +456,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -20, opacity: 0 }}
                 className="space-y-6"
+                data-cy="wizard-step-1"
               >
                 <div>
                   <h3 className="text-xl font-semibold mb-2">
@@ -481,6 +485,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                         updateFormData("artistName", e.target.value)
                       }
                       maxLength={100}
+                      data-cy="artist-name-input"
                     />
                     {errors.artistName && (
                       <label className="label">
@@ -507,6 +512,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       onChange={(e) =>
                         updateFormData("baseLocation", e.target.value)
                       }
+                      data-cy="base-location-input"
                     />
                     {errors.baseLocation && (
                       <label className="label">
@@ -534,6 +540,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                           e.target.value as ArtistType
                         )
                       }
+                      data-cy="artist-type-select"
                     >
                       {ARTIST_TYPE_OPTIONS.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -558,6 +565,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                           e.target.value as ArtistDiscipline
                         )
                       }
+                      data-cy="artist-discipline-select"
                     >
                       {ARTIST_DISCIPLINE_OPTIONS.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -574,16 +582,18 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       Genres / Styles *{getMissingItemBadge("genres")}
                     </span>
                   </label>
-                  <MultiSelect
-                    label=""
-                    options={MUSIC_GENRES}
-                    value={formData.genres}
-                    onChange={(value) => updateFormData("genres", value)}
-                    placeholder="Sélectionnez vos genres"
-                    maxSelections={5}
-                    allowCustom={true}
-                    error={errors.genres}
-                  />
+                  <div data-cy="genres-multiselect">
+                    <MultiSelect
+                      label=""
+                      options={MUSIC_GENRES}
+                      value={formData.genres}
+                      onChange={(value) => updateFormData("genres", value)}
+                      placeholder="Sélectionnez vos genres"
+                      maxSelections={5}
+                      allowCustom={true}
+                      error={errors.genres}
+                    />
+                  </div>
                 </div>
 
                 <div className="form-control">
@@ -605,6 +615,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       updateFormData("artistDescription", e.target.value)
                     }
                     maxLength={250}
+                    data-cy="artist-description-input"
                   />
                   {errors.artistDescription && (
                     <label className="label">
@@ -624,6 +635,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -20, opacity: 0 }}
                 className="space-y-6"
+                data-cy="wizard-step-2"
               >
                 <div>
                   <h3 className="text-xl font-semibold mb-2">
@@ -647,18 +659,20 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       <strong>La première photo</strong> sera automatiquement utilisée comme photo de profil principale dans vos cartes et profil public.
                     </span>
                   </div>
-                  <ImageUpload
-                    label=""
-                    value={formData.portfolioPhotos}
-                    onChange={(value) =>
-                      updateFormData("portfolioPhotos", value)
-                    }
-                    maxImages={8}
-                    isPremiumFeature={true}
-                    freeLimit={4}
-                    premiumLimit={10}
-                    error={errors.portfolioPhotos}
-                  />
+                  <div data-cy="portfolio-upload">
+                    <ImageUpload
+                      label=""
+                      value={formData.portfolioPhotos}
+                      onChange={(value) =>
+                        updateFormData("portfolioPhotos", value)
+                      }
+                      maxImages={8}
+                      isPremiumFeature={true}
+                      freeLimit={4}
+                      premiumLimit={10}
+                      error={errors.portfolioPhotos}
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -674,6 +688,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       onChange={(e) =>
                         updateSocialLinks("spotify", e.target.value)
                       }
+                      data-cy="spotify-input"
                     />
                   </div>
 
@@ -689,6 +704,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       onChange={(e) =>
                         updateSocialLinks("youtube", e.target.value)
                       }
+                      data-cy="youtube-input"
                     />
                   </div>
 
@@ -704,6 +720,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       onChange={(e) =>
                         updateSocialLinks("soundcloud", e.target.value)
                       }
+                      data-cy="soundcloud-input"
                     />
                   </div>
 
@@ -719,6 +736,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       onChange={(e) =>
                         updateSocialLinks("instagram", e.target.value)
                       }
+                      data-cy="instagram-input"
                     />
                   </div>
                 </div>
@@ -736,6 +754,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                     onChange={(e) =>
                       updateFormData("demoVideo", e.target.value)
                     }
+                    data-cy="demo-video-input"
                   />
                 </div>
 
@@ -752,6 +771,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                     onChange={(e) =>
                       updateFormData("priceRange", e.target.value)
                     }
+                    data-cy="price-range-select"
                   >
                     <option value="">Non spécifié</option>
                     {PRICE_RANGES.map((range) => (
@@ -771,6 +791,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -20, opacity: 0 }}
                 className="space-y-6"
+                data-cy="wizard-step-3"
               >
                 <div>
                   <h3 className="text-xl font-semibold mb-2">
@@ -782,7 +803,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                 </div>
 
                 {/* Progress Comparison */}
-                <div className="card bg-gradient-to-br from-primary/5 to-secondary/5 border-2 border-primary/20">
+                <div className="card bg-gradient-to-br from-primary/5 to-secondary/5 border-2 border-primary/20" data-cy="completion-comparison">
                   <div className="card-body">
                     <h4 className="font-semibold text-lg mb-4">
                       Progression de votre profil
@@ -803,6 +824,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                               "--thickness": "4px",
                             } as React.CSSProperties
                           }
+                          data-cy="before-percentage"
                         >
                           {initialCompletionPercentage}%
                         </div>
@@ -827,6 +849,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                               "--thickness": "4px",
                             } as React.CSSProperties
                           }
+                          data-cy="after-percentage"
                         >
                           {formData.qualityScore}%
                         </div>
@@ -970,7 +993,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                     </p>
                   </div>
                 </div> */}
-                <motion.div>
+                <motion.div data-cy="artist-card-preview">
                   <ArtistCard artist={getArtistData(formData)} />
                 </motion.div>
 
@@ -984,6 +1007,7 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
                       onChange={(e) =>
                         updateFormData("isPublic", e.target.checked)
                       }
+                      data-cy="publish-checkbox"
                     />
                     <div>
                       <span className="label-text font-medium">
@@ -1024,12 +1048,12 @@ export const PublicationWizard: React.FC<PublicationWizardProps> = ({
           </button>
 
           {currentStep < 3 ? (
-            <button onClick={nextStep} className="btn btn-primary gap-2">
+            <button onClick={nextStep} className="btn btn-primary gap-2" data-cy="next-step-btn">
               Suivant
               <ArrowRightIcon className="w-4 h-4" />
             </button>
           ) : (
-            <button onClick={handleComplete} className="btn btn-primary gap-2">
+            <button onClick={handleComplete} className="btn btn-primary gap-2" data-cy="publish-btn">
               <CheckIcon className="w-4 h-4" />
               {formData.isPublic
                 ? "Publier le profil"

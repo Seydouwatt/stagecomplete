@@ -139,7 +139,7 @@ When('I click on the {string} section', (sectionName) => {
 });
 
 Then('I should see the text {string}', (text) => {
-  cy.contains(text).should('be.visible');
+  cy.contains(text).scrollIntoView().should('be.visible');
 });
 
 When('I try to add a 5th photo', () => {

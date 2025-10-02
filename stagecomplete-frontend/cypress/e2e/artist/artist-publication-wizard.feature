@@ -8,71 +8,100 @@ Feature: Artist Publication Wizard
     And the backend services are running
     And I am logged in as an artist
 
-  Scenario: Complete publication wizard with quality scoring
+  Scenario: Access publication wizard from dashboard
     Given I am on my artist dashboard
     When I click on "Publier mon profil"
     Then I should see the publication wizard with 3 steps
-    And I should see the quality score at 0%
+    And I should see the completion score displayed
 
   Scenario: Step 1 - Basic Information
     Given I am on the publication wizard step 1
     When I enter "Jazz Virtuoso" as artist name
-    And I enter a description of at least 50 characters
-    And I select "Solo" as artist type
+    And I enter "Je suis un artiste passionné avec plus de 10 ans d'expérience dans le jazz et le blues. Ma musique combine tradition et innovation." as artist description
+    And I select "SOLO" as artist type
+    And I select "MUSIC" as artist discipline
     And I select "Jazz" and "Blues" as genres
     And I enter "Paris" as base location
-    Then the quality score should increase to at least 30%
-    And I should be able to proceed to step 2
+    Then I should be able to proceed to step 2
 
   Scenario: Step 2 - Portfolio Creative
     Given I am on the publication wizard step 2
-    When I upload a main photo
-    And I add additional portfolio photos
-    And I add YouTube links for videos
-    And I add SoundCloud links for audio
-    And I add Instagram and Facebook social links
-    Then the quality score should increase to at least 70%
-    And I should be able to proceed to step 3
+    When I upload at least one portfolio photo
+    And I add a Spotify link
+    And I add a YouTube link
+    And I add a SoundCloud link
+    And I add an Instagram link
+    And I add a demo video URL
+    And I select a price range
+    Then I should be able to proceed to step 3
 
-  Scenario: Step 3 - Publication & Preview
+  Scenario: Step 3 - Preview and Publish
     Given I am on the publication wizard step 3
-    And my quality score is at least 80%
-    When I preview my public profile
-    Then I should see a comparison between private and public view
-    And I should see the generated public URL
-    And I should see social sharing buttons
+    Then I should see a before/after completion comparison
+    And I should see my estimated completion percentage
+    And I should see a preview of my artist card
+    And I should see a checkbox to publish my profile
+    When I check "Publier mon profil maintenant"
+    And I click "Publier le profil"
+    Then the wizard should complete successfully
 
-  Scenario: Publish profile successfully
-    Given I have completed all wizard steps
-    And my quality score is 100%
-    When I click "Publier maintenant"
-    Then I should see a success confirmation
-    And my profile should be marked as public
-    And I should receive the shareable URL
-    And I should see next steps suggestions
+  Scenario: Step 3 - Save as Draft
+    Given I am on the publication wizard step 3
+    When I leave the "Publier mon profil maintenant" checkbox unchecked
+    And I click "Sauvegarder en brouillon"
+    Then the wizard should complete successfully
+    And my profile should remain private
 
-  Scenario: Quality scoring validation
+  Scenario: Validation on Step 1
+    Given I am on the publication wizard step 1
+    When I try to proceed without entering artist name
+    Then I should see a validation error for artist name
+    When I enter "Test" as artist name
+    And I try to proceed without entering description
+    Then I should see a validation error for description
+    When I enter a description shorter than 20 characters
+    Then I should see a validation error for description length
+    When I enter a valid description of at least 20 characters
+    And I try to proceed without selecting genres
+    Then I should see a validation error for genres
+    When I try to proceed without entering location
+    Then I should see a validation error for location
+
+  Scenario: Validation on Step 2
+    Given I am on the publication wizard step 2
+    When I try to proceed without uploading any portfolio photo
+    Then I should see a validation error for portfolio photos
+
+  Scenario: Navigate between wizard steps
+    Given I am on the publication wizard step 1
+    When I fill all required fields in step 1
+    And I proceed to step 2
+    Then I should see step 2 content
+    When I click "Précédent"
+    Then I should see step 1 content
+    And my previously entered data should be preserved
+
+  Scenario: Close wizard
     Given I am in the publication wizard
-    When I have no main photo
-    Then the quality score should show -20 points for missing photo
-    When I have a description under 50 characters
-    Then the quality score should show -15 points for short description
-    When I have no genres selected
-    Then the quality score should show -10 points for missing genres
-    When I have no social links
-    Then the quality score should show -10 points for missing social presence
+    When I click the close button
+    Then the wizard should close
+    And I should return to the dashboard
 
-  Scenario: Save draft and resume later
-    Given I am in the middle of the publication wizard
-    When I navigate away from the wizard
-    And I return to the wizard later
-    Then my progress should be saved
-    And I should be able to continue from where I left off
+  Scenario: Profile completion indicator updates
+    Given I am on the publication wizard step 1
+    When I start filling the form
+    Then the estimated completion percentage should increase
+    When I complete all fields in step 1 and step 2
+    And I go to step 3
+    Then I should see a higher completion percentage than when I started
 
-  Scenario: Cancel wizard and keep changes
-    Given I have made changes in the publication wizard
-    When I click "Annuler"
-    Then I should see a confirmation dialog
-    When I confirm cancellation
-    Then my changes should be saved to my profile
-    But my profile should remain private
+  Scenario: Missing items alert on incomplete profile
+    Given I have an incomplete artist profile
+    When I open the publication wizard
+    Then I should see an alert showing missing items count
+    And the alert should mention "Cet assistant va vous aider à les compléter"
+
+  Scenario: Portfolio photo becomes main photo
+    Given I am on the publication wizard step 2
+    When I upload a portfolio photo
+    Then I should see an info message explaining that the first photo will be used as the main profile photo
