@@ -217,21 +217,34 @@
 // export default App;
 
 import { BrowserRouter as Router } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ToastContainer from "./components/ui/Toast";
 import { AppRoutes } from "./routes/AppRoutes";
 import { useDebugLog } from "./hooks/useDebugLog";
+
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 function App() {
   useDebugLog('APP', 'App component rendering...')
 
   try {
     return (
-      <div data-theme="stagecomplete">
-        <Router>
-          <AppRoutes />
-          <ToastContainer />
-        </Router>
-      </div>
+      <QueryClientProvider client={queryClient}>
+        <div data-theme="stagecomplete">
+          <Router>
+            <AppRoutes />
+            <ToastContainer />
+          </Router>
+        </div>
+      </QueryClientProvider>
     );
   } catch (error) {
     console.error('❌ [APP] Error in App component:', error)

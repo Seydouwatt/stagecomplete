@@ -332,3 +332,98 @@ export interface ArtistSearchResponse {
 }
 
 export { type ArtistCardSmallProps } from "./ArtistCardSmallProps";
+
+// ========== ADVANCED SEARCH TYPES ==========
+
+export type SortBy = "relevance" | "popularity" | "newest" | "price_asc" | "price_desc" | "rating";
+
+export interface AdvancedSearchQuery {
+  q?: string;
+  genres?: string[];
+  instruments?: string[];
+  location?: string;
+  experience?: Experience;
+  priceRange?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  sortBy?: SortBy;
+  limit?: number;
+  offset?: number;
+  availableOnly?: boolean;
+  radius?: number;
+}
+
+export interface SearchArtistResult {
+  id: string;
+  name: string;
+  avatar?: string;
+  location?: string;
+  genres: string[];
+  instruments: string[];
+  priceRange?: string;
+  experience?: string;
+  artisticBio?: string;
+  yearsActive?: number;
+  publicSlug?: string;
+  portfolioPreview?: string[];
+  relevanceScore?: number;
+  popularityScore?: number;
+  profileViews?: number;
+  memberCount?: number;
+  artistType?: string;
+}
+
+export interface SearchMetadata {
+  total: number;
+  limit: number;
+  offset: number;
+  hasMore: boolean;
+  page: number;
+  totalPages: number;
+  executionTime: number;
+  searchQuery?: string;
+  appliedFilters?: Record<string, any>;
+}
+
+export interface AdvancedSearchResponse {
+  results: SearchArtistResult[];
+  metadata: SearchMetadata;
+}
+
+export type SuggestionType = "artist" | "genre" | "instrument";
+
+export interface SearchSuggestion {
+  id: string;
+  type: SuggestionType;
+  text: string;
+  subtitle?: string;
+  avatar?: string;
+}
+
+export interface SearchSuggestionsResponse {
+  suggestions: SearchSuggestion[];
+  query: string;
+  executionTime: number;
+}
+
+export interface PopularGenre {
+  genre: string;
+  count: number;
+}
+
+export interface TrendingArtist {
+  id: string;
+  name: string;
+  avatar?: string;
+  genres: string[];
+  publicSlug?: string;
+  trendScore: number;
+}
+
+export interface QuickFilters {
+  genres: string[];
+  instruments: string[];
+  locations: string[];
+  experienceLevels: string[];
+  priceRanges: string[];
+}

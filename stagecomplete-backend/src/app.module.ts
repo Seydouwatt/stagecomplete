@@ -7,6 +7,7 @@ import { ArtistModule } from './artist/artist.module';
 import { ProfileModule } from './profile/profile.module';
 import { HealthModule } from './health/health.module';
 import { PublicModule } from './public/public.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PublicModule } from './public/public.module';
     ProfileModule,
     HealthModule,
     PublicModule,
+    SearchModule, // Advanced search with full-text capabilities
   ],
   controllers: [AppController],
   providers: [AppService],

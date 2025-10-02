@@ -70,7 +70,7 @@ export class PublicService {
         this.createMetricsEvent(
           artistId,
           MetricEventType.VENUE_REQUEST,
-          null,
+          undefined,
           venueId,
         ),
         this.incrementMetricCounter(artistId, 'venueRequests'),

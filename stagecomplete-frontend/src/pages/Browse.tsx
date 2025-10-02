@@ -9,58 +9,8 @@ import type { FilterOptions } from "../components/search/FilterPanel";
 import { BrowseGrid } from "../components/browse/BrowseGrid";
 import { useAuthStore } from "../stores/authStore";
 import { motion } from "framer-motion";
-
-// Mock data - remplacer par API calls
-const mockArtists = [
-  {
-    id: "1",
-    name: "Luna Jazz Quartet",
-    bio: "Quartet de jazz moderne avec influences fusion et électroniques",
-    avatar:
-      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300",
-    location: "Paris, FR",
-    genres: ["Jazz", "Fusion", "Electronic"],
-    rating: 4.8,
-    reviewCount: 24,
-    priceRange: "800-1200€",
-    experience: "PROFESSIONAL" as const,
-    availability: true,
-    portfolioImages: [
-      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400",
-      "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400",
-    ],
-    socialLinks: {
-      spotify: "https://spotify.com",
-      youtube: "https://youtube.com",
-    },
-  },
-  // Ajoutez plus d'artistes mock...
-];
-
-const mockVenues = [
-  {
-    id: "1",
-    name: "Le Blue Moon",
-    description:
-      "Club de jazz intime avec excellente acoustique et ambiance feutrée",
-    images: [
-      "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400",
-      "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400",
-    ],
-    location: "Paris 11ème",
-    address: "15 rue de la Roquette, 75011 Paris",
-    capacity: 150,
-    venueType: "Club",
-    rating: 4.6,
-    reviewCount: 89,
-    priceRange: "500-800€/soirée",
-    equipment: ["Piano", "Sono", "Éclairage"],
-    amenities: ["wifi", "parking", "sound_system"],
-    availability: true,
-    website: "https://bluemoon.fr",
-  },
-  // Ajoutez plus de venues mock...
-];
+import { useAdvancedSearch, useSearchSuggestions } from "../hooks/useAdvancedSearch";
+import type { AdvancedSearchQuery } from "../types";
 
 export const Browse: React.FC = () => {
   const { user } = useAuthStore();
@@ -70,13 +20,10 @@ export const Browse: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [isLoading] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
 
   // Type de contenu basé sur le rôle utilisateur
   const browseType = user?.role === "ARTIST" ? "venue" : "artist";
-  const artists = mockArtists;
-  const venues = mockVenues;
 
   // Filtres
   const [filters, setFilters] = useState<FilterOptions>({
@@ -89,164 +36,73 @@ export const Browse: React.FC = () => {
     experience: "",
   });
 
+  // Construire la query pour l'API
+  const apiQuery = useMemo<AdvancedSearchQuery>(() => ({
+    q: searchQuery || undefined,
+    genres: filters.genres.length > 0 ? filters.genres : undefined,
+    location: filters.locations.length > 0 ? filters.locations[0] : undefined,
+    experience: filters.experience || undefined,
+    minPrice: filters.priceRange?.[0] || undefined,
+    maxPrice: filters.priceRange?.[1] || undefined,
+    sortBy: "relevance",
+    limit: 20,
+  }), [searchQuery, filters]);
+
+  // Hook de recherche avec l'API réelle
+  const {
+    results,
+    metadata,
+    isLoading,
+    error,
+    updateQuery,
+    nextPage,
+    previousPage,
+  } = useAdvancedSearch(apiQuery);
+
+  // Hook pour les suggestions
+  const { suggestions: apiSuggestions, isLoading: suggestionsLoading } =
+    useSearchSuggestions(searchQuery, browseType === "artist");
+
   // Keep local searchQuery in sync with URL param changes (back/forward)
   useEffect(() => {
     const urlQuery = searchParams.get("q") || "";
     if (urlQuery !== searchQuery) setSearchQuery(urlQuery);
   }, [searchParams]);
 
-  // Suggestions de recherche
+  // Mapper les suggestions API au format du composant SearchBar
   const searchSuggestions = useMemo(() => {
-    if (searchQuery.length < 2) return [];
+    return apiSuggestions.map((suggestion) => ({
+      id: suggestion.id,
+      type: suggestion.type as "artist" | "genre" | "venue",
+      title: suggestion.text,
+      subtitle: suggestion.subtitle,
+      avatar: suggestion.avatar,
+    }));
+  }, [apiSuggestions]);
 
-    const suggestions = [] as SearchSuggestion[];
-
-    // Suggestions d'artistes/venues
-    const currentItems = browseType === "artist" ? artists : venues;
-    currentItems.forEach((item) => {
-      if (item.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-        suggestions.push({
-          id: item.id,
-          type: browseType,
-          title: item.name,
-          subtitle:
-            browseType === "artist"
-              ? (item as any).location
-              : (item as any).address,
-          avatar:
-            browseType === "artist"
-              ? (item as any).avatar
-              : (item as any).images?.[0],
-        });
-      }
-    });
-
-    // Suggestions de genres
-    const allGenres =
-      browseType === "artist"
-        ? [...new Set(artists.flatMap((item) => item.genres))]
-        : [];
-
-    allGenres.forEach((genre) => {
-      if (genre.toLowerCase().includes(searchQuery.toLowerCase())) {
-        suggestions.push({
-          id: genre,
-          type: "genre" as const,
-          title: genre,
-          subtitle: `Genre musical`,
-        });
-      }
-    });
-
-    return suggestions.slice(0, 8);
-  }, [searchQuery, artists, venues, browseType]);
-
-  // Filtrage des résultats
+  // Mapper les résultats API vers le format attendu par BrowseGrid
   const filteredItems = useMemo(() => {
-    if (browseType === "artist") {
-      let results = [...artists];
-
-      // Recherche textuelle
-      if (searchQuery) {
-        results = results.filter(
-          (item) =>
-            item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.genres.some((genre: string) =>
-              genre.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-        );
-      }
-
-      // Filtres
-      if (filters.genres.length > 0) {
-        results = results.filter((item) =>
-          filters.genres.some((genre) => item.genres.includes(genre))
-        );
-      }
-
-      if (filters.locations.length > 0) {
-        results = results.filter((item) =>
-          filters.locations.some((location) => item.location?.includes(location))
-        );
-      }
-
-      if (filters.rating > 0) {
-        results = results.filter((item) => item.rating >= filters.rating);
-      }
-
-      // Experience (for artists)
-      if (filters.experience) {
-        results = results.filter((item) => item.experience === filters.experience);
-      }
-
-      // Price upper-bound (parse from string like "800-1200€")
-      if (filters.priceRange && filters.priceRange[1] > 0) {
-        const maxPrice = filters.priceRange[1];
-        const parseMaxFromPrice = (priceStr: string): number => {
-          const nums = (priceStr.match(/\d+/g) || []).map((n) => parseInt(n, 10));
-          if (nums.length === 0) return 0;
-          return Math.max(...nums);
-        };
-        results = results.filter((item) => {
-          if (!item.priceRange) return true;
-          return parseMaxFromPrice(item.priceRange) <= maxPrice;
-        });
-      }
-
-      // Availability: if any availability filter selected, require item to be available
-      if (filters.availability) {
-        results = results.filter((item) => item.availability === true);
-      }
-
-      return results;
-    } else {
-      let results = [...venues];
-
-      // Recherche textuelle
-      if (searchQuery) {
-        results = results.filter((item) =>
-          item.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-      }
-
-      if (filters.locations.length > 0) {
-        results = results.filter((item) =>
-          filters.locations.some((location) => item.location?.includes(location))
-        );
-      }
-
-      if (filters.rating > 0) {
-        results = results.filter((item) => item.rating >= filters.rating);
-      }
-
-      // Capacity upper-bound (for venues)
-      if (filters.capacity) {
-        const maxCap = filters.capacity[1];
-        results = results.filter((item) => item.capacity <= maxCap);
-      }
-
-      // Price upper-bound (parse from string like "500-800€/soirée")
-      if (filters.priceRange && filters.priceRange[1] > 0) {
-        const maxPrice = filters.priceRange[1];
-        const parseMaxFromPrice = (priceStr: string): number => {
-          const nums = (priceStr.match(/\d+/g) || []).map((n) => parseInt(n, 10));
-          if (nums.length === 0) return 0;
-          return Math.max(...nums);
-        };
-        results = results.filter((item) => {
-          if (!item.priceRange) return true;
-          return parseMaxFromPrice(item.priceRange) <= maxPrice;
-        });
-      }
-
-      // Availability: if any availability filter selected, require item to be available
-      if (filters.availability) {
-        results = results.filter((item) => item.availability === true);
-      }
-
-      return results;
+    if (browseType !== "artist") {
+      // TODO: Implémenter la recherche de venues quand l'API sera prête
+      return [];
     }
-  }, [artists, venues, searchQuery, filters, browseType]);
+
+    return results.map((artist) => ({
+      id: artist.id,
+      name: artist.name,
+      bio: artist.artisticBio || "",
+      avatar: artist.avatar,
+      location: artist.location,
+      genres: artist.genres,
+      rating: 4.5, // TODO: Ajouter rating dans l'API
+      reviewCount: artist.profileViews || 0,
+      priceRange: artist.priceRange,
+      experience: artist.experience as "BEGINNER" | "INTERMEDIATE" | "PROFESSIONAL",
+      availability: true, // TODO: Gérer la disponibilité
+      portfolioImages: artist.portfolioPreview || [],
+      socialLinks: {}, // TODO: Ajouter socialLinks dans l'API si nécessaire
+    }));
+  }, [results, browseType]);
 
   // Handlers
   const handleSearch = (query: string) => {
@@ -301,7 +157,7 @@ export const Browse: React.FC = () => {
                 onSearch={handleSearch}
                 onFilterClick={() => setShowFilters(true)}
                 suggestions={searchSuggestions}
-                isLoading={isLoading}
+                isLoading={isLoading || suggestionsLoading}
               />
             </div>
           </motion.div>
