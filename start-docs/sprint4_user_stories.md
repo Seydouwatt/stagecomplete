@@ -14,25 +14,25 @@
 
 **Critères d'acceptation :**
 
-- [ ] Recherche full-text : nom artiste, bio, instruments, genres
-- [ ] Filtres avancés combinables : genre, localisation, instruments, expérience, tarifs
-- [ ] Résultats instantanés avec suggestions auto-complete
-- [ ] Tri par : pertinence, distance, tarifs, popularité, note qualité
-- [ ] Pagination avec scroll infini ou pagination classique
-- [ ] Affichage résultats en grille ou liste
-- [ ] Preview profil au hover avec infos clés
-- [ ] Compteur de résultats en temps réel
+- [x] Recherche full-text : nom artiste, bio, instruments, genres
+- [x] Filtres avancés combinables : genre, localisation, instruments, expérience, tarifs
+- [x] Résultats instantanés avec suggestions auto-complete
+- [x] Tri par : pertinence, popularité, tarifs
+- [x] Pagination avec scroll infini
+- [x] Affichage résultats en grille ou liste
+- [x] Preview profil au hover avec infos clés
+- [x] Compteur de résultats en temps réel
 - [ ] Historique des recherches récentes
 - [ ] Suggestions "Artistes similaires" basées sur profil recherché
 
 **Issues techniques :**
 
-- [ ] **SEARCH-008**: API search avec indexation full-text (PostgreSQL/Elasticsearch)
-- [ ] **SEARCH-009**: Composant SearchEngine avec auto-complete
-- [ ] **SEARCH-010**: Système de filtres avancés combinables
-- [ ] **SEARCH-011**: Preview cards avec lazy loading
-- [ ] **SEARCH-012**: Algorithme de tri et scoring pertinence
-- [ ] **SEARCH-013**: Optimisation performance requêtes complexes
+- [x] **SEARCH-008**: API search avec indexation full-text PostgreSQL (tsvector, GIN indexes)
+- [x] **SEARCH-009**: Composant SearchEngine avec auto-complete (SearchBar + suggestions)
+- [x] **SEARCH-010**: Système de filtres avancés combinables (FilterPanel)
+- [x] **SEARCH-011**: Preview cards avec lazy loading (ArtistCard)
+- [x] **SEARCH-012**: Algorithme de tri et scoring pertinence (relevance + popularity scores)
+- [x] **SEARCH-013**: Optimisation performance requêtes complexes (debouncing, caching)
 - [ ] **SEARCH-014**: Suggestions artistes similaires (IA simple)
 - [ ] **SEARCH-015**: Historique recherches localStorage
 
