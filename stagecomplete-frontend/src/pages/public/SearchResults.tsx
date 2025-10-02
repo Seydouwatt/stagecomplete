@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -8,100 +8,70 @@ import {
 } from "@heroicons/react/24/outline";
 import { PublicSearchBar } from "../../components/public/PublicSearchBar";
 import { FeaturedArtists } from "../../components/public/FeaturedArtists";
-import { artistService } from "../../services/artistService";
+import { useAdvancedSearch } from "../../hooks/useAdvancedSearch";
+import type { AdvancedSearchQuery } from "../../types";
 import { trackSearchClick } from "../../services/metricsService";
 import {
   SEOHead,
   SEO_TEMPLATES,
   generateSearchSchema,
 } from "../../components/seo/SEOHead";
-import type { PublicArtistProfile, ArtistSearchFilters } from "../../types";
+import type { PublicArtistProfile } from "../../types";
 import { getMainPhoto } from "../../types";
 
 export const SearchResults: React.FC = () => {
-  const [searchParams] = useSearchParams();
-  const [artists, setArtists] = useState<PublicArtistProfile[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [totalResults, setTotalResults] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
 
   const query = searchParams.get("q") || "";
   const location = searchParams.get("location") || "";
-  const genres = searchParams.get("genres")?.split(",") || [];
-  const limit = 12;
+  const genres = searchParams.get("genres")?.split(",").filter(Boolean) || [];
 
-  useEffect(() => {
-    if (query) {
-      performSearch();
-    }
-  }, [query, location, currentPage]);
+  // Construire la query pour l'API de recherche avancée
+  const apiQuery = useMemo<AdvancedSearchQuery>(() => ({
+    q: query || undefined,
+    location: location || undefined,
+    genres: genres.length > 0 ? genres : undefined,
+    sortBy: "relevance",
+    limit: 20,
+    offset: 0,
+  }), [query, location, genres]);
 
-  const performSearch = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  // Utiliser le hook de recherche avancée
+  const {
+    results,
+    metadata,
+    isLoading,
+    error: searchError,
+    nextPage,
+  } = useAdvancedSearch(apiQuery);
 
-      const filters: ArtistSearchFilters = {
-        limit,
-        offset: (currentPage - 1) * limit,
-      };
-
-      // Ajouter les filtres basés sur les paramètres URL
-      if (query) {
-        // Pour l'instant, on utilise les genres comme approximation
-        // TODO: Implémenter la recherche full-text côté backend
-        const possibleGenres = query
-          .split(" ")
-          .filter((term) =>
-            ["jazz", "rock", "pop", "blues", "folk", "classical"].includes(
-              term.toLowerCase()
-            )
-          );
-        if (possibleGenres.length > 0) {
-          filters.genres = possibleGenres;
-        }
-      }
-
-      if (location) {
-        filters.location = location;
-      }
-
-      if (genres.length > 0) {
-        filters.genres = [...(filters.genres || []), ...genres];
-      }
-
-      const response = await artistService.searchArtists(filters);
-
-      setArtists(response.artists);
-      setTotalResults(response.total);
-      setHasMore(response.hasMore);
-    } catch (err) {
-      console.error("Search error:", err);
-      setError("Erreur lors de la recherche");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Mapper les résultats vers le format PublicArtistProfile
+  const artists = useMemo(() => {
+    return results.map(artist => ({
+      id: artist.id,
+      profile: {
+        name: artist.name,
+        avatar: artist.avatar,
+        bio: artist.artisticBio || '',
+      },
+      artistType: artist.artistType as 'SOLO' | 'GROUP' | undefined,
+      baseLocation: artist.location,
+      genres: artist.genres,
+      instruments: artist.instruments,
+      priceRange: artist.priceRange,
+      experience: artist.experience,
+      publicSlug: artist.publicSlug,
+      portfolioPreview: artist.portfolioPreview,
+      isPublic: true,
+    }));
+  }, [results]);
 
   const handleSearch = (newQuery: string, newLocation?: string) => {
     const newSearchParams = new URLSearchParams();
     if (newQuery) newSearchParams.set("q", newQuery);
     if (newLocation) newSearchParams.set("location", newLocation);
-
-    window.history.pushState(
-      {},
-      "",
-      `${window.location.pathname}?${newSearchParams.toString()}`
-    );
-    setCurrentPage(1);
-    performSearch();
-  };
-
-  const loadMore = () => {
-    setCurrentPage((prev) => prev + 1);
+    setSearchParams(newSearchParams);
   };
 
   // Si pas de query, afficher la page de découverte
@@ -120,7 +90,7 @@ export const SearchResults: React.FC = () => {
         url={`/search?q=${encodeURIComponent(query)}${
           location ? `&location=${encodeURIComponent(location)}` : ""
         }`}
-        schemaData={generateSearchSchema(query, totalResults)}
+        schemaData={generateSearchSchema(query, metadata?.total || 0)}
       />
       {/* Header avec recherche */}
       <section className="bg-white border-b sticky top-0 z-10 shadow-sm">
@@ -189,28 +159,28 @@ export const SearchResults: React.FC = () => {
             )}
           </h1>
           <p className="text-gray-600">
-            {loading
+            {isLoading
               ? "Recherche en cours..."
-              : `${totalResults} artiste(s) trouvé(s)`}
+              : `${metadata?.total || 0} artiste(s) trouvé(s)`}
           </p>
         </div>
 
         {/* Chargement */}
-        {loading && currentPage === 1 && (
+        {isLoading && artists.length === 0 && (
           <div className="flex justify-center py-12">
             <div className="loading loading-spinner loading-lg text-primary"></div>
           </div>
         )}
 
         {/* Erreur */}
-        {error && (
+        {searchError && (
           <div className="alert alert-error mb-6">
-            <span>{error}</span>
+            <span>Erreur lors de la recherche</span>
           </div>
         )}
 
         {/* Grille d'artistes */}
-        {!loading && artists.length > 0 && (
+        {!isLoading && artists.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
             {artists.map((artist, index) => (
               <motion.div
@@ -226,7 +196,7 @@ export const SearchResults: React.FC = () => {
         )}
 
         {/* Aucun résultat */}
-        {!loading && artists.length === 0 && query && (
+        {!isLoading && artists.length === 0 && query && (
           <div className="text-center py-12">
             <MagnifyingGlassIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -254,14 +224,14 @@ export const SearchResults: React.FC = () => {
         )}
 
         {/* Bouton "Charger plus" */}
-        {!loading && hasMore && (
+        {!isLoading && metadata?.hasMore && (
           <div className="text-center">
             <button
-              onClick={loadMore}
+              onClick={nextPage}
               className="btn btn-outline btn-lg"
-              disabled={loading}
+              disabled={isLoading}
             >
-              {loading ? (
+              {isLoading ? (
                 <span className="loading loading-spinner loading-sm"></span>
               ) : (
                 "Charger plus d'artistes"
