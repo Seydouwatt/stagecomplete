@@ -83,6 +83,8 @@ export const ArtistCard: React.FC<ArtistCardProps> = ({
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
       className="card bg-base-100 shadow-lg hover:shadow-2xl transition-all duration-300 border border-base-300 overflow-hidden"
+      data-cy="artist-card"
+      data-experience={artist.experience}
     >
       {/* Image carousel */}
       <div className="relative h-48 overflow-hidden">
@@ -158,8 +160,8 @@ export const ArtistCard: React.FC<ArtistCardProps> = ({
         {/* Header */}
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1">
-            <h3 className="card-title text-lg mb-1">{artist.name}</h3>
-            <div className="flex items-center gap-2 text-sm text-base-content/60">
+            <h3 className="card-title text-lg mb-1" data-cy="artist-name">{artist.name}</h3>
+            <div className="flex items-center gap-2 text-sm text-base-content/60" data-cy="artist-location">
               <MapPin className="w-4 h-4" />
               {artist.location}
             </div>
@@ -189,7 +191,7 @@ export const ArtistCard: React.FC<ArtistCardProps> = ({
         </p>
 
         {/* Genres */}
-        <div className="flex flex-wrap gap-1 mb-3">
+        <div className="flex flex-wrap gap-1 mb-3" data-cy="artist-genres">
           {artist.genres.slice(0, 3).map((genre) => (
             <span key={genre} className="badge badge-primary badge-sm">
               {genre}

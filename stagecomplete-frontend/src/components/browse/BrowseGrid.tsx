@@ -112,7 +112,7 @@ export function BrowseGrid<T extends { id: string }>({
 
       {/* Results count */}
       <div className="mb-4">
-        <p className="text-sm text-base-content/60">
+        <p className="text-sm text-base-content/60" data-cy="results-count">
           {items.length} {itemType === "artist" ? "artistes" : "venues"} trouvé
           {items.length > 1 ? "s" : ""}
         </p>
@@ -126,6 +126,7 @@ export function BrowseGrid<T extends { id: string }>({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className={gridClass}
+          data-cy="browse-grid"
         >
           {paginatedItems.map((item, index) => renderItem(item, index))}
         </motion.div>
@@ -133,7 +134,7 @@ export function BrowseGrid<T extends { id: string }>({
 
       {/* Loading indicator */}
       {isLoading && (
-        <div className="flex justify-center py-8">
+        <div className="flex justify-center py-8" data-cy="loading-indicator">
           <div className="loading loading-spinner loading-lg"></div>
         </div>
       )}
@@ -197,10 +198,10 @@ export function BrowseGrid<T extends { id: string }>({
 
       {/* Empty state */}
       {items.length === 0 && !isLoading && (
-        <div className="text-center py-12">
+        <div className="text-center py-12" data-cy="no-results">
           <div className="text-6xl mb-4">🔍</div>
           <h3 className="text-xl font-semibold mb-2">Aucun résultat</h3>
-          <p className="text-base-content/60">
+          <p className="text-base-content/60" data-cy="search-tips">
             Essayez de modifier vos filtres ou votre recherche
           </p>
         </div>

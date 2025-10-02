@@ -126,7 +126,7 @@ export const Browse: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-base-200">
+    <div className="min-h-screen bg-base-200" data-cy="browse-page">
       {/* Hero section */}
       <div className="bg-gradient-to-br from-primary to-secondary text-primary-content">
         <div className="container mx-auto px-4 py-12">

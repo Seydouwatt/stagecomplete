@@ -99,6 +99,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             onBlur={() => setTimeout(() => setIsFocused(false), 200)}
             placeholder={placeholder}
             className="input input-bordered w-full pl-12 pr-20 py-3 text-lg focus:ring-2 focus:ring-primary"
+            data-cy="search-input"
           />
 
           <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
@@ -117,6 +118,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 type="button"
                 onClick={onFilterClick}
                 className="btn btn-ghost btn-sm"
+                data-cy="filters-button"
               >
                 <Filter className="w-4 h-4" />
                 Filtres
@@ -140,6 +142,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             className="absolute top-full left-0 right-0 z-50 mt-2 bg-base-100 rounded-lg shadow-xl border border-base-300 max-h-96 overflow-y-auto"
+            data-cy="search-suggestions"
           >
             {suggestions.map((suggestion, index) => (
               <motion.button
@@ -149,6 +152,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 transition={{ delay: index * 0.05 }}
                 onClick={() => handleSuggestionClick(suggestion)}
                 className="w-full flex items-center gap-3 p-4 hover:bg-base-200 transition-colors duration-200 text-left"
+                data-cy="suggestion-item"
+                data-type={suggestion.type}
               >
                 <div className="w-10 h-10 rounded-full bg-base-300 flex items-center justify-center text-lg">
                   {suggestion.avatar ? (
