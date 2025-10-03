@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import {
-  SearchBar,
-  type SearchSuggestion,
-} from "../components/search/SearchBar";
+import { SearchBar } from "../components/search/SearchBar";
 import { FilterPanel } from "../components/search/FilterPanel";
-import type { FilterOptions } from "../components/search/FilterPanel";
 import { BrowseGrid } from "../components/browse/BrowseGrid";
 import { useAuthStore } from "../stores/authStore";
 import { motion } from "framer-motion";
-import { useAdvancedSearch, useSearchSuggestions } from "../hooks/useAdvancedSearch";
+import {
+  useAdvancedSearch,
+  useSearchSuggestions,
+} from "../hooks/useAdvancedSearch";
 import type { AdvancedSearchQuery } from "../types";
 
 export const Browse: React.FC = () => {
@@ -26,37 +25,24 @@ export const Browse: React.FC = () => {
   const browseType = user?.role === "ARTIST" ? "venue" : "artist";
 
   // Filtres
-  const [filters, setFilters] = useState<FilterOptions>({
-    genres: [],
-    locations: [],
-    priceRange: [0, 5000],
-    availability: "",
-    rating: 0,
-    capacity: [0, 1000],
-    experience: "",
+  const [filters, setFilters] = useState<AdvancedSearchQuery>({
+    sortBy: "relevance",
+    limit: 20,
   });
 
   // Construire la query pour l'API
-  const apiQuery = useMemo<AdvancedSearchQuery>(() => ({
-    q: searchQuery || undefined,
-    genres: filters.genres.length > 0 ? filters.genres : undefined,
-    location: filters.locations.length > 0 ? filters.locations[0] : undefined,
-    experience: filters.experience || undefined,
-    minPrice: filters.priceRange?.[0] || undefined,
-    maxPrice: filters.priceRange?.[1] || undefined,
-    sortBy: "relevance",
-    limit: 20,
-  }), [searchQuery, filters]);
+  const apiQuery = useMemo<AdvancedSearchQuery>(
+    () => ({
+      ...filters,
+      q: searchQuery || filters.q,
+    }),
+    [searchQuery, filters]
+  );
 
   // Hook de recherche avec l'API réelle
   const {
     results,
-    metadata,
     isLoading,
-    error,
-    updateQuery,
-    nextPage,
-    previousPage,
   } = useAdvancedSearch(apiQuery);
 
   // Hook pour les suggestions
@@ -97,7 +83,10 @@ export const Browse: React.FC = () => {
       rating: 4.5, // TODO: Ajouter rating dans l'API
       reviewCount: artist.profileViews || 0,
       priceRange: artist.priceRange,
-      experience: artist.experience as "BEGINNER" | "INTERMEDIATE" | "PROFESSIONAL",
+      experience: artist.experience as
+        | "BEGINNER"
+        | "INTERMEDIATE"
+        | "PROFESSIONAL",
       availability: true, // TODO: Gérer la disponibilité
       portfolioImages: artist.portfolioPreview || [],
       socialLinks: {}, // TODO: Ajouter socialLinks dans l'API si nécessaire
@@ -110,7 +99,7 @@ export const Browse: React.FC = () => {
     setSearchParams(query ? { q: query } : {});
   };
 
-  const handleFiltersChange = (newFilters: FilterOptions) => {
+  const handleFiltersChange = (newFilters: AdvancedSearchQuery) => {
     setFilters(newFilters);
   };
 
@@ -188,8 +177,8 @@ export const Browse: React.FC = () => {
       <FilterPanel
         isOpen={showFilters}
         onClose={() => setShowFilters(false)}
+        filters={filters}
         onFiltersChange={handleFiltersChange}
-        userRole={user?.role || "ARTIST"}
       />
     </div>
   );

@@ -9,8 +9,10 @@ import {
   ZoomIn,
   Volume2,
   Star,
+  Download,
 } from "lucide-react";
 import type { PublicArtistProfile } from "../../../types";
+import { toast } from "../../../stores/useToastStore";
 
 interface PortfolioTabProps {
   artistProfile: PublicArtistProfile;
@@ -19,6 +21,29 @@ interface PortfolioTabProps {
 export const PortfolioTab: React.FC<PortfolioTabProps> = ({ artistProfile }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<"all" | "photos" | "videos" | "audio">("all");
+
+  const handleDownloadPhoto = async (photoUrl: string, index: number) => {
+    try {
+      const artistName = artistProfile.profile.name.replace(/\s+/g, '-').toLowerCase();
+      const fileName = `${artistName}-photo-${index + 1}.jpg`;
+
+      // Créer un lien temporaire pour télécharger l'image
+      const link = document.createElement('a');
+      link.href = photoUrl;
+      link.download = fileName;
+      link.target = '_blank';
+
+      // Déclencher le téléchargement
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success("Photo téléchargée !");
+    } catch (error) {
+      toast.error("Impossible de télécharger la photo");
+      console.error("Failed to download photo:", error);
+    }
+  };
 
   // Composant Lightbox pour les images
   const Lightbox = ({ src, onClose }: { src: string; onClose: () => void }) => (
@@ -136,8 +161,7 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ artistProfile }) => 
                   key={index}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="relative aspect-square rounded-lg overflow-hidden cursor-pointer group"
-                  onClick={() => setSelectedImage(photo)}
+                  className="relative aspect-square rounded-lg overflow-hidden group"
                   data-cy="portfolio-photo"
                 >
                   <img
@@ -145,8 +169,25 @@ export const PortfolioTab: React.FC<PortfolioTabProps> = ({ artistProfile }) => 
                     alt={`Portfolio ${index + 1}`}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                    <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center gap-4">
+                    <button
+                      onClick={() => setSelectedImage(photo)}
+                      className="p-2 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white"
+                      title="Agrandir"
+                    >
+                      <ZoomIn className="w-5 h-5 text-gray-800" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownloadPhoto(photo, index);
+                      }}
+                      className="p-2 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white"
+                      title="Télécharger"
+                      data-cy="download-photo-button"
+                    >
+                      <Download className="w-5 h-5 text-gray-800" />
+                    </button>
                   </div>
                   {/* Badge pour la photo principale (première photo) */}
                   {index === 0 && (

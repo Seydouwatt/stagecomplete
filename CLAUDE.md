@@ -148,3 +148,4 @@ npm run dev          # Runs on http://localhost:5173
 - Frontend uses custom `useDebugLog` hook for component debugging
 - Prisma Studio for database inspection
 - Swagger UI for API testing
+- never add claude credits dans les commit

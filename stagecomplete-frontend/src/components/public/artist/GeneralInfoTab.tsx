@@ -9,8 +9,10 @@ import {
   Users,
   MapPin,
   Zap,
+  Copy,
 } from "lucide-react";
 import type { PublicArtistProfile } from "../../../types";
+import { toast } from "../../../stores/useToastStore";
 
 interface GeneralInfoTabProps {
   artistProfile: PublicArtistProfile;
@@ -19,6 +21,17 @@ interface GeneralInfoTabProps {
 export const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({
   artistProfile,
 }) => {
+  const handleCopyBio = async () => {
+    try {
+      const bioText = artistProfile.artisticBio || "Aucune biographie artistique détaillée n'est disponible pour le moment.";
+      await navigator.clipboard.writeText(bioText);
+      toast.success("Biographie copiée dans le presse-papier !");
+    } catch (error) {
+      toast.error("Impossible de copier la biographie");
+      console.error("Failed to copy bio:", error);
+    }
+  };
+
   const getExperienceLabel = (experience: string) => {
     switch (experience) {
       case "BEGINNER":
@@ -81,10 +94,20 @@ export const GeneralInfoTab: React.FC<GeneralInfoTabProps> = ({
         className="card bg-base-100 shadow-lg"
       >
         <div className="card-body">
-          <h2 className="card-title text-2xl mb-6">
-            <FileText className="w-6 h-6 text-primary" />
-            Biographie artistique
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="card-title text-2xl">
+              <FileText className="w-6 h-6 text-primary" />
+              Biographie artistique
+            </h2>
+            <button
+              onClick={handleCopyBio}
+              className="btn btn-sm btn-outline gap-2"
+              data-cy="copy-bio-button"
+            >
+              <Copy className="w-4 h-4" />
+              Copier la bio
+            </button>
+          </div>
           <div className="prose max-w-none">
             <p className="text-lg leading-relaxed text-base-content/80">
               {artistProfile.artisticBio ??

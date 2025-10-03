@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -10,7 +10,7 @@ import { PublicSearchBar } from "../../components/public/PublicSearchBar";
 import { FeaturedArtists } from "../../components/public/FeaturedArtists";
 import { FilterPanel } from "../../components/search/FilterPanel";
 import { useAdvancedSearch } from "../../hooks/useAdvancedSearch";
-import type { AdvancedSearchQuery } from "../../types";
+import type { AdvancedSearchQuery, Experience, ArtistType } from "../../types";
 import { trackSearchClick } from "../../services/metricsService";
 import {
   SEOHead,
@@ -31,11 +31,18 @@ export const SearchResults: React.FC = () => {
     const params: AdvancedSearchQuery = {
       q: query || undefined,
       location: searchParams.get("location") || undefined,
-      genres: searchParams.get("genres")?.split(",").filter(Boolean) || undefined,
-      instruments: searchParams.get("instruments")?.split(",").filter(Boolean) || undefined,
+      genres:
+        searchParams.get("genres")?.split(",").filter(Boolean) || undefined,
+      instruments:
+        searchParams.get("instruments")?.split(",").filter(Boolean) ||
+        undefined,
       experience: (searchParams.get("experience") as any) || undefined,
-      minPrice: searchParams.get("minPrice") ? parseInt(searchParams.get("minPrice")!) : undefined,
-      maxPrice: searchParams.get("maxPrice") ? parseInt(searchParams.get("maxPrice")!) : undefined,
+      minPrice: searchParams.get("minPrice")
+        ? parseInt(searchParams.get("minPrice")!)
+        : undefined,
+      maxPrice: searchParams.get("maxPrice")
+        ? parseInt(searchParams.get("maxPrice")!)
+        : undefined,
       availableOnly: searchParams.get("availableOnly") === "true" || undefined,
       sortBy: (searchParams.get("sortBy") as any) || "relevance",
       limit: 20,
@@ -43,7 +50,7 @@ export const SearchResults: React.FC = () => {
     };
 
     // Remove undefined values
-    Object.keys(params).forEach(key => {
+    Object.keys(params).forEach((key) => {
       if (params[key as keyof AdvancedSearchQuery] === undefined) {
         delete params[key as keyof AdvancedSearchQuery];
       }
@@ -75,22 +82,33 @@ export const SearchResults: React.FC = () => {
 
   // Mapper les résultats vers le format PublicArtistProfile
   const artists = useMemo(() => {
-    return results.map(artist => ({
+    return results.map((artist) => ({
       id: artist.id,
+      profileId: artist.id,
       profile: {
+        id: artist.id,
         name: artist.name,
         avatar: artist.avatar,
-        bio: artist.artisticBio || '',
+        bio: artist.artisticBio || "",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        user: {
+          id: artist.id,
+          role: "ARTIST",
+          createdAt: new Date().toISOString(),
+        },
       },
-      artistType: artist.artistType as 'SOLO' | 'GROUP' | undefined,
+      artistType: artist.artistType as ArtistType | undefined,
       baseLocation: artist.location,
       genres: artist.genres,
       instruments: artist.instruments,
       priceRange: artist.priceRange,
-      experience: artist.experience,
+      experience: artist.experience as Experience | undefined,
       publicSlug: artist.publicSlug,
       portfolioPreview: artist.portfolioPreview,
       isPublic: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     }));
   }, [results]);
 
@@ -115,14 +133,21 @@ export const SearchResults: React.FC = () => {
     if (newFilters.q) newSearchParams.set("q", newFilters.q);
 
     // Add all other filters
-    if (newFilters.location) newSearchParams.set("location", newFilters.location);
-    if (newFilters.genres?.length) newSearchParams.set("genres", newFilters.genres.join(","));
-    if (newFilters.instruments?.length) newSearchParams.set("instruments", newFilters.instruments.join(","));
-    if (newFilters.experience) newSearchParams.set("experience", newFilters.experience);
-    if (newFilters.minPrice) newSearchParams.set("minPrice", newFilters.minPrice.toString());
-    if (newFilters.maxPrice) newSearchParams.set("maxPrice", newFilters.maxPrice.toString());
+    if (newFilters.location)
+      newSearchParams.set("location", newFilters.location);
+    if (newFilters.genres?.length)
+      newSearchParams.set("genres", newFilters.genres.join(","));
+    if (newFilters.instruments?.length)
+      newSearchParams.set("instruments", newFilters.instruments.join(","));
+    if (newFilters.experience)
+      newSearchParams.set("experience", newFilters.experience);
+    if (newFilters.minPrice)
+      newSearchParams.set("minPrice", newFilters.minPrice.toString());
+    if (newFilters.maxPrice)
+      newSearchParams.set("maxPrice", newFilters.maxPrice.toString());
     if (newFilters.availableOnly) newSearchParams.set("availableOnly", "true");
-    if (newFilters.sortBy && newFilters.sortBy !== "relevance") newSearchParams.set("sortBy", newFilters.sortBy);
+    if (newFilters.sortBy && newFilters.sortBy !== "relevance")
+      newSearchParams.set("sortBy", newFilters.sortBy);
 
     setSearchParams(newSearchParams);
     updateQuery(newFilters);
@@ -133,7 +158,8 @@ export const SearchResults: React.FC = () => {
     return <DiscoveryPage onSearch={handleSearch} />;
   }
 
-  const seoData = SEO_TEMPLATES.search(query, location);
+  const locationParam = searchParams.get("location") || "";
+  const seoData = SEO_TEMPLATES.search(query, locationParam);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -142,7 +168,7 @@ export const SearchResults: React.FC = () => {
         description={seoData.description}
         keywords={seoData.keywords.filter((k): k is string => Boolean(k))}
         url={`/search?q=${encodeURIComponent(query)}${
-          location ? `&location=${encodeURIComponent(location)}` : ""
+          locationParam ? `&location=${encodeURIComponent(locationParam)}` : ""
         }`}
         schemaData={generateSearchSchema(query, metadata?.total || 0)}
       />
@@ -216,23 +242,48 @@ export const SearchResults: React.FC = () => {
         </div>
 
         {/* Filtres actifs */}
-        {(currentQuery.genres?.length || currentQuery.instruments?.length || currentQuery.location ||
-          currentQuery.experience || currentQuery.minPrice || currentQuery.maxPrice || currentQuery.availableOnly) && (
-          <div className="mb-6 flex flex-wrap gap-2 items-center" data-cy="active-filters">
-            <span className="text-sm font-medium text-gray-600">Filtres actifs:</span>
+        {(currentQuery.genres?.length ||
+          currentQuery.instruments?.length ||
+          currentQuery.location ||
+          currentQuery.experience ||
+          currentQuery.minPrice ||
+          currentQuery.maxPrice ||
+          currentQuery.availableOnly) && (
+          <div
+            className="mb-6 flex flex-wrap gap-2 items-center"
+            data-cy="active-filters"
+          >
+            <span className="text-sm font-medium text-gray-600">
+              Filtres actifs:
+            </span>
 
             {currentQuery.genres?.map((genre) => (
               <button
                 key={genre}
                 onClick={() => {
-                  const newGenres = currentQuery.genres?.filter((g) => g !== genre);
-                  handleFiltersChange({ ...currentQuery, genres: newGenres?.length ? newGenres : undefined });
+                  const newGenres = currentQuery.genres?.filter(
+                    (g) => g !== genre
+                  );
+                  handleFiltersChange({
+                    ...currentQuery,
+                    genres: newGenres?.length ? newGenres : undefined,
+                  });
                 }}
                 className="badge badge-primary gap-2"
               >
                 {genre}
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-4 h-4 stroke-current">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  className="inline-block w-4 h-4 stroke-current"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
                 </svg>
               </button>
             ))}
@@ -241,80 +292,162 @@ export const SearchResults: React.FC = () => {
               <button
                 key={instrument}
                 onClick={() => {
-                  const newInstruments = currentQuery.instruments?.filter((i) => i !== instrument);
-                  handleFiltersChange({ ...currentQuery, instruments: newInstruments?.length ? newInstruments : undefined });
+                  const newInstruments = currentQuery.instruments?.filter(
+                    (i) => i !== instrument
+                  );
+                  handleFiltersChange({
+                    ...currentQuery,
+                    instruments: newInstruments?.length
+                      ? newInstruments
+                      : undefined,
+                  });
                 }}
                 className="badge badge-secondary gap-2"
               >
                 {instrument}
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-4 h-4 stroke-current">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  className="inline-block w-4 h-4 stroke-current"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
                 </svg>
               </button>
             ))}
 
             {currentQuery.location && (
               <button
-                onClick={() => handleFiltersChange({ ...currentQuery, location: undefined })}
+                onClick={() =>
+                  handleFiltersChange({ ...currentQuery, location: undefined })
+                }
                 className="badge badge-accent gap-2"
               >
                 📍 {currentQuery.location}
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-4 h-4 stroke-current">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  className="inline-block w-4 h-4 stroke-current"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
                 </svg>
               </button>
             )}
 
             {currentQuery.experience && (
               <button
-                onClick={() => handleFiltersChange({ ...currentQuery, experience: undefined })}
+                onClick={() =>
+                  handleFiltersChange({
+                    ...currentQuery,
+                    experience: undefined,
+                  })
+                }
                 className="badge badge-info gap-2"
               >
-                {currentQuery.experience === "BEGINNER" ? "Débutant" : currentQuery.experience === "INTERMEDIATE" ? "Intermédiaire" : "Professionnel"}
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-4 h-4 stroke-current">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                {currentQuery.experience === "BEGINNER"
+                  ? "Débutant"
+                  : currentQuery.experience === "INTERMEDIATE"
+                  ? "Intermédiaire"
+                  : "Professionnel"}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  className="inline-block w-4 h-4 stroke-current"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
                 </svg>
               </button>
             )}
 
             {(currentQuery.minPrice || currentQuery.maxPrice) && (
               <button
-                onClick={() => handleFiltersChange({ ...currentQuery, minPrice: undefined, maxPrice: undefined })}
+                onClick={() =>
+                  handleFiltersChange({
+                    ...currentQuery,
+                    minPrice: undefined,
+                    maxPrice: undefined,
+                  })
+                }
                 className="badge badge-warning gap-2"
               >
-                {currentQuery.minPrice || 0}€ - {currentQuery.maxPrice ? `${currentQuery.maxPrice}€` : "∞"}
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-4 h-4 stroke-current">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                {currentQuery.minPrice || 0}€ -{" "}
+                {currentQuery.maxPrice ? `${currentQuery.maxPrice}€` : "∞"}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  className="inline-block w-4 h-4 stroke-current"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
                 </svg>
               </button>
             )}
 
             {currentQuery.availableOnly && (
               <button
-                onClick={() => handleFiltersChange({ ...currentQuery, availableOnly: undefined })}
+                onClick={() =>
+                  handleFiltersChange({
+                    ...currentQuery,
+                    availableOnly: undefined,
+                  })
+                }
                 className="badge badge-success gap-2"
               >
                 Disponible maintenant
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-4 h-4 stroke-current">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  className="inline-block w-4 h-4 stroke-current"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
                 </svg>
               </button>
             )}
 
             <button
-              onClick={() => handleFiltersChange({
-                q: currentQuery.q,
-                limit: currentQuery.limit,
-                offset: 0,
-                genres: undefined,
-                instruments: undefined,
-                location: undefined,
-                experience: undefined,
-                minPrice: undefined,
-                maxPrice: undefined,
-                availableOnly: undefined,
-                sortBy: 'relevance'
-              })}
+              onClick={() =>
+                handleFiltersChange({
+                  q: currentQuery.q,
+                  limit: currentQuery.limit,
+                  offset: 0,
+                  genres: undefined,
+                  instruments: undefined,
+                  location: undefined,
+                  experience: undefined,
+                  minPrice: undefined,
+                  maxPrice: undefined,
+                  availableOnly: undefined,
+                  sortBy: "relevance",
+                })
+              }
               className="btn btn-ghost btn-xs"
               data-cy="clear-all-filters"
             >
@@ -339,7 +472,10 @@ export const SearchResults: React.FC = () => {
 
         {/* Grille d'artistes */}
         {!isLoading && artists.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" data-cy="search-results">
+          <div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8"
+            data-cy="search-results"
+          >
             {artists.map((artist, index) => (
               <motion.div
                 key={artist.id}
@@ -459,7 +595,10 @@ const ArtistCard: React.FC<{ artist: PublicArtistProfile }> = ({ artist }) => {
 
   const handleClick = () => {
     // Track click from search results
-    trackSearchClick(artist.id, window.location.pathname + window.location.search);
+    trackSearchClick(
+      artist.id,
+      window.location.pathname + window.location.search
+    );
   };
 
   return (

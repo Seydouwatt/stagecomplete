@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   searchArtists,
   getSuggestions,
@@ -19,11 +19,10 @@ import type {
 /**
  * Hook pour la recherche avancée d'artistes avec debouncing
  */
-export const useAdvancedSearch = (
-  initialQuery: AdvancedSearchQuery = {}
-) => {
+export const useAdvancedSearch = (initialQuery: AdvancedSearchQuery = {}) => {
   const [query, setQuery] = useState<AdvancedSearchQuery>(initialQuery);
-  const [debouncedQuery, setDebouncedQuery] = useState<AdvancedSearchQuery>(initialQuery);
+  const [debouncedQuery, setDebouncedQuery] =
+    useState<AdvancedSearchQuery>(initialQuery);
 
   // Debouncing de la recherche textuelle (300ms)
   useEffect(() => {
@@ -35,20 +34,15 @@ export const useAdvancedSearch = (
   }, [query]);
 
   // Query principale de recherche
-  const {
-    data,
-    isLoading,
-    isFetching,
-    error,
-    refetch,
-  } = useQuery<AdvancedSearchResponse>({
-    queryKey: ["search", "artists", debouncedQuery],
-    queryFn: () => searchArtists(debouncedQuery),
-    // Garder les anciennes données pendant le rechargement
-    placeholderData: (previousData) => previousData,
-    // Cache pendant 5 minutes
-    staleTime: 5 * 60 * 1000,
-  });
+  const { data, isLoading, isFetching, error, refetch } =
+    useQuery<AdvancedSearchResponse>({
+      queryKey: ["search", "artists", debouncedQuery],
+      queryFn: () => searchArtists(debouncedQuery),
+      // Garder les anciennes données pendant le rechargement
+      placeholderData: (previousData) => previousData,
+      // Cache pendant 5 minutes
+      staleTime: 5 * 60 * 1000,
+    });
 
   // Helper pour mettre à jour la query
   const updateQuery = useCallback((updates: Partial<AdvancedSearchQuery>) => {
@@ -101,7 +95,10 @@ export const useAdvancedSearch = (
 /**
  * Hook pour les suggestions d'auto-complétion avec debouncing
  */
-export const useSearchSuggestions = (searchQuery: string, enabled: boolean = true) => {
+export const useSearchSuggestions = (
+  searchQuery: string,
+  enabled: boolean = true
+) => {
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
 
   // Debouncing (200ms pour suggestions - plus rapide)
