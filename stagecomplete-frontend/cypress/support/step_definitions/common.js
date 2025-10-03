@@ -7,6 +7,11 @@ Given('the application is accessible', () => {
   cy.get('body').should('be.visible');
 });
 
+Given('I am on the search results page for {string}', (query) => {
+  cy.visit(`/directory?q=${encodeURIComponent(query)}`);
+  cy.url().should('include', `q=${encodeURIComponent(query)}`);
+});
+
 Given('the backend services are running', () => {
   // Check if backend is responding
   cy.request({
@@ -633,4 +638,210 @@ Then('I should see all my members listed', () => {
 // Cleanup
 When('I cleanup test data', () => {
   cy.cleanupTestData();
+});
+
+// ===== Filtering System Steps (consolidated from multiple files) =====
+
+// Simple button click without mapping logic
+When('I click {string}', (buttonText) => {
+  cy.contains('button', buttonText).click();
+});
+
+When('I click on the filters button', () => {
+  cy.get('[data-cy="filters-button"]').click();
+});
+
+When('I open the filter panel', () => {
+  cy.get('[data-cy="filters-button"]').click();
+  cy.get('[data-cy="filter-panel"]').should('be.visible');
+});
+
+When('I select {string} genre', (genre) => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.contains('button', genre).click();
+  });
+});
+
+When('I select {string} instrument', (instrument) => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.contains('button', instrument).click();
+  });
+});
+
+When('I set minimum price to {string}', (minPrice) => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.get('input[placeholder="0"]').clear().type(minPrice);
+  });
+});
+
+When('I set maximum price to {string}', (maxPrice) => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.get('input[placeholder="5000"]').clear().type(maxPrice);
+  });
+});
+
+When('I click on quick range {string}', (range) => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.contains('button', `${range}€`).click();
+  });
+});
+
+When('I select {string} experience level', (level) => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.get('select').select(level);
+  });
+});
+
+When('I check {string}', (checkboxLabel) => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.contains(checkboxLabel).parent().find('input[type="checkbox"]').check({ force: true });
+  });
+});
+
+When('I select multiple filters', () => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.contains('button', 'Jazz').click();
+    cy.contains('button', 'Rock').click();
+    cy.get('input[placeholder*="Paris"]').type('Paris');
+  });
+});
+
+When('I click the X button on {string} filter badge', (filterText) => {
+  cy.get('[data-cy="active-filters"]').within(() => {
+    cy.contains('.badge', filterText).find('svg').click();
+  });
+});
+
+When('I select 3 genres', () => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.contains('button', 'Jazz').click();
+    cy.contains('button', 'Blues').click();
+    cy.contains('button', 'Rock').click();
+  });
+});
+
+When('I select 2 instruments', () => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.contains('button', 'Guitare').click();
+    cy.contains('button', 'Piano').click();
+  });
+});
+
+When('I copy the URL', () => {
+  cy.url().then((url) => {
+    cy.wrap(url).as('copiedUrl');
+  });
+});
+
+When('I open the URL in a new session', () => {
+  cy.get('@copiedUrl').then((url) => {
+    cy.clearCookies();
+    cy.visit(url);
+  });
+});
+
+// Filter assertions
+Then('I should see the filter panel', () => {
+  cy.get('[data-cy="filter-panel"]').should('be.visible');
+});
+
+Then('the filter panel should display the current results count', () => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.contains(/\d+ résultat/).should('be.visible');
+  });
+});
+
+Then('the filter panel should close', () => {
+  cy.get('[data-cy="filter-panel"]').should('not.exist');
+});
+
+Then('I should see {string} in the active filters', (filterText) => {
+  cy.get('[data-cy="active-filters"]', { timeout: 10000 }).should('be.visible');
+  cy.get('[data-cy="active-filters"]').should('contain', filterText);
+});
+
+Then('the URL should contain {string}', (urlPart) => {
+  cy.url().should('include', urlPart);
+});
+
+Then('I should see {int} active filters displayed', (count) => {
+  cy.get('[data-cy="active-filters"] .badge').should('have.length', count);
+});
+
+Then('the URL should contain all selected filters', () => {
+  cy.url().should('include', 'genres=Rock');
+  cy.url().should('include', 'instruments=Guitare');
+  cy.url().should('include', 'location=Lyon');
+  cy.url().should('include', 'minPrice=200');
+  cy.url().should('include', 'experience=PROFESSIONAL');
+});
+
+Then('the {string} filter should be removed', (filterText) => {
+  cy.get('[data-cy="active-filters"]').should('not.contain', filterText);
+});
+
+Then('the {string} filter should remain', (filterText) => {
+  cy.get('[data-cy="active-filters"]').should('contain', filterText);
+});
+
+Then('the URL should not contain {string}', (urlPart) => {
+  cy.url().should('not.include', urlPart);
+});
+
+Then('all filters should be removed', () => {
+  cy.get('[data-cy="active-filters"]').should('not.exist');
+});
+
+Then('only the search query should remain in the URL', () => {
+  cy.url().then((url) => {
+    const urlObj = new URL(url);
+    const params = new URLSearchParams(urlObj.search);
+    const paramKeys = Array.from(params.keys());
+    expect(paramKeys).to.have.length(1);
+    expect(paramKeys[0]).to.equal('q');
+  });
+});
+
+Then('all filter selections should be cleared', () => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.get('.btn-primary').should('not.exist');
+  });
+});
+
+Then('the reset button should be disabled', () => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.contains('button', 'Réinitialiser').should('be.disabled');
+  });
+});
+
+Then('all the filters should be applied', () => {
+  cy.get('[data-cy="active-filters"]').should('be.visible');
+});
+
+Then('the search results should match the filters', () => {
+  cy.get('[data-cy="search-results"]').should('exist');
+});
+
+Then('the filter panel header should show the count of selected genres', () => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.contains('Genres musicaux').parent().find('.badge').should('contain', '3');
+  });
+});
+
+Then('the filter panel header should show the count of selected instruments', () => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.contains('Instruments').parent().find('.badge').should('contain', '2');
+  });
+});
+
+Then('the panel header should display the current number of results', () => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.contains(/\d+ résultat/).should('be.visible');
+  });
+});
+
+Then('the results count should update dynamically', () => {
+  cy.get('[data-cy="filter-panel"]').within(() => {
+    cy.contains(/\d+ résultat/).should('be.visible');
+  });
 });
