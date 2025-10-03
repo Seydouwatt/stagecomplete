@@ -1,100 +1,78 @@
-import React, { useState } from "react";
-import { X, MapPin, Calendar, DollarSign, Star } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { X, MapPin, DollarSign, Music, Award, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-export interface FilterOptions {
-  genres: string[];
-  locations: string[];
-  priceRange: [number, number];
-  availability: string;
-  rating: number;
-  capacity?: [number, number]; // Pour venues
-  experience?: string; // Pour artistes
-}
+import { useQuickFilters } from "../../hooks/useAdvancedSearch";
+import type { AdvancedSearchQuery, Experience } from "../../types";
 
 interface FilterPanelProps {
   isOpen: boolean;
   onClose: () => void;
-  onFiltersChange: (filters: FilterOptions) => void;
-  userRole: "ARTIST" | "VENUE" | "ADMIN" | "MEMBER";
+  filters: AdvancedSearchQuery;
+  onFiltersChange: (filters: AdvancedSearchQuery) => void;
+  resultsCount?: number;
 }
 
 export const FilterPanel: React.FC<FilterPanelProps> = ({
   isOpen,
   onClose,
+  filters,
   onFiltersChange,
-  userRole,
+  resultsCount = 0,
 }) => {
-  const [filters, setFilters] = useState<FilterOptions>({
-    genres: [],
-    locations: [],
-    priceRange: [0, 5000],
-    availability: "",
-    rating: 0,
-    capacity: [0, 1000],
-    experience: "",
-  });
+  const { filters: quickFilters, isLoading: filtersLoading } = useQuickFilters();
+  const [localFilters, setLocalFilters] = useState<AdvancedSearchQuery>(filters);
 
-  const genres = [
-    "Jazz",
-    "Blues",
-    "Rock",
-    "Pop",
-    "Electronic",
-    "Classical",
-    "Hip Hop",
-    "R&B",
-    "Country",
-    "Folk",
-    "Reggae",
-    "Punk",
-  ];
+  // Sync local filters with props
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
 
-  const locations = [
-    "Paris",
-    "Lyon",
-    "Marseille",
-    "Toulouse",
-    "Nice",
-    "Nantes",
-    "Strasbourg",
-    "Montpellier",
-    "Bordeaux",
-    "Lille",
-  ];
-
-  const handleGenreToggle = (genre: string) => {
-    const newGenres = filters.genres.includes(genre)
-      ? filters.genres.filter((g) => g !== genre)
-      : [...filters.genres, genre];
-
-    const newFilters = { ...filters, genres: newGenres };
-    setFilters(newFilters);
+  const updateFilters = (updates: Partial<AdvancedSearchQuery>) => {
+    const newFilters = { ...localFilters, ...updates };
+    setLocalFilters(newFilters);
     onFiltersChange(newFilters);
   };
 
-  const handleLocationToggle = (location: string) => {
-    const newLocations = filters.locations.includes(location)
-      ? filters.locations.filter((l) => l !== location)
-      : [...filters.locations, location];
+  const handleGenreToggle = (genre: string) => {
+    const currentGenres = localFilters.genres || [];
+    const newGenres = currentGenres.includes(genre)
+      ? currentGenres.filter((g) => g !== genre)
+      : [...currentGenres, genre];
 
-    const newFilters = { ...filters, locations: newLocations };
-    setFilters(newFilters);
-    onFiltersChange(newFilters);
+    updateFilters({ genres: newGenres.length > 0 ? newGenres : undefined });
+  };
+
+  const handleInstrumentToggle = (instrument: string) => {
+    const currentInstruments = localFilters.instruments || [];
+    const newInstruments = currentInstruments.includes(instrument)
+      ? currentInstruments.filter((i) => i !== instrument)
+      : [...currentInstruments, instrument];
+
+    updateFilters({
+      instruments: newInstruments.length > 0 ? newInstruments : undefined,
+    });
   };
 
   const resetFilters = () => {
-    const resetFilters: FilterOptions = {
-      genres: [],
-      locations: [],
-      priceRange: [0, 5000],
-      availability: "",
-      rating: 0,
-      capacity: [0, 1000],
-      experience: "",
+    const resetFilters: AdvancedSearchQuery = {
+      q: localFilters.q, // Keep search query
+      limit: localFilters.limit,
+      offset: 0,
     };
-    setFilters(resetFilters);
+    setLocalFilters(resetFilters);
     onFiltersChange(resetFilters);
+  };
+
+  const hasActiveFilters = () => {
+    return !!(
+      localFilters.genres?.length ||
+      localFilters.instruments?.length ||
+      localFilters.location ||
+      localFilters.experience ||
+      localFilters.minPrice ||
+      localFilters.maxPrice ||
+      localFilters.availableOnly
+    );
   };
 
   return (
@@ -120,37 +98,109 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             data-cy="filter-panel"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-base-300">
-              <h2 className="text-xl font-semibold">Filtres</h2>
+            <div className="flex items-center justify-between p-6 border-b border-base-300 bg-primary text-primary-content sticky top-0 z-10">
+              <div>
+                <h2 className="text-xl font-semibold">Filtres</h2>
+                <p className="text-sm opacity-90">
+                  {resultsCount} résultat{resultsCount !== 1 ? "s" : ""}
+                </p>
+              </div>
               <button
                 onClick={onClose}
-                className="btn btn-ghost btn-sm btn-circle"
+                className="btn btn-ghost btn-sm btn-circle text-primary-content"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="p-6 space-y-6">
+              {/* Available Now Filter */}
+              <div className="form-control">
+                <label className="label cursor-pointer justify-start gap-3">
+                  <input
+                    type="checkbox"
+                    className="checkbox checkbox-primary"
+                    checked={localFilters.availableOnly || false}
+                    onChange={(e) =>
+                      updateFilters({ availableOnly: e.target.checked || undefined })
+                    }
+                  />
+                  <div>
+                    <span className="label-text font-medium flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      Disponible maintenant
+                    </span>
+                    <span className="label-text-alt">Profils actifs récemment</span>
+                  </div>
+                </label>
+              </div>
+
+              <div className="divider"></div>
+
               {/* Genres */}
               <div>
                 <h3 className="font-medium mb-3 flex items-center gap-2">
                   🎵 Genres musicaux
+                  {localFilters.genres && localFilters.genres.length > 0 && (
+                    <span className="badge badge-primary badge-sm">
+                      {localFilters.genres.length}
+                    </span>
+                  )}
                 </h3>
-                <div className="flex flex-wrap gap-2">
-                  {genres.map((genre) => (
-                    <button
-                      key={genre}
-                      onClick={() => handleGenreToggle(genre)}
-                      className={`btn btn-sm ${
-                        filters.genres.includes(genre)
-                          ? "btn-primary"
-                          : "btn-outline"
-                      }`}
-                    >
-                      {genre}
-                    </button>
-                  ))}
-                </div>
+                {filtersLoading ? (
+                  <div className="flex justify-center py-4">
+                    <span className="loading loading-spinner loading-sm"></span>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {quickFilters?.genres.map((genre) => (
+                      <button
+                        key={genre}
+                        onClick={() => handleGenreToggle(genre)}
+                        className={`btn btn-sm ${
+                          localFilters.genres?.includes(genre)
+                            ? "btn-primary"
+                            : "btn-outline"
+                        }`}
+                      >
+                        {genre}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Instruments */}
+              <div>
+                <h3 className="font-medium mb-3 flex items-center gap-2">
+                  <Music className="w-4 h-4" /> Instruments
+                  {localFilters.instruments && localFilters.instruments.length > 0 && (
+                    <span className="badge badge-secondary badge-sm">
+                      {localFilters.instruments.length}
+                    </span>
+                  )}
+                </h3>
+                {filtersLoading ? (
+                  <div className="flex justify-center py-4">
+                    <span className="loading loading-spinner loading-sm"></span>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {quickFilters?.instruments.slice(0, 12).map((instrument) => (
+                      <button
+                        key={instrument}
+                        onClick={() => handleInstrumentToggle(instrument)}
+                        className={`btn btn-sm ${
+                          localFilters.instruments?.includes(instrument)
+                            ? "btn-secondary"
+                            : "btn-outline"
+                        }`}
+                      >
+                        {instrument}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Localisation */}
@@ -158,171 +208,127 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <h3 className="font-medium mb-3 flex items-center gap-2">
                   <MapPin className="w-4 h-4" /> Localisation
                 </h3>
-                <div className="flex flex-wrap gap-2">
-                  {locations.map((location) => (
-                    <button
-                      key={location}
-                      onClick={() => handleLocationToggle(location)}
-                      className={`btn btn-sm ${
-                        filters.locations.includes(location)
-                          ? "btn-secondary"
-                          : "btn-outline"
-                      }`}
-                    >
-                      {location}
-                    </button>
-                  ))}
+                <div className="form-control">
+                  <input
+                    type="text"
+                    placeholder="Ex: Paris, Lyon..."
+                    className="input input-bordered"
+                    value={localFilters.location || ""}
+                    onChange={(e) =>
+                      updateFilters({
+                        location: e.target.value || undefined,
+                      })
+                    }
+                    list="locations-list"
+                  />
+                  <datalist id="locations-list">
+                    {quickFilters?.locations.map((loc) => (
+                      <option key={loc} value={loc} />
+                    ))}
+                  </datalist>
                 </div>
               </div>
 
               {/* Prix */}
               <div>
                 <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <DollarSign className="w-4 h-4" />
-                  {userRole === "VENUE"
-                    ? "Budget par événement"
-                    : "Tarif par prestation"}
+                  <DollarSign className="w-4 h-4" /> Fourchette de prix
                 </h3>
-                <div className="space-y-2">
-                  <input
-                    type="range"
-                    min="0"
-                    max="5000"
-                    step="100"
-                    value={filters.priceRange[1]}
-                    onChange={(e) => {
-                      const newFilters = {
-                        ...filters,
-                        priceRange: [0, parseInt(e.target.value)] as [
-                          number,
-                          number
-                        ],
-                      };
-                      setFilters(newFilters);
-                      onFiltersChange(newFilters);
-                    }}
-                    className="range range-primary"
-                  />
-                  <div className="flex justify-between text-sm text-base-content/60">
-                    <span>€0</span>
-                    <span>€{filters.priceRange[1]}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Rating */}
-              <div>
-                <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <Star className="w-4 h-4" /> Note minimum
-                </h3>
-                <div className="rating rating-lg">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <input
-                      key={star}
-                      type="radio"
-                      name="rating"
-                      className="mask mask-star-2 bg-warning"
-                      checked={filters.rating === star}
-                      onChange={() => {
-                        const newFilters = { ...filters, rating: star };
-                        setFilters(newFilters);
-                        onFiltersChange(newFilters);
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Venue specific filters */}
-              {userRole === "VENUE" && (
-                <div>
-                  <h3 className="font-medium mb-3">Expérience artiste</h3>
-                  <select
-                    value={filters.experience}
-                    onChange={(e) => {
-                      const newFilters = {
-                        ...filters,
-                        experience: e.target.value,
-                      };
-                      setFilters(newFilters);
-                      onFiltersChange(newFilters);
-                    }}
-                    className="select select-bordered w-full"
-                  >
-                    <option value="">Toutes expériences</option>
-                    <option value="BEGINNER">Débutant</option>
-                    <option value="INTERMEDIATE">Intermédiaire</option>
-                    <option value="PROFESSIONAL">Professionnel</option>
-                  </select>
-                </div>
-              )}
-
-              {/* Artist specific filters */}
-              {userRole === "ARTIST" && (
-                <div>
-                  <h3 className="font-medium mb-3">Capacité venue</h3>
-                  <div className="space-y-2">
-                    <input
-                      type="range"
-                      min="0"
-                      max="1000"
-                      step="50"
-                      value={filters.capacity?.[1] || 1000}
-                      onChange={(e) => {
-                        const newFilters = {
-                          ...filters,
-                          capacity: [0, parseInt(e.target.value)] as [
-                            number,
-                            number
-                          ],
-                        };
-                        setFilters(newFilters);
-                        onFiltersChange(newFilters);
-                      }}
-                      className="range range-secondary"
-                    />
-                    <div className="flex justify-between text-sm text-base-content/60">
-                      <span>0 places</span>
-                      <span>{filters.capacity?.[1]} places</span>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text-alt">Prix min (€)</span>
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="0"
+                        className="input input-bordered input-sm"
+                        value={localFilters.minPrice || ""}
+                        onChange={(e) =>
+                          updateFilters({
+                            minPrice: e.target.value
+                              ? parseInt(e.target.value)
+                              : undefined,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="form-control">
+                      <label className="label">
+                        <span className="label-text-alt">Prix max (€)</span>
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="5000"
+                        className="input input-bordered input-sm"
+                        value={localFilters.maxPrice || ""}
+                        onChange={(e) =>
+                          updateFilters({
+                            maxPrice: e.target.value
+                              ? parseInt(e.target.value)
+                              : undefined,
+                          })
+                        }
+                      />
                     </div>
                   </div>
-                </div>
-              )}
 
-              {/* Disponibilité */}
+                  {/* Quick price ranges */}
+                  <div className="flex flex-wrap gap-2">
+                    {["0-200", "200-500", "500-1000", "1000-2000", "2000+"].map(
+                      (range) => (
+                        <button
+                          key={range}
+                          onClick={() => {
+                            const [min, max] = range.split("-");
+                            updateFilters({
+                              minPrice: parseInt(min),
+                              maxPrice: max === "+" ? undefined : parseInt(max),
+                            });
+                          }}
+                          className="btn btn-xs btn-outline"
+                        >
+                          {range}€
+                        </button>
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Expérience */}
               <div>
                 <h3 className="font-medium mb-3 flex items-center gap-2">
-                  <Calendar className="w-4 h-4" /> Disponibilité
+                  <Award className="w-4 h-4" /> Niveau d'expérience
                 </h3>
                 <select
-                  value={filters.availability}
-                  onChange={(e) => {
-                    const newFilters = {
-                      ...filters,
-                      availability: e.target.value,
-                    };
-                    setFilters(newFilters);
-                    onFiltersChange(newFilters);
-                  }}
+                  value={localFilters.experience || ""}
+                  onChange={(e) =>
+                    updateFilters({
+                      experience: (e.target.value as Experience) || undefined,
+                    })
+                  }
                   className="select select-bordered w-full"
                 >
-                  <option value="">Toutes dates</option>
-                  <option value="this_week">Cette semaine</option>
-                  <option value="this_month">Ce mois</option>
-                  <option value="next_month">Mois prochain</option>
+                  <option value="">Tous niveaux</option>
+                  <option value="BEGINNER">Débutant</option>
+                  <option value="INTERMEDIATE">Intermédiaire</option>
+                  <option value="PROFESSIONAL">Professionnel</option>
                 </select>
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 pt-4">
+              <div className="flex gap-3 pt-4 sticky bottom-0 bg-base-100 pb-4">
                 <button
                   onClick={resetFilters}
                   className="btn btn-outline flex-1"
+                  disabled={!hasActiveFilters()}
                 >
                   Réinitialiser
                 </button>
                 <button onClick={onClose} className="btn btn-primary flex-1">
-                  Appliquer
+                  Appliquer ({resultsCount})
                 </button>
               </div>
             </div>
