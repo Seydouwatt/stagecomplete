@@ -211,6 +211,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 <div className="form-control">
                   <input
                     type="text"
+                    name="location"
+                    data-cy="location-input"
                     placeholder="Ex: Paris, Lyon..."
                     className="input input-bordered"
                     value={localFilters.location || ""}

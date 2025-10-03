@@ -117,11 +117,7 @@ Given('I apply multiple filters on the search page', () => {
   cy.contains('button', 'Appliquer').click();
 });
 
-When('I enter {string} as location', (location) => {
-  cy.get('[data-cy="filter-panel"]').within(() => {
-    cy.get('input[placeholder*="Paris"]').clear().type(location);
-  });
-});
+// Note: "I enter {string} as location" step is defined in common.js
 
 When('I select additional filters', () => {
   cy.get('[data-cy="filter-panel"]').within(() => {

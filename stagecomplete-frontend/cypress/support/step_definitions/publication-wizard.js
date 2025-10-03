@@ -153,9 +153,7 @@ Then('I should see a checkbox to publish my profile', () => {
   cy.get('[data-cy="publish-checkbox"]').should('be.visible');
 });
 
-When('I check {string}', (checkboxLabel) => {
-  cy.contains('label', checkboxLabel).find('input[type="checkbox"]').check({ force: true });
-});
+// Note: "I check {string}" step is defined in common.js
 
 When('I leave the {string} checkbox unchecked', (checkboxLabel) => {
   cy.contains('label', checkboxLabel).find('input[type="checkbox"]').should('not.be.checked');

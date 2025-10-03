@@ -282,7 +282,7 @@ export const SearchResults: React.FC = () => {
                 onClick={() => handleFiltersChange({ ...currentQuery, minPrice: undefined, maxPrice: undefined })}
                 className="badge badge-warning gap-2"
               >
-                {currentQuery.minPrice || 0}€ - {currentQuery.maxPrice || "∞"}
+                {currentQuery.minPrice || 0}€ - {currentQuery.maxPrice ? `${currentQuery.maxPrice}€` : "∞"}
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-4 h-4 stroke-current">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
@@ -304,6 +304,7 @@ export const SearchResults: React.FC = () => {
             <button
               onClick={() => handleFiltersChange({ q: currentQuery.q, limit: currentQuery.limit, offset: 0 })}
               className="btn btn-ghost btn-xs"
+              data-cy="clear-all-filters"
             >
               Tout effacer
             </button>
