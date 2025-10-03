@@ -180,6 +180,7 @@ export const SearchResults: React.FC = () => {
             <button
               onClick={() => setShowFilters(!showFilters)}
               className="btn btn-neutral btn-outline gap-2 lg:btn-sm"
+              data-cy="filters-button"
             >
               <AdjustmentsHorizontalIcon className="w-4 h-4" />
               Filtres
@@ -217,7 +218,7 @@ export const SearchResults: React.FC = () => {
         {/* Filtres actifs */}
         {(currentQuery.genres?.length || currentQuery.instruments?.length || currentQuery.location ||
           currentQuery.experience || currentQuery.minPrice || currentQuery.maxPrice || currentQuery.availableOnly) && (
-          <div className="mb-6 flex flex-wrap gap-2 items-center">
+          <div className="mb-6 flex flex-wrap gap-2 items-center" data-cy="active-filters">
             <span className="text-sm font-medium text-gray-600">Filtres actifs:</span>
 
             {currentQuery.genres?.map((genre) => (
@@ -325,7 +326,7 @@ export const SearchResults: React.FC = () => {
 
         {/* Grille d'artistes */}
         {!isLoading && artists.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8" data-cy="search-results">
             {artists.map((artist, index) => (
               <motion.div
                 key={artist.id}
