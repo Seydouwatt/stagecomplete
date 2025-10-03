@@ -135,6 +135,23 @@
       "profileViews": 3456,
       "availableNow": true,
       "artisticBio": "Top-rated electronic music DJ"
+    },
+    {
+      "id": "artist-9",
+      "artistName": "Jazz Guitarist Paris",
+      "publicSlug": "jazz-guitarist-paris",
+      "avatar": "https://via.placeholder.com/150",
+      "baseLocation": "Paris, France",
+      "artisticGenres": ["Jazz"],
+      "instruments": ["Guitare"],
+      "minRate": 600,
+      "maxRate": 1200,
+      "experience": "PROFESSIONAL",
+      "artistType": "SOLO",
+      "isPublic": true,
+      "profileViews": 890,
+      "availableNow": true,
+      "artisticBio": "Virtuoso jazz guitarist based in Paris"
     }
   ],
   "quickFilters": {

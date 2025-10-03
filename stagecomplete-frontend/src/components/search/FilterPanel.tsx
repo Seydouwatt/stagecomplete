@@ -54,13 +54,14 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   };
 
   const resetFilters = () => {
-    const resetFilters: AdvancedSearchQuery = {
+    const clearedFilters: AdvancedSearchQuery = {
       q: localFilters.q, // Keep search query
       limit: localFilters.limit,
       offset: 0,
+      sortBy: 'relevance',
     };
-    setLocalFilters(resetFilters);
-    onFiltersChange(resetFilters);
+    setLocalFilters(clearedFilters);
+    onFiltersChange(clearedFilters);
   };
 
   const hasActiveFilters = () => {

@@ -302,7 +302,19 @@ export const SearchResults: React.FC = () => {
             )}
 
             <button
-              onClick={() => handleFiltersChange({ q: currentQuery.q, limit: currentQuery.limit, offset: 0 })}
+              onClick={() => handleFiltersChange({
+                q: currentQuery.q,
+                limit: currentQuery.limit,
+                offset: 0,
+                genres: undefined,
+                instruments: undefined,
+                location: undefined,
+                experience: undefined,
+                minPrice: undefined,
+                maxPrice: undefined,
+                availableOnly: undefined,
+                sortBy: 'relevance'
+              })}
               className="btn btn-ghost btn-xs"
               data-cy="clear-all-filters"
             >

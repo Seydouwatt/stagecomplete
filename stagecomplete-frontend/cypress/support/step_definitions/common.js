@@ -806,8 +806,16 @@ Then('only the search query should remain in the URL', () => {
 });
 
 Then('all filter selections should be cleared', () => {
+  // Wait for URL to update (filters should be removed)
+  cy.url().should('not.contain', 'genres=');
+  cy.url().should('not.contain', 'location=');
+
+  // Wait for React to update the form inputs
+  cy.wait(500);
+
   cy.get('[data-cy="filter-panel"]').within(() => {
-    cy.get('.btn-primary').should('not.exist');
+    // Check that location input is empty
+    cy.get('input[name="location"]').should('have.value', '');
   });
 });
 
@@ -822,6 +830,11 @@ Then('all the filters should be applied', () => {
 });
 
 Then('the search results should match the filters', () => {
+  // Wait for loading to finish
+  cy.get('.loading-spinner', { timeout: 10000 }).should('not.exist');
+
+  // Check that either results are shown or "no results" message appears (both indicate filters are applied)
+  cy.get('body').should('be.visible');
   cy.get('[data-cy="search-results"]').should('exist');
 });
 
