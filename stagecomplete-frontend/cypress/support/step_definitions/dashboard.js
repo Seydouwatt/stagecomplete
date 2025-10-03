@@ -52,6 +52,4 @@ Then('I should not see a completion indicator', () => {
   cy.get('[data-cy="profile-completion-prompt"]').should('not.exist');
 });
 
-Then('the URL should contain {string}', (urlPart) => {
-  cy.url().should('include', urlPart);
-});
+// Note: "the URL should contain {string}" step is defined in common.js

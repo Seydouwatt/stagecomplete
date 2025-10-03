@@ -761,7 +761,10 @@ Then('I should see {string} in the active filters', (filterText) => {
 });
 
 Then('the URL should contain {string}', (urlPart) => {
-  cy.url().should('include', urlPart);
+  cy.url().then((url) => {
+    const decodedUrl = decodeURIComponent(url);
+    expect(decodedUrl).to.include(urlPart);
+  });
 });
 
 Then('I should see {int} active filters displayed', (count) => {

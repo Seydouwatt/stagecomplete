@@ -248,9 +248,7 @@ Then('the final section should mention {string}', (text) => {
 });
 
 // Conversion tracking
-Then('the URL should contain {string}', (param) => {
-  cy.url().should('include', param);
-});
+// Note: "the URL should contain {string}" step is defined in common.js
 
 Then('the parameter should be preserved during navigation', () => {
   cy.url().should('include', '?from=artist');

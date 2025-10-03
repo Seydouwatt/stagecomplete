@@ -202,9 +202,7 @@ Then('the search should be executed with the selected term', () => {
   cy.get('[data-cy="artist-card"]').should('be.visible');
 });
 
-When('I click on the filters button', () => {
-  cy.get('[data-cy="filters-button"]').click();
-});
+// Note: "I click on the filters button" step is defined in common.js
 
 When('I select {string} and {string} as genres', (genre1, genre2) => {
   cy.get('[data-cy="filter-panel"]').should('be.visible');
