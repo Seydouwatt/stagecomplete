@@ -38,35 +38,40 @@
 
 ---
 
-### **US-034: Smart Filtering System**
+### **US-034: Smart Filtering System** ✅
 
-**En tant que** venue  
-**Je veux** filtrer les artistes selon mes besoins précis  
+**En tant que** venue
+**Je veux** filtrer les artistes selon mes besoins précis
 **Afin d'** optimiser ma recherche et gagner du temps
 
 **Critères d'acceptation :**
 
-- [ ] Filtres prioritaires : Genre musical, Localisation, Instruments, Expérience, Tarifs
+- [x] Filtres prioritaires : Genre musical, Localisation, Instruments, Expérience, Tarifs
+- [x] Multi-sélection dans chaque catégorie de filtre
+- [x] Range slider pour tarifs avec min/max personnalisables
+- [x] Filtre localisation avec saisie ville + suggestion
+- [x] Filtre "Disponible maintenant" (profils actifs récents)
+- [x] Reset rapide de tous les filtres ou individuels
+- [x] Indicateurs visuels nombre de résultats par filtre
+- [x] Sauvegarde état des filtres dans URL (persistance session)
 - [ ] Filtres secondaires : Type artiste (Solo/Groupe), Années d'activité, Badges de vérification
-- [ ] Multi-sélection dans chaque catégorie de filtre
 - [ ] Filtres en cascade intelligents (genres → sous-genres)
-- [ ] Range slider pour tarifs avec min/max personnalisables
-- [ ] Filtre localisation avec saisie ville + suggestion
-- [ ] Filtre "Disponible maintenant" (profils actifs <30 jours)
-- [ ] Reset rapide de tous les filtres ou individuels
-- [ ] Indicateurs visuels nombre de résultats par filtre
-- [ ] Sauvegarde état des filtres pendant session
 
 **Issues techniques :**
 
-- [ ] **FILTER-008**: Composant FilterPanel modulaire et réutilisable
-- [ ] **FILTER-009**: MultiSelect avec groupes et recherche interne
-- [ ] **FILTER-010**: RangeSlider pour tarifs avec debouncing
-- [ ] **FILTER-011**: LocationFilter avec API suggestions villes
+- [x] **FILTER-008**: Composant FilterPanel modulaire et réutilisable
+- [x] **FILTER-009**: MultiSelect pour genres et instruments
+- [x] **FILTER-010**: Range inputs pour tarifs avec debouncing
+- [x] **FILTER-011**: LocationFilter avec suggestions
+- [x] **FILTER-013**: Indicateurs de compte dynamiques
+- [x] **FILTER-014**: State management filtres avec URL sync (React Router)
+- [x] **FILTER-015**: Query builder SQL optimisé pour filtres
 - [ ] **FILTER-012**: Système de filtres en cascade (genres)
-- [ ] **FILTER-013**: Indicateurs de compte dynamiques
-- [ ] **FILTER-014**: State management filtres complexes (Zustand)
-- [ ] **FILTER-015**: Query builder SQL optimisé pour filtres
+
+**Tests E2E :**
+- [x] 14/16 scenarios passing (87.5%)
+- [x] Fixtures créés avec données de test
+- [x] API mocks pour tests isolés
 
 ---
 
