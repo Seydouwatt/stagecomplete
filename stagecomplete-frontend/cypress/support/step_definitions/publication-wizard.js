@@ -1,10 +1,6 @@
 import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 
-// Background steps
-Given('the application is accessible', () => {
-  // Assuming baseUrl is configured in cypress.config.js
-  cy.visit('/');
-});
+
 
 Given('the backend services are running', () => {
   // Check health endpoint or simply proceed
@@ -18,9 +14,7 @@ Given('I am on my artist dashboard', () => {
 });
 
 // Wizard access
-When('I click on {string}', (buttonText) => {
-  cy.contains('button', buttonText).click();
-});
+// Note: "I click on {string}" step is defined in common.js
 
 Then('I should see the publication wizard with {int} steps', (steps) => {
   cy.get('[data-cy="publication-wizard"]').should('be.visible');
@@ -167,9 +161,7 @@ When('I leave the {string} checkbox unchecked', (checkboxLabel) => {
   cy.contains('label', checkboxLabel).find('input[type="checkbox"]').should('not.be.checked');
 });
 
-When('I click {string}', (buttonText) => {
-  cy.contains('button', buttonText).click();
-});
+// Note: "I click {string}" step is defined in common.js
 
 Then('the wizard should complete successfully', () => {
   // Wizard should close or show success
@@ -262,9 +254,7 @@ Then('I should see step {int} content', (step) => {
   cy.get(`[data-cy="wizard-step-${step}"]`).should('be.visible');
 });
 
-When('I click {string}', (buttonText) => {
-  cy.contains('button', buttonText).click();
-});
+// Note: "I click {string}" step is defined in common.js
 
 Then('my previously entered data should be preserved', () => {
   cy.get('[data-cy="artist-name-input"]').should('have.value', 'Test Artist');

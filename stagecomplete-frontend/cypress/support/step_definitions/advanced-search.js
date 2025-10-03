@@ -229,10 +229,7 @@ Then('the URL should include the selected genres', () => {
   cy.url().should('match', /genres=.*jazz|genres=.*blues/i);
 });
 
-When('I enter {string} as location', (location) => {
-  cy.get('[data-cy="filter-panel"]').should('be.visible');
-  cy.get('[data-cy="location-filter"]').clear().type(location);
-});
+// Note: "I enter {string} as location" step is defined in smart-filtering.js
 
 Then('I should see only artists from Paris area', () => {
   cy.wait('@searchArtists');
@@ -466,11 +463,7 @@ Then('new results should be appended to the list', () => {
   cy.get('[data-cy="artist-card"]').should('have.length.greaterThan', 20);
 });
 
-When('I copy the URL', () => {
-  cy.url().then((url) => {
-    cy.wrap(url).as('copiedUrl');
-  });
-});
+// Note: "I copy the URL" and related steps are defined in common.js
 
 When('I open the URL in a new tab', () => {
   cy.get('@copiedUrl').then((url) => {

@@ -2,6 +2,86 @@ import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 
 // Smart filtering specific steps (common steps moved to common.js)
 
+// Setup API mocks with fixtures
+Given('the filtering API is mocked', () => {
+  cy.fixture('filter-test-artists').then((data) => {
+    // Mock search API to return filtered results based on query params
+    cy.intercept('GET', '**/api/public/artists/search*', (req) => {
+      const url = new URL(req.url);
+      const params = url.searchParams;
+
+      let filteredArtists = [...data.artists];
+
+      // Filter by genres
+      const genres = params.get('genres')?.split(',').filter(Boolean);
+      if (genres && genres.length > 0) {
+        filteredArtists = filteredArtists.filter(artist =>
+          artist.artisticGenres.some(g => genres.includes(g))
+        );
+      }
+
+      // Filter by instruments
+      const instruments = params.get('instruments')?.split(',').filter(Boolean);
+      if (instruments && instruments.length > 0) {
+        filteredArtists = filteredArtists.filter(artist =>
+          artist.instruments.some(i => instruments.includes(i))
+        );
+      }
+
+      // Filter by location
+      const location = params.get('location');
+      if (location) {
+        filteredArtists = filteredArtists.filter(artist =>
+          artist.baseLocation.includes(location)
+        );
+      }
+
+      // Filter by price range
+      const minPrice = params.get('minPrice');
+      const maxPrice = params.get('maxPrice');
+      if (minPrice) {
+        filteredArtists = filteredArtists.filter(artist =>
+          artist.maxRate >= parseInt(minPrice)
+        );
+      }
+      if (maxPrice) {
+        filteredArtists = filteredArtists.filter(artist =>
+          artist.minRate <= parseInt(maxPrice)
+        );
+      }
+
+      // Filter by experience
+      const experience = params.get('experience');
+      if (experience) {
+        filteredArtists = filteredArtists.filter(artist =>
+          artist.experience === experience
+        );
+      }
+
+      // Filter by availability
+      const availableOnly = params.get('availableOnly');
+      if (availableOnly === 'true') {
+        filteredArtists = filteredArtists.filter(artist => artist.availableNow);
+      }
+
+      req.reply({
+        statusCode: 200,
+        body: {
+          artists: filteredArtists,
+          total: filteredArtists.length,
+          hasMore: false
+        }
+      });
+    }).as('searchArtists');
+
+    // Mock quick filters API
+    cy.intercept('GET', '**/api/search/quick-filters', {
+      statusCode: 200,
+      body: data.quickFilters
+    }).as('quickFilters');
+  });
+});
+
 Given('I am on the search results page with active filters', () => {
   cy.visit('/directory?q=artiste&genres=Jazz,Blues');
   cy.get('[data-cy="active-filters"]').should('be.visible');

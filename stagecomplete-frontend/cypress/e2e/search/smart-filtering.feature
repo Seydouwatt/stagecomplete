@@ -3,6 +3,9 @@ Feature: Smart Filtering System
   I want to filter artists with precise criteria
   So that I can find the perfect talents for my events
 
+  Background:
+    Given the filtering API is mocked
+
   Scenario: Open filter panel from search results
     Given I am on the search results page for "jazz"
     When I click on the filters button
