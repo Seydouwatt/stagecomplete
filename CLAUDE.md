@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-StageComplete is a premium booking platform connecting venues (bars, theaters, clubs) with verified artists (music, comedy, theater, dance). This is a monorepo with a NestJS backend and React frontend, currently in Sprint 3 of MVP development.
+StageComplete is a premium booking platform connecting venues (bars, theaters, clubs) with verified artists (music, comedy, theater, dance). This is a monorepo with a NestJS backend and React frontend, currently in Phase MVP avancée with focus on the artist ecosystem.
 
 ## Architecture
 
@@ -14,10 +14,11 @@ StageComplete is a premium booking platform connecting venues (bars, theaters, c
 - **Authentication**: JWT with role-based access (ARTIST, VENUE, MEMBER, ADMIN)
 - **API Documentation**: Swagger available at `/api/docs`
 - **Key Modules**:
-  - `auth/` - JWT authentication, user management
+  - `auth/` - JWT authentication, user management, artist registration
   - `artist/` - Artist profiles and member management
   - `profile/` - Universal profile system
-  - `public/` - Public endpoints for artist discovery
+  - `public/` - Public endpoints for artist discovery with SEO optimization
+  - `search/` - Advanced search engine with fuzzy matching and filtering
   - `health/` - Health check endpoints
 
 ### Frontend (`stagecomplete-frontend/`)
@@ -103,9 +104,13 @@ npm run dev          # Runs on http://localhost:5173
 - Handled in artist profile photos, logos, and portfolio media
 
 ### Component Organization
-- `src/components/ui/` - Reusable UI components
-- `src/components/artist/` - Artist-specific components
+- `src/components/ui/` - Reusable UI components (buttons, modals, etc.)
 - `src/components/auth/` - Authentication components
+- `src/components/public/` - Public pages components (artist profiles, search)
+- `src/components/search/` - Advanced search and filtering components
+- `src/components/browse/` - Artist discovery and browsing
+- `src/components/landing/` - Landing pages and marketing components
+- `src/components/dashboard/` - User dashboards (artist/venue)
 - `src/pages/` - Page-level components matching routes
 
 ## Business Logic
@@ -120,7 +125,9 @@ npm run dev          # Runs on http://localhost:5173
 - Universal Profile (name, bio, avatar, social links) shared across all users
 - Extended Artist profile with genres, instruments, pricing, portfolio
 - Member management for bands/groups with individual member profiles
-- Public artist pages accessible at `/artist/:slug`
+- Public artist pages accessible at `/artist/:slug` with SEO optimization
+- Copy bio and download portfolio features for enhanced UX
+- Advanced portfolio management with multiple media types
 
 ### Pricing & Business Model
 - Venue Premium: €99/month (unlimited bookings)
@@ -129,11 +136,32 @@ npm run dev          # Runs on http://localhost:5173
 
 ## Development Notes
 
-- **Sprint Progress**: Currently in Sprint 3 (Communication & Booking features)
-- **Documentation**: Sprint plans and user stories in `start-docs/`
+- **Current Phase**: MVP Artist-focused (Sprint 4 features completed)
+- **Documentation**: Comprehensive sprint plans and user stories in `start-docs/`
 - **Deployment**: Backend on Render, Frontend on Netlify
-- **Environment**: Node.js 18+, TypeScript throughout
+- **Environment**: Node.js 20+, TypeScript throughout
 - **Code Style**: ESLint configured, auto-formatting enabled
+- **Test Coverage**: 14/16 Cypress E2E tests passing (87.5%)
+
+## Recent Major Features Completed
+
+### Search & Discovery System
+- ✅ **Advanced Search Engine** with fuzzy matching and accent normalization
+- ✅ **Smart Filtering System** with 14/16 E2E tests passing  
+- ✅ **Intelligent Suggestions** with typo tolerance and artist name prioritization
+- ✅ **SEO-Optimized Pages** for artist discovery and genre directories
+
+### Enhanced Artist Experience  
+- ✅ **Copy Bio Feature** for easy content sharing
+- ✅ **Download Portfolio** with automatic file naming
+- ✅ **Public Artist Profiles** with comprehensive information display
+- ✅ **Advanced Portfolio Management** with multiple media types
+
+### Technical Improvements
+- ✅ **Performance Optimizations** in search algorithms
+- ✅ **Mobile-Responsive Design** across all components
+- ✅ **State Management** with Zustand + TanStack Query
+- ✅ **Component Architecture** with 117+ TypeScript files
 
 ## Troubleshooting
 
