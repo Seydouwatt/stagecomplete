@@ -15,12 +15,12 @@ import { usePremiumFeatures } from '../../hooks/usePremiumFeatures';
 import { CalendarView } from '../../components/calendar';
 
 export const BookingsList: React.FC = () => {
-  const { token } = useAuthStore();
+  const { token, uiPreferences, setBookingsViewMode } = useAuthStore();
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const { isPremium } = usePremiumFeatures();
   const queryClient = useQueryClient();
+  const viewMode = uiPreferences.bookingsViewMode;
 
   const { data: bookings, isLoading } = useQuery({
     queryKey: ['bookings'],
@@ -108,14 +108,14 @@ export const BookingsList: React.FC = () => {
         <div className="flex gap-2 flex-wrap">
           <button
             className={`btn btn-sm ${viewMode === 'list' ? 'btn-primary' : 'btn-ghost'}`}
-            onClick={() => setViewMode('list')}
+            onClick={() => setBookingsViewMode('list')}
             title="Vue liste"
           >
             <List className="w-4 h-4" />
           </button>
           <button
             className={`btn btn-sm ${viewMode === 'calendar' ? 'btn-primary' : 'btn-ghost'}`}
-            onClick={() => setViewMode('calendar')}
+            onClick={() => setBookingsViewMode('calendar')}
             title="Vue calendrier"
           >
             <Calendar className="w-4 h-4" />

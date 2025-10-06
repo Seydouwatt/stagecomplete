@@ -11,6 +11,14 @@ import { authService } from "../services/authService";
 import { profileService } from "../services/profileService";
 import { userService } from "../services/userService";
 
+export type ViewMode = 'list' | 'calendar';
+export type CalendarViewType = 'day' | 'week' | 'month' | 'year';
+
+interface UIPreferences {
+  bookingsViewMode: ViewMode;
+  calendarViewType: CalendarViewType;
+}
+
 interface AuthState {
   // State
   user: User | null;
@@ -18,6 +26,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  uiPreferences: UIPreferences;
 
   // Actions
   login: (credentials: LoginCredentials) => Promise<void>;
@@ -28,6 +37,8 @@ interface AuthState {
   updateProfile: (data: UpdateProfileData) => Promise<void>;
   refreshUser: () => Promise<void>;
   deleteAccount: (currentPassword: string) => Promise<void>;
+  setBookingsViewMode: (mode: ViewMode) => void;
+  setCalendarViewType: (type: CalendarViewType) => void;
 
   // Utils
   getAuthHeader: () => string | null;
@@ -42,6 +53,10 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      uiPreferences: {
+        bookingsViewMode: 'list',
+        calendarViewType: 'month',
+      },
 
       // Login action
       login: async (credentials: LoginCredentials) => {
@@ -201,6 +216,26 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
+      // Set bookings view mode
+      setBookingsViewMode: (mode: ViewMode) => {
+        set((state) => ({
+          uiPreferences: {
+            ...state.uiPreferences,
+            bookingsViewMode: mode,
+          },
+        }));
+      },
+
+      // Set calendar view type
+      setCalendarViewType: (type: CalendarViewType) => {
+        set((state) => ({
+          uiPreferences: {
+            ...state.uiPreferences,
+            calendarViewType: type,
+          },
+        }));
+      },
+
       // Get auth header for API calls
       getAuthHeader: () => {
         const { token } = get();
@@ -213,6 +248,7 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
+        uiPreferences: state.uiPreferences,
       }),
     }
   )

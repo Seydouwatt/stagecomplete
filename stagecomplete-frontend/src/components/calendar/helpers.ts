@@ -8,7 +8,8 @@ export interface CalendarDay {
   dayNumber: number;
 }
 
-export const DAYS_OF_WEEK = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+// Semaine commence le lundi (format français)
+export const DAYS_OF_WEEK = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
 export const MONTHS = [
   'Janvier',
@@ -36,8 +37,9 @@ export function getCalendarDays(year: number, month: number): CalendarDay[] {
   // Get the day of week for the first day (0 = Sunday, 1 = Monday, etc.)
   const firstDayOfWeek = firstDayOfMonth.getDay();
 
-  // Calculate padding days from previous month
-  const daysFromPrevMonth = firstDayOfWeek;
+  // Calculate padding days from previous month (start week on Monday)
+  // If Sunday (0), need 6 days back to Monday; if Monday (1), need 0 days
+  const daysFromPrevMonth = (firstDayOfWeek + 6) % 7;
   const startDate = new Date(firstDayOfMonth);
   startDate.setDate(startDate.getDate() - daysFromPrevMonth);
 
@@ -54,6 +56,7 @@ export function getCalendarDays(year: number, month: number): CalendarDay[] {
       date.getFullYear() === today.getFullYear() &&
       date.getMonth() === today.getMonth() &&
       date.getDate() === today.getDate();
+    // Weekend = Saturday (6) and Sunday (0)
     const isWeekend = date.getDay() === 0 || date.getDay() === 6;
 
     days.push({
