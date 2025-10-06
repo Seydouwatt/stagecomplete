@@ -7,14 +7,18 @@ import {
   getBookingStats,
   exportBookingsIcal,
 } from '../../services/bookingService';
-import { Calendar, List, Plus, Download, Trash2, Edit, MapPin, Euro } from 'lucide-react';
+import type { Booking } from '../../services/bookingService';
+import { Calendar, List, Plus, Download, Trash2, Edit, MapPin, Euro, X } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { usePremiumFeatures } from '../../hooks/usePremiumFeatures';
+import { CalendarView } from '../../components/calendar';
 
 export const BookingsList: React.FC = () => {
   const { token } = useAuthStore();
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const { isPremium } = usePremiumFeatures();
   const queryClient = useQueryClient();
 
@@ -260,16 +264,149 @@ export const BookingsList: React.FC = () => {
         </div>
       )}
 
-      {/* Calendar view - À implémenter */}
+      {/* Calendar view */}
       {viewMode === 'calendar' && (
-        <div className="card bg-base-100 shadow-lg border border-base-300">
-          <div className="card-body text-center py-12">
-            <div className="text-6xl mb-4">📆</div>
-            <h3 className="text-xl font-semibold mb-2">Vue calendrier</h3>
-            <p className="text-base-content/70">
-              La vue calendrier arrive bientôt ! En attendant, utilisez la vue liste.
-            </p>
+        <div className="card bg-base-100 shadow-lg border border-base-300 p-6">
+          <CalendarView
+            bookings={bookings || []}
+            onDayClick={(date) => {
+              // Navigate to create booking with pre-filled date
+              const isoDate = date.toISOString().slice(0, 16);
+              navigate(`/artist/bookings/new?date=${isoDate}`);
+            }}
+            onBookingClick={(booking) => {
+              setSelectedBooking(booking);
+            }}
+          />
+        </div>
+      )}
+
+      {/* Booking Detail Modal */}
+      {selectedBooking && (
+        <div className="modal modal-open">
+          <div className="modal-box max-w-2xl">
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="font-bold text-2xl">{selectedBooking.title}</h3>
+              <button
+                className="btn btn-sm btn-circle btn-ghost"
+                onClick={() => setSelectedBooking(null)}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <span className={`badge ${getStatusBadge(selectedBooking.status)}`}>
+                  {getStatusLabel(selectedBooking.status)}
+                </span>
+                <span className="badge badge-outline">{selectedBooking.eventType}</span>
+              </div>
+
+              {selectedBooking.description && (
+                <div>
+                  <h4 className="font-semibold mb-1">Description</h4>
+                  <p className="text-base-content/70">{selectedBooking.description}</p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="font-semibold mb-1 flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Date et heure
+                  </h4>
+                  <p className="text-base-content/70">
+                    {new Date(selectedBooking.date).toLocaleString('fr-FR', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </p>
+                  {selectedBooking.endDate && (
+                    <p className="text-sm text-base-content/60">
+                      Fin: {new Date(selectedBooking.endDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  )}
+                </div>
+
+                {selectedBooking.location && (
+                  <div>
+                    <h4 className="font-semibold mb-1 flex items-center gap-2">
+                      <MapPin className="w-4 h-4" />
+                      Lieu
+                    </h4>
+                    <p className="text-base-content/70">{selectedBooking.location}</p>
+                    {selectedBooking.address && (
+                      <p className="text-sm text-base-content/60">{selectedBooking.address}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {(selectedBooking.duration || selectedBooking.budget) && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {selectedBooking.duration && (
+                    <div>
+                      <h4 className="font-semibold mb-1">Durée</h4>
+                      <p className="text-base-content/70">{selectedBooking.duration} minutes</p>
+                    </div>
+                  )}
+                  {selectedBooking.budget && (
+                    <div>
+                      <h4 className="font-semibold mb-1 flex items-center gap-2">
+                        <Euro className="w-4 h-4" />
+                        Cachet
+                      </h4>
+                      <p className="text-base-content/70 font-semibold">{selectedBooking.budget}€</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {selectedBooking.tags && selectedBooking.tags.length > 0 && (
+                <div>
+                  <h4 className="font-semibold mb-2">Tags</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedBooking.tags.map((tag, i) => (
+                      <span key={i} className="badge badge-outline">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedBooking.notes && (
+                <div>
+                  <h4 className="font-semibold mb-1">Notes privées</h4>
+                  <p className="text-base-content/70 text-sm whitespace-pre-wrap">
+                    {selectedBooking.notes}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="modal-action">
+              <button
+                className="btn btn-ghost"
+                onClick={() => setSelectedBooking(null)}
+              >
+                Fermer
+              </button>
+              <Link
+                to={`/artist/bookings/${selectedBooking.id}/edit`}
+                className="btn btn-primary"
+              >
+                <Edit className="w-4 h-4" />
+                Modifier
+              </Link>
+            </div>
           </div>
+          <div className="modal-backdrop" onClick={() => setSelectedBooking(null)}></div>
         </div>
       )}
     </div>
