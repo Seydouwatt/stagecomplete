@@ -8,6 +8,7 @@ import { ProfileModule } from './profile/profile.module';
 import { HealthModule } from './health/health.module';
 import { PublicModule } from './public/public.module';
 import { SearchModule } from './search/search.module';
+import { BookingModule } from './booking/booking.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SearchModule } from './search/search.module';
     HealthModule,
     PublicModule,
     SearchModule, // Advanced search with full-text capabilities
+    BookingModule, // Artist calendar and bookings management
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -23,6 +23,12 @@ model User {
   phone     String?  // Téléphone personnel
   isFounder Boolean  @default(false) // Membre fondateur?
   role      Role     @default(ARTIST)
+
+  // Premium/Subscription fields
+  plan              SubscriptionType @default(FREE)
+  subscriptionEndsAt DateTime?      // Date fin abonnement
+  trialEndsAt       DateTime?       // Date fin période d'essai
+
   profile   Profile?
   sentMessages     Message[] @relation("MessageSender")
   createdAt DateTime @default(now())
@@ -202,20 +208,34 @@ model Event {
   title       String
   description String?
   date        DateTime
+  endDate     DateTime?     // Heure de fin du booking
+
+  // Location info (artist self-service)
+  location    String?       // Nom de la venue/lieu
+  address     String?       // Adresse complète
+
   duration    Int?          // Duration in minutes
-  budget      Float?
-  status      BookingStatus @default(PENDING)
+  budget      Float?        // Cachet négocié
+  status      BookingStatus @default(CONFIRMED)
   eventType   String        // "CONCERT", "COMEDY", "THEATER", etc
+
+  // Artist personal management
+  notes       String?       // Notes privées artiste
+  tags        String[]      // Tags pour catégorisation
   requirements String?      // Special requirements
-  venueId     String
-  artistId    String?
-  venue       Venue         @relation(fields: [venueId], references: [id], onDelete: Cascade)
-  artist      Artist?       @relation(fields: [artistId], references: [id])
+
+  // Relations - venueId optionnel maintenant (artist-first)
+  venueId     String?
+  artistId    String
+  venue       Venue?        @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  artist      Artist        @relation(fields: [artistId], references: [id], onDelete: Cascade)
   messages    Message[]
+
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
   @@map("events")
+  @@index([artistId, date])
 }
 
 model Message {
@@ -261,12 +281,15 @@ enum Role {
 }
 
 enum BookingStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
-  CONFIRMED
-  COMPLETED
-  CANCELLED
+  CONFIRMED   // Booking confirmé
+  TENTATIVE   // Provisoire
+  CANCELLED   // Annulé
+  COMPLETED   // Passé/Terminé
+}
+
+enum SubscriptionType {
+  FREE
+  PREMIUM
 }
 
 enum MetricEventType {
