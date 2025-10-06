@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MagnifyingGlassIcon, MapPinIcon } from '@heroicons/react/24/outline';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface SearchSuggestion {
   type: 'genre' | 'artist' | 'location';
@@ -34,7 +34,7 @@ export const PublicSearchBar: React.FC<PublicSearchBarProps> = ({
   size = 'lg'
 }) => {
   const [query, setQuery] = useState('');
-  const [location, setLocation] = useState('');
+  const [locationInput, setLocationInput] = useState('');
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [showSuggestionsList, setShowSuggestionsList] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
@@ -42,6 +42,7 @@ export const PublicSearchBar: React.FC<PublicSearchBarProps> = ({
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const sizeClasses = {
     sm: 'h-10 text-sm',
@@ -110,7 +111,7 @@ export const PublicSearchBar: React.FC<PublicSearchBarProps> = ({
 
   const handleSearch = (searchQuery?: string, searchLocation?: string) => {
     const finalQuery = searchQuery || query;
-    const finalLocation = searchLocation || location;
+    const finalLocation = searchLocation || locationInput;
 
     if (!finalQuery.trim()) return;
 
@@ -119,11 +120,27 @@ export const PublicSearchBar: React.FC<PublicSearchBarProps> = ({
     params.set('q', finalQuery);
     if (finalLocation) params.set('location', finalLocation);
 
-    // Callback custom ou navigation
+    // Callback custom ou navigation contextuelle
     if (onSearch) {
       onSearch(finalQuery, finalLocation);
     } else {
-      navigate(`/search?${params.toString()}`);
+      // Détecter le contexte de la page pour choisir la destination
+      const currentPath = location.pathname;
+      
+      if (currentPath === '/browse') {
+        // Rester sur la page Browse, juste modifier les paramètres
+        const currentParams = new URLSearchParams(location.search);
+        currentParams.set('q', finalQuery);
+        if (finalLocation) {
+          currentParams.set('location', finalLocation);
+        } else {
+          currentParams.delete('location');
+        }
+        navigate(`/browse?${currentParams.toString()}`);
+      } else {
+        // Navigation normale vers la page de recherche depuis les autres pages
+        navigate(`/search?${params.toString()}`);
+      }
     }
 
     setShowSuggestionsList(false);
@@ -196,8 +213,8 @@ export const PublicSearchBar: React.FC<PublicSearchBarProps> = ({
             type="text"
             className="w-32 h-full px-2 bg-transparent text-gray-800 placeholder-gray-500 focus:outline-none"
             placeholder="Ville"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            value={locationInput}
+            onChange={(e) => setLocationInput(e.target.value)}
             onKeyDown={handleKeyDown}
           />
         </div>

@@ -8,7 +8,6 @@ import {
   ArrowRightIcon,
   PlayCircleIcon,
 } from "@heroicons/react/24/outline";
-import { PublicSearchBar } from "../components/public/PublicSearchBar";
 import { FeaturedArtists } from "../components/public/FeaturedArtists";
 import { PublicStats } from "../components/public/PublicStats";
 import {
@@ -93,52 +92,12 @@ const Home: React.FC = () => {
                 partage réseaux sociaux - 100% gratuit !
               </motion.p>
 
-              {/* Barre de recherche */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="mb-12"
-              >
-                <PublicSearchBar
-                  className="max-w-2xl mx-auto"
-                  placeholder="Jazz, Rock, Paris, Lyon..."
-                  size="lg"
-                />
-              </motion.div>
-
-              {/* Suggestions populaires */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="mb-16"
-              >
-                <p className="text-gray-300 mb-4">Recherches populaires :</p>
-                <div className="flex flex-wrap justify-center gap-3">
-                  {[
-                    "Jazz Paris",
-                    "Rock Lyon",
-                    "Solo Marseille",
-                    "Groupe Toulouse",
-                    "Folk Nice",
-                  ].map((term) => (
-                    <Link
-                      key={term}
-                      to={`/search?q=${encodeURIComponent(term)}`}
-                      className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm transition-colors"
-                    >
-                      {term}
-                    </Link>
-                  ))}
-                </div>
-              </motion.div>
 
               {/* CTAs */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
+                transition={{ delay: 0.3 }}
                 className="flex flex-col sm:flex-row gap-4 justify-center items-center"
               >
                 <Link

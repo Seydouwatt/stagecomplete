@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { PublicSearchBar } from "../../components/public/PublicSearchBar";
 import { SEOHead } from "../../components/seo/SEOHead";
 import { artistService } from "../../services/artistService";
 import type { PublicArtistProfile, ArtistSearchFilters } from "../../types";
@@ -293,14 +292,15 @@ export const GenreDirectory: React.FC = () => {
             )}
           </div>
 
-          {/* Search Bar */}
+          {/* Call to Action - Discover More */}
           <div className="max-w-2xl mx-auto">
-            <PublicSearchBar
-              placeholder={`Rechercher ${
-                genreInfo ? `des artistes ${genreInfo.name}` : "des artistes"
-              }${cityInfo ? ` à ${cityInfo.name}` : ""}...`}
-              size="md"
-            />
+            <Link
+              to="/directory"
+              className="inline-flex items-center gap-2 bg-primary hover:bg-primary-focus text-primary-content px-6 py-3 rounded-lg font-medium transition-colors"
+            >
+              <MusicalNoteIcon className="w-5 h-5" />
+              Rechercher avec filtres avancés
+            </Link>
           </div>
         </div>
       </section>

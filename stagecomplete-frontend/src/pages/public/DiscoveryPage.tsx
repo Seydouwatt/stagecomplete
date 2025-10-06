@@ -20,7 +20,7 @@ import {
 import type { PublicArtistProfile } from "../../types";
 import { getMainPhoto } from "../../types";
 
-export const SearchResults: React.FC = () => {
+export const DiscoveryPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
 
@@ -129,8 +129,9 @@ export const SearchResults: React.FC = () => {
   const handleFiltersChange = (newFilters: AdvancedSearchQuery) => {
     const newSearchParams = new URLSearchParams();
 
-    // Always keep search query
-    if (newFilters.q) newSearchParams.set("q", newFilters.q);
+    // Always keep search query - preserve existing query from URL if not in newFilters
+    const currentQuery = query || newFilters.q;
+    if (currentQuery) newSearchParams.set("q", currentQuery);
 
     // Add all other filters
     if (newFilters.location)
@@ -150,12 +151,15 @@ export const SearchResults: React.FC = () => {
       newSearchParams.set("sortBy", newFilters.sortBy);
 
     setSearchParams(newSearchParams);
-    updateQuery(newFilters);
+    updateQuery({
+      ...newFilters,
+      q: currentQuery // Ensure the query is passed to updateQuery
+    });
   };
 
   // Si pas de query, afficher la page de découverte
   if (!query) {
-    return <DiscoveryPage onSearch={handleSearch} />;
+    return <DiscoveryHomePage onSearch={handleSearch} />;
   }
 
   const locationParam = searchParams.get("location") || "";
@@ -539,7 +543,7 @@ export const SearchResults: React.FC = () => {
 };
 
 // Page de découverte quand pas de recherche
-const DiscoveryPage: React.FC<{
+const DiscoveryHomePage: React.FC<{
   onSearch: (query: string, location?: string) => void;
 }> = ({ onSearch }) => {
   return (

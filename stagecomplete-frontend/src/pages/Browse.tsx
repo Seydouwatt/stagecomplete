@@ -24,10 +24,31 @@ export const Browse: React.FC = () => {
   // Type de contenu basé sur le rôle utilisateur
   const browseType = user?.role === "ARTIST" ? "venue" : "artist";
 
-  // Filtres
-  const [filters, setFilters] = useState<AdvancedSearchQuery>({
-    sortBy: "relevance",
-    limit: 20,
+  // Filtres - initialiser depuis les paramètres URL
+  const [filters, setFilters] = useState<AdvancedSearchQuery>(() => {
+    const params: AdvancedSearchQuery = {
+      sortBy: (searchParams.get('sortBy') as any) || "relevance",
+      limit: 20,
+    };
+
+    // Lire tous les filtres depuis l'URL
+    const location = searchParams.get('location');
+    const genres = searchParams.get('genres')?.split(',').filter(Boolean);
+    const instruments = searchParams.get('instruments')?.split(',').filter(Boolean);
+    const experience = searchParams.get('experience') as any;
+    const minPrice = searchParams.get('minPrice');
+    const maxPrice = searchParams.get('maxPrice');
+    const availableOnly = searchParams.get('availableOnly');
+
+    if (location) params.location = location;
+    if (genres?.length) params.genres = genres;
+    if (instruments?.length) params.instruments = instruments;
+    if (experience) params.experience = experience;
+    if (minPrice) params.minPrice = parseInt(minPrice);
+    if (maxPrice) params.maxPrice = parseInt(maxPrice);
+    if (availableOnly === 'true') params.availableOnly = true;
+
+    return params;
   });
 
   // Construire la query pour l'API
@@ -96,11 +117,37 @@ export const Browse: React.FC = () => {
   // Handlers
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    setSearchParams(query ? { q: query } : {});
+    
+    // Préserver les filtres existants lors d'une nouvelle recherche
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (query) {
+      newSearchParams.set('q', query);
+    } else {
+      newSearchParams.delete('q');
+    }
+    setSearchParams(newSearchParams);
   };
 
   const handleFiltersChange = (newFilters: AdvancedSearchQuery) => {
     setFilters(newFilters);
+    
+    // Synchroniser avec les paramètres URL pour maintenir l'état de navigation
+    const newSearchParams = new URLSearchParams();
+    
+    // Conserver la recherche actuelle
+    if (searchQuery) newSearchParams.set('q', searchQuery);
+    
+    // Ajouter tous les autres filtres
+    if (newFilters.location) newSearchParams.set('location', newFilters.location);
+    if (newFilters.genres?.length) newSearchParams.set('genres', newFilters.genres.join(','));
+    if (newFilters.instruments?.length) newSearchParams.set('instruments', newFilters.instruments.join(','));
+    if (newFilters.experience) newSearchParams.set('experience', newFilters.experience);
+    if (newFilters.minPrice) newSearchParams.set('minPrice', newFilters.minPrice.toString());
+    if (newFilters.maxPrice) newSearchParams.set('maxPrice', newFilters.maxPrice.toString());
+    if (newFilters.availableOnly) newSearchParams.set('availableOnly', 'true');
+    if (newFilters.sortBy && newFilters.sortBy !== 'relevance') newSearchParams.set('sortBy', newFilters.sortBy);
+    
+    setSearchParams(newSearchParams);
   };
 
   const handleContact = (id: string) => {
