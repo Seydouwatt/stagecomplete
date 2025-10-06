@@ -13,6 +13,7 @@ import {
   Users,
   LogOut,
   Crown,
+  CalendarCheck,
 } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -63,6 +64,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
           icon: Music,
           href: "/artist/portfolio",
         },
+        {
+          id: "bookings",
+          label: "Mes Bookings",
+          icon: CalendarCheck,
+          href: "/artist/bookings",
+        },
       ];
 
       // Sections premium pour les artistes
@@ -87,13 +94,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
           label: "Trouver des venues",
           icon: Search,
           href: "/browse/venues",
-          isPremium: true,
-        },
-        {
-          id: "bookings",
-          label: "Mes Bookings",
-          icon: Calendar,
-          href: "/artist/bookings",
           isPremium: true,
         },
         {

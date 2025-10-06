@@ -12,14 +12,17 @@ export const usePremiumFeatures = () => {
   const canAccess = {
     // Fonctionnalités premium pour artistes
     messages: isPremium || isVenue,
-    calendar: isPremium || isVenue,
-    browseVenues: isPremium || isVenue,
-    bookings: isPremium || isVenue,
     analytics: isPremium || isVenue,
+    browseVenues: isPremium || isVenue,
 
-    // Portfolio photos (4 gratuit, 10 premium)
+    // Fonctionnalités gratuites pour artistes (accès de base)
+    calendar: true, // Vue calendrier gratuite pour tous
+    bookings: true, // Bookings illimités gratuit pour tous
+    calendarExport: isPremium, // Export iCal/Google Calendar premium only
+
+    // Portfolio photos (5 gratuit, illimité premium)
     portfolioPhotos: {
-      maxCount: isPremium ? 10 : 4,
+      maxCount: isPremium ? Infinity : 5,
       isPremiumFeature: true,
     },
 
@@ -34,11 +37,10 @@ export const usePremiumFeatures = () => {
   const getUpgradeMessage = (feature: string) => {
     const messages: Record<string, string> = {
       messages: "Communiquez avec les venues sans limite avec Premium",
-      calendar: "Gérez tous vos événements avec le calendrier Premium",
-      browseVenues: "Trouvez des venues parfaites avec la recherche Premium",
-      bookings: "Suivez tous vos bookings avec Premium",
       analytics: "Analysez votre performance avec les stats Premium",
-      portfolioPhotos: "Ajoutez jusqu'à 10 photos avec Premium (vs 4 gratuit)",
+      browseVenues: "Trouvez des venues parfaites avec la recherche Premium",
+      calendarExport: "Exportez votre calendrier (iCal/Google Calendar) avec Premium",
+      portfolioPhotos: "Portfolio photos illimité avec Premium (vs 5 gratuit)",
     };
 
     return messages[feature] || "Cette fonctionnalité est réservée aux membres Premium";
@@ -52,11 +54,13 @@ export const usePremiumFeatures = () => {
       "/user": true,
       "/settings": true,
 
+      // Routes gratuites pour artistes
+      "/artist/bookings": canAccess.bookings, // true (gratuit)
+      "/calendar": canAccess.calendar, // true (gratuit)
+
       // Routes premium
       "/messages": canAccess.messages,
-      "/calendar": canAccess.calendar,
       "/browse/venues": canAccess.browseVenues,
-      "/artist/bookings": canAccess.bookings,
       "/artist/analytics": canAccess.analytics,
     };
 
