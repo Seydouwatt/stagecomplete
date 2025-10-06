@@ -80,35 +80,59 @@ export class SearchService {
       isPublic: true, // Toujours filtrer les profils publics
     };
 
-    // Full-text search sur la colonne search_vector
+    // Recherche textuelle améliorée
     if (query.q && query.q.trim()) {
-      // Utiliser raw SQL pour recherche full-text avec PostgreSQL
-      // Note: Prisma ne supporte pas nativement ts_rank, on utilisera une approche mixte
+      const searchQuery = this.normalizeSearchQuery(query.q.trim());
+      const searchTerms = searchQuery.split(' ').filter((w: string) => w.length > 1);
+      
       conditions.OR = [
-        // Recherche exacte dans artisticBio
-        {
-          artisticBio: {
-            contains: query.q,
-            mode: 'insensitive' as Prisma.QueryMode,
-          },
-        },
-        // Recherche dans les genres
-        {
-          genres: {
-            hasSome: query.q.split(' ').filter((w) => w.length > 2),
-          },
-        },
-        // Recherche dans les instruments
-        {
-          instruments: {
-            hasSome: query.q.split(' ').filter((w) => w.length > 2),
-          },
-        },
-        // Recherche dans le nom via profile
+        // 1. PRIORITÉ MAXIMALE: Recherche exacte dans le nom d'artiste
         {
           profile: {
             name: {
-              contains: query.q,
+              contains: searchQuery,
+              mode: 'insensitive' as Prisma.QueryMode,
+            },
+          },
+        },
+        // 2. Recherche partielle dans le nom (mots séparés)
+        ...searchTerms.map((term: string) => ({
+          profile: {
+            name: {
+              contains: term,
+              mode: 'insensitive' as Prisma.QueryMode,
+            },
+          },
+        })),
+        // 3. Recherche exacte dans les genres
+        {
+          genres: {
+            hasSome: [searchQuery],
+          },
+        },
+        // 4. Recherche par termes dans les genres
+        {
+          genres: {
+            hasSome: searchTerms,
+          },
+        },
+        // 5. Recherche exacte dans les instruments
+        {
+          instruments: {
+            hasSome: [searchQuery],
+          },
+        },
+        // 6. Recherche par termes dans les instruments
+        {
+          instruments: {
+            hasSome: searchTerms,
+          },
+        },
+        // 7. Recherche dans la localisation via profile
+        {
+          profile: {
+            location: {
+              contains: searchQuery,
               mode: 'insensitive' as Prisma.QueryMode,
             },
           },
@@ -310,39 +334,80 @@ export class SearchService {
    */
   private calculateRelevanceScore(artist: any, query: string): number {
     let score = 0;
-    const queryLower = query.toLowerCase();
-    const queryTerms = queryLower.split(' ').filter((t) => t.length > 2);
+    const normalizedQuery = this.normalizeSearchQuery(query);
+    const normalizedName = this.normalizeSearchQuery(artist.profile?.name || '');
+    const queryTerms = normalizedQuery.split(' ').filter((t: string) => t.length > 1);
 
-    // Correspondance exacte dans le nom (poids 10)
-    if (artist.profile?.name?.toLowerCase().includes(queryLower)) {
-      score += 10;
+    // 1. CORRESPONDANCE EXACTE dans le nom (poids maximum: 100)
+    if (normalizedName === normalizedQuery) {
+      score += 100;
+    }
+    // 2. Correspondance complète dans le nom (poids 80)
+    else if (normalizedName.includes(normalizedQuery)) {
+      score += 80;
+    }
+    // 3. Le nom commence par la requête (poids 60)
+    else if (normalizedName.startsWith(normalizedQuery)) {
+      score += 60;
+    }
+    // 4. Correspondance partielle significative dans le nom (poids 40)
+    else {
+      const nameWords = normalizedName.split(' ');
+      let partialMatches = 0;
+      queryTerms.forEach((term: string) => {
+        if (nameWords.some((word: string) => word.includes(term) || term.includes(word))) {
+          partialMatches++;
+        }
+      });
+      if (partialMatches > 0) {
+        score += (partialMatches / queryTerms.length) * 40;
+      }
     }
 
-    // Correspondance dans les genres (poids 5 par terme)
-    queryTerms.forEach((term) => {
-      if (
-        artist.genres?.some((g: string) => g.toLowerCase().includes(term))
-      ) {
-        score += 5;
+    // 5. Correspondance exacte dans les genres (poids 20 par terme)
+    queryTerms.forEach((term: string) => {
+      if (artist.genres?.some((g: string) => 
+        this.normalizeSearchQuery(g) === term
+      )) {
+        score += 20;
       }
     });
 
-    // Correspondance dans les instruments (poids 3 par terme)
-    queryTerms.forEach((term) => {
-      if (
-        artist.instruments?.some((i: string) => i.toLowerCase().includes(term))
-      ) {
-        score += 3;
+    // 6. Correspondance partielle dans les genres (poids 10 par terme)
+    queryTerms.forEach((term: string) => {
+      if (artist.genres?.some((g: string) => 
+        this.normalizeSearchQuery(g).includes(term)
+      )) {
+        score += 10;
       }
     });
 
-    // Correspondance dans la bio (poids 2)
-    if (artist.artisticBio?.toLowerCase().includes(queryLower)) {
+    // 7. Correspondance exacte dans les instruments (poids 15 par terme)
+    queryTerms.forEach((term: string) => {
+      if (artist.instruments?.some((i: string) => 
+        this.normalizeSearchQuery(i) === term
+      )) {
+        score += 15;
+      }
+    });
+
+    // 8. Correspondance partielle dans les instruments (poids 8 par terme)
+    queryTerms.forEach((term: string) => {
+      if (artist.instruments?.some((i: string) => 
+        this.normalizeSearchQuery(i).includes(term)
+      )) {
+        score += 8;
+      }
+    });
+
+    // 9. Correspondance dans la localisation (poids 2)
+    if (artist.profile?.location && 
+        this.normalizeSearchQuery(artist.profile.location).includes(normalizedQuery)) {
       score += 2;
     }
 
-    // Normaliser entre 0 et 1
-    return Math.min(score / 20, 1);
+    // Normaliser entre 0 et 1 (score max théorique: ~192 sans les bios)
+    return Math.min(score / 192, 1);
   }
 
   /**
@@ -393,8 +458,8 @@ export class SearchService {
     }
 
     try {
-      // 1. Suggestions d'artistes
-      const artists = await this.prisma.artist.findMany({
+      // 1. Suggestions d'artistes (recherche standard d'abord)
+      const exactArtists = await this.prisma.artist.findMany({
         where: {
           isPublic: true,
           profile: {
@@ -416,7 +481,7 @@ export class SearchService {
         },
       });
 
-      artists.forEach((artist) => {
+      exactArtists.forEach((artist) => {
         suggestions.push({
           id: artist.id,
           type: 'artist',
@@ -425,6 +490,39 @@ export class SearchService {
           avatar: artist.profile?.avatar ?? undefined,
         });
       });
+
+      // Si pas assez de résultats exacts, chercher avec recherche floue
+      if (exactArtists.length < 3 && query.length > 3) {
+        const allArtists = await this.prisma.artist.findMany({
+          where: { isPublic: true },
+          take: 50, // Limite pour performance
+          include: {
+            profile: {
+              select: {
+                name: true,
+                avatar: true,
+                location: true,
+              },
+            },
+          },
+        });
+
+        const artistNames = allArtists.map(a => a.profile?.name || '').filter(Boolean);
+        const fuzzyMatches = this.findFuzzyMatches(query, artistNames);
+        
+        fuzzyMatches.slice(0, 3 - exactArtists.length).forEach(matchedName => {
+          const artist = allArtists.find(a => a.profile?.name === matchedName);
+          if (artist && !suggestions.find(s => s.id === artist.id)) {
+            suggestions.push({
+              id: artist.id,
+              type: 'artist',
+              text: artist.profile?.name || '',
+              subtitle: `${artist.profile?.location ?? ''} (suggestion)`.trim(),
+              avatar: artist.profile?.avatar ?? undefined,
+            });
+          }
+        });
+      }
 
       // 2. Suggestions de genres
       const allGenres = await this.prisma.artist.findMany({
@@ -548,5 +646,103 @@ export class SearchService {
         },
       },
     });
+  }
+
+  /**
+   * Normalise une requête de recherche pour améliorer les résultats
+   */
+  private normalizeSearchQuery(query: string): string {
+    return query
+      // Supprimer les accents et caractères spéciaux
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      // Convertir en minuscules
+      .toLowerCase()
+      // Supprimer les caractères spéciaux sauf espaces et tirets
+      .replace(/[^\w\s-]/g, '')
+      // Normaliser les espaces multiples
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  /**
+   * Calcule la distance de Levenshtein entre deux chaînes
+   * Utilisé pour détecter les fautes de frappe
+   */
+  private levenshteinDistance(str1: string, str2: string): number {
+    const matrix = Array(str2.length + 1).fill(null).map(() => Array(str1.length + 1).fill(null));
+
+    for (let i = 0; i <= str1.length; i++) {
+      matrix[0][i] = i;
+    }
+
+    for (let j = 0; j <= str2.length; j++) {
+      matrix[j][0] = j;
+    }
+
+    for (let j = 1; j <= str2.length; j++) {
+      for (let i = 1; i <= str1.length; i++) {
+        const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1;
+        matrix[j][i] = Math.min(
+          matrix[j][i - 1] + 1, // deletion
+          matrix[j - 1][i] + 1, // insertion
+          matrix[j - 1][i - 1] + indicator // substitution
+        );
+      }
+    }
+
+    return matrix[str2.length][str1.length];
+  }
+
+  /**
+   * Vérifie si deux termes sont similaires (tolérance aux fautes de frappe)
+   */
+  private isSimilar(term1: string, term2: string, maxDistance: number = 2): boolean {
+    if (term1.length < 3 || term2.length < 3) {
+      return term1 === term2;
+    }
+
+    const distance = this.levenshteinDistance(term1, term2);
+    const maxLength = Math.max(term1.length, term2.length);
+    
+    // Tolérer jusqu'à maxDistance erreurs ou 25% de la longueur du mot
+    return distance <= Math.min(maxDistance, Math.floor(maxLength * 0.25));
+  }
+
+  /**
+   * Trouve des correspondances floues dans une liste de termes
+   */
+  private findFuzzyMatches(searchTerm: string, terms: string[]): string[] {
+    const normalizedSearch = this.normalizeSearchQuery(searchTerm);
+    const matches: string[] = [];
+
+    terms.forEach(term => {
+      const normalizedTerm = this.normalizeSearchQuery(term);
+      
+      // Correspondance exacte
+      if (normalizedTerm.includes(normalizedSearch)) {
+        matches.push(term);
+      }
+      // Correspondance floue pour les mots courts
+      else if (this.isSimilar(normalizedSearch, normalizedTerm)) {
+        matches.push(term);
+      }
+      // Correspondance partielle pour les mots longs
+      else if (normalizedSearch.length > 4 && normalizedTerm.length > 4) {
+        const words1 = normalizedSearch.split(' ');
+        const words2 = normalizedTerm.split(' ');
+        
+        for (const word1 of words1) {
+          for (const word2 of words2) {
+            if (word1.length > 3 && word2.length > 3 && this.isSimilar(word1, word2)) {
+              matches.push(term);
+              return;
+            }
+          }
+        }
+      }
+    });
+
+    return [...new Set(matches)];
   }
 }
