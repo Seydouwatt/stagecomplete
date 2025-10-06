@@ -151,7 +151,7 @@ export const CalendarDayView: React.FC<CalendarDayViewProps> = ({
                       </div>
                       {booking.tags && booking.tags.length > 0 && (
                         <div className="flex gap-2 mt-2">
-                          {booking.tags.map((tag, i) => (
+                          {booking.tags.map((tag: string, i: number) => (
                             <span key={i} className="badge badge-xs badge-outline">
                               {tag}
                             </span>
