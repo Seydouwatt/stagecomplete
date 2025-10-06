@@ -2,10 +2,7 @@ import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 
 
 
-Given('the backend services are running', () => {
-  // Check health endpoint or simply proceed
-  // This could be verified with a health check if needed
-});
+
 
 // Dashboard navigation
 Given('I am on my artist dashboard', () => {
