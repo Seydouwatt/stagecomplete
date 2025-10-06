@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Navigation Fix</title>
+</head>
+<body>
+    <h1>Test de Navigation - Fix du problème de contexte</h1>
+    
+    <h2>Étapes de test :</h2>
+    
+    <ol>
+        <li><strong>Aller sur /browse</strong> (page avec barre de recherche en haut)
+            <br><a href="http://localhost:5175/browse" target="_blank">→ Ouvrir /browse</a>
+        </li>
+        
+        <li><strong>Faire une recherche</strong>
+            <br>- Taper un terme de recherche (ex: "jazz")
+            <br>- ✅ <strong>RÉSULTAT ATTENDU</strong>: Rester sur /browse avec ?q=jazz
+        </li>
+        
+        <li><strong>Ouvrir les filtres</strong>
+            <br>- Cliquer sur "Filtres"
+            <br>- Sélectionner un genre (ex: "Rock")
+            <br>- ✅ <strong>RÉSULTAT ATTENDU</strong>: Rester sur /browse avec les paramètres ajoutés
+        </li>
+        
+        <li><strong>Ajouter une localisation</strong>
+            <br>- Dans la barre de recherche, ajouter une ville (ex: "Paris")
+            <br>- ✅ <strong>RÉSULTAT ATTENDU</strong>: Rester sur /browse avec ?q=jazz&location=Paris
+        </li>
+        
+        <li><strong>Vérifier depuis la page d'accueil</strong>
+            <br><a href="http://localhost:5175/" target="_blank">→ Ouvrir page d'accueil</a>
+            <br>- Faire une recherche depuis la page d'accueil
+            <br>- ✅ <strong>RÉSULTAT ATTENDU</strong>: Navigation vers /search (comportement normal)
+        </li>
+    </ol>
+    
+    <h2>Vérifications :</h2>
+    <ul>
+        <li>☐ La recherche depuis /browse reste sur /browse</li>
+        <li>☐ Les filtres depuis /browse restent sur /browse</li>
+        <li>☐ La recherche depuis la page d'accueil va vers /search</li>
+        <li>☐ L'URL se met à jour correctement avec les paramètres</li>
+        <li>☐ Le layout reste cohérent (pas de changement d'affichage)</li>
+    </ul>
+    
+    <h3>Avant le fix :</h3>
+    <p style="color: red;">❌ Cliquer sur un filtre depuis /browse redirigeait vers /search avec un layout différent</p>
+    
+    <h3>Après le fix :</h3>
+    <p style="color: green;">✅ Toutes les interactions depuis /browse restent sur /browse avec le même layout</p>
+</body>
+</html>
