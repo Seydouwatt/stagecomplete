@@ -95,10 +95,6 @@ When('I click {string}', (buttonText) => {
   cy.contains('button', buttonText).click();
 });
 
-When('I refresh the page', () => {
-  cy.reload();
-});
-
 When('I click the browser back button', () => {
   cy.go('back');
 });

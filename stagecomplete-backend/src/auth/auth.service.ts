@@ -36,7 +36,6 @@ export class AuthService {
    */
   async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
     const { email, password, name, role } = registerDto;
-    console.log(registerDto);
 
     try {
       // 1. Vérifier si l'utilisateur existe déjà
@@ -48,6 +47,7 @@ export class AuthService {
         throw new ConflictException('Un compte avec cet email existe déjà');
       }
 
+      console.log(registerDto);
       // 2. Hash du mot de passe
       const saltRounds = 12;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -773,9 +773,9 @@ export class AuthService {
           email: true,
           profile: {
             select: {
-              name: true
-            }
-          }
+              name: true,
+            },
+          },
         },
       });
 
@@ -794,7 +794,9 @@ export class AuthService {
       }
 
       // Log de l'action pour audit
-      console.log(`Suppression du compte utilisateur: ${user.email} (${user.profile?.name || 'N/A'}) - ${new Date().toISOString()}`);
+      console.log(
+        `Suppression du compte utilisateur: ${user.email} (${user.profile?.name || 'N/A'}) - ${new Date().toISOString()}`,
+      );
 
       // Supprimer l'utilisateur (cascade automatique via Prisma)
       // Les relations suivantes seront supprimées automatiquement :
