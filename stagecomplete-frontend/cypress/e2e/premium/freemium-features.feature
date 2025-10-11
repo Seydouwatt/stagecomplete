@@ -16,13 +16,13 @@ Feature: Freemium Features for Artists
       | Section      | Visible |
       | Dashboard    | Yes     |
       | My Portfolio | Yes     |
+      | My Bookings  | Yes     |
       | My Info      | Yes     |
       | Settings     | Yes     |
       | Logout       | Yes     |
       | Messages     | No      |
       | Calendar     | No      |
       | Find Venues  | No      |
-      | My Bookings  | No      |
       | Analytics    | No      |
     And I should see an "Passer à Premium" button
     And I delete my account
@@ -30,7 +30,7 @@ Feature: Freemium Features for Artists
   Scenario: Free artist - Portfolio photo limitation
     Given I am an artist with a free plan
     And I am logged in to my account
-    When I navigate to "My Portfolio"
+    When I navigate to the "My Portfolio" section
     And I click on the "Portfolio photos" section
     Then I should see the text "Plan gratuit: maximum 4 photos"
     And I should see the text "Premium: 10 photos"

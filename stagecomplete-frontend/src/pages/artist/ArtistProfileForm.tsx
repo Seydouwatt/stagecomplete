@@ -288,6 +288,7 @@ export const ArtistProfileForm: React.FC = () => {
       <LoadingOverlay
         isLoading={isLoading}
         message="Chargement du profil artiste..."
+        backdrop="transparent"
       />
     );
   }

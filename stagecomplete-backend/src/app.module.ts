@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
@@ -9,9 +10,13 @@ import { HealthModule } from './health/health.module';
 import { PublicModule } from './public/public.module';
 import { SearchModule } from './search/search.module';
 import { BookingModule } from './booking/booking.module';
+import { MessageModule } from './message/message.module';
+import { BookingRequestModule } from './booking-request/booking-request.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
     PrismaModule,
     AuthModule,
     ArtistModule,
@@ -19,7 +24,7 @@ import { BookingModule } from './booking/booking.module';
     HealthModule,
     PublicModule,
     SearchModule, // Advanced search with full-text capabilities
-    BookingModule, // Artist calendar and bookings management
+    BookingModule, MessageModule, BookingRequestModule, NotificationModule, // Artist calendar and bookings management
   ],
   controllers: [AppController],
   providers: [AppService],

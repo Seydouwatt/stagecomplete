@@ -2,7 +2,7 @@ import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 
 
 
-
+  
 
 // Dashboard navigation
 Given('I am on my artist dashboard', () => {

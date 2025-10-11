@@ -10,6 +10,7 @@ async function bootstrap() {
     bodyParser: false,
   });
 
+  // TEMPORAIRE: 10MB pour base64. TODO: Migrer vers upload binaire avec stockage externe (S3/Cloudinary)
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ limit: '10mb', extended: true }));
   // Global exception filter pour gérer les exceptions HTTP
@@ -29,6 +30,18 @@ async function bootstrap() {
           field: error.property,
           errors: Object.values(error.constraints || {}),
         }));
+
+        // Log détaillé des erreurs de validation
+        console.log('🚨 [VALIDATION ERROR] Erreurs détectées:');
+        errors.forEach((error) => {
+          console.log(`  - Champ: "${error.property}"`);
+          console.log(`    Valeur reçue: ${typeof error.value} (length: ${error.value?.length || 'N/A'})`);
+          console.log(`    Contraintes échouées:`, Object.keys(error.constraints || {}));
+          Object.entries(error.constraints || {}).forEach(([key, msg]) => {
+            console.log(`      • ${key}: ${msg}`);
+          });
+        });
+
         return {
           statusCode: 400,
           message: 'Données de validation invalides',

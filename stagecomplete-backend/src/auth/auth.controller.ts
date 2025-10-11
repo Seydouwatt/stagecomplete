@@ -103,6 +103,7 @@ export class AuthController {
     },
   })
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
+    console.log('registerDto', registerDto);
     return await this.authService.register(registerDto);
   }
 
@@ -165,6 +166,7 @@ export class AuthController {
     },
   })
   async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
+    console.log('loginDto', loginDto);
     return await this.authService.login(loginDto);
   }
 
@@ -365,6 +367,7 @@ export class AuthController {
     @GetUser() user: AuthenticatedUser,
     @Body() updateProfileDto: UpdateProfileDto,
   ) {
+    console.log('updateProfileDto', updateProfileDto);
     try {
       // Version simplifiée temporaire pour test
       const updatedProfile = await this.authService.updateUserProfile(
@@ -659,7 +662,7 @@ export class AuthController {
   })
   @ApiBody({
     type: DeleteAccountDto,
-    description: 'Mot de passe actuel requis pour confirmer la suppression'
+    description: 'Mot de passe actuel requis pour confirmer la suppression',
   })
   @ApiOkResponse({
     description: 'Compte supprimé avec succès',

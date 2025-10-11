@@ -41,4 +41,24 @@ export const API_ENDPOINTS = {
   USERS: {
     PROFILE: "/users/profile",
   },
+  MESSAGES: {
+    LIST: "/messages",
+    CREATE: "/messages",
+    MARK_READ: (id: string) => `/messages/${id}/read`,
+    UNREAD_COUNT: "/messages/unread-count",
+  },
+  BOOKING_REQUESTS: {
+    LIST: "/booking-requests",
+    CREATE: "/booking-requests",
+    STATS: "/booking-requests/stats",
+    GET_ONE: (id: string) => `/booking-requests/${id}`,
+    RESPOND: (id: string) => `/booking-requests/${id}/respond`,
+  },
+  NOTIFICATIONS: {
+    LIST: "/notifications",
+    UNREAD_COUNT: "/notifications/unread-count",
+    MARK_READ: (id: string) => `/notifications/${id}/read`,
+    MARK_ALL_READ: "/notifications/read-all",
+    DELETE: (id: string) => `/notifications/${id}`,
+  },
 } as const;

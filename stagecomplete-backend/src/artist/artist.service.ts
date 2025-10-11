@@ -45,6 +45,8 @@ export class ArtistService {
     userId: string,
     updateArtistProfileDto: UpdateArtistProfileDto,
   ) {
+    console.log('ici' + userId);
+
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
@@ -69,18 +71,27 @@ export class ArtistService {
     // Gestion intelligente des photos portfolio
     let processedPortfolio = portfolio as any;
     if (portfolio && user.profile.artist?.portfolio) {
-      const existingPhotos = (user.profile.artist.portfolio as any)?.photos || [];
+      const existingPhotos =
+        (user.profile.artist.portfolio as any)?.photos || [];
       const newPhotos = portfolio.photos || [];
 
       // Logger les changements de photos pour debugging/cleanup futur
-      const removedPhotos = existingPhotos.filter((photo: string) => !newPhotos.includes(photo));
-      const addedPhotos = newPhotos.filter((photo: string) => !existingPhotos.includes(photo));
+      const removedPhotos = existingPhotos.filter(
+        (photo: string) => !newPhotos.includes(photo),
+      );
+      const addedPhotos = newPhotos.filter(
+        (photo: string) => !existingPhotos.includes(photo),
+      );
 
       if (removedPhotos.length > 0) {
-        console.log(`[ArtistService] ${removedPhotos.length} photo(s) supprimée(s) du portfolio`);
+        console.log(
+          `[ArtistService] ${removedPhotos.length} photo(s) supprimée(s) du portfolio`,
+        );
       }
       if (addedPhotos.length > 0) {
-        console.log(`[ArtistService] ${addedPhotos.length} photo(s) ajoutée(s) au portfolio`);
+        console.log(
+          `[ArtistService] ${addedPhotos.length} photo(s) ajoutée(s) au portfolio`,
+        );
       }
 
       // Validation basique des images base64
@@ -89,7 +100,9 @@ export class ArtistService {
         if (!photo.startsWith('data:image/')) return false;
         // Limite de taille approximative (5MB en base64 ≈ 6.7MB)
         if (photo.length > 7000000) {
-          console.warn(`[ArtistService] Photo trop volumineuse ignorée: ${photo.length} caractères`);
+          console.warn(
+            `[ArtistService] Photo trop volumineuse ignorée: ${photo.length} caractères`,
+          );
           return false;
         }
         return true;
@@ -101,7 +114,9 @@ export class ArtistService {
       };
 
       if (validPhotos.length !== newPhotos.length) {
-        console.log(`[ArtistService] ${newPhotos.length - validPhotos.length} photo(s) invalide(s) filtrée(s)`);
+        console.log(
+          `[ArtistService] ${newPhotos.length - validPhotos.length} photo(s) invalide(s) filtrée(s)`,
+        );
       }
     }
 
@@ -325,13 +340,16 @@ export class ArtistService {
         return { value: 0, type: 'stable' as const };
       }
 
-      const percentChange = Math.round(
-        ((current - previous) / previous) * 100,
-      );
+      const percentChange = Math.round(((current - previous) / previous) * 100);
 
       return {
         value: Math.abs(percentChange),
-        type: percentChange > 0 ? ('increase' as const) : percentChange < 0 ? ('decrease' as const) : ('stable' as const),
+        type:
+          percentChange > 0
+            ? ('increase' as const)
+            : percentChange < 0
+              ? ('decrease' as const)
+              : ('stable' as const),
       };
     };
 
@@ -340,10 +358,7 @@ export class ArtistService {
       searchClicks: metrics.searchClicks,
       venueRequests: metrics.venueRequests,
       trends: {
-        views: calculateTrend(
-          metrics.viewsThisMonth,
-          metrics.viewsLastMonth,
-        ),
+        views: calculateTrend(metrics.viewsThisMonth, metrics.viewsLastMonth),
         clicks: calculateTrend(
           metrics.clicksThisMonth,
           metrics.clicksLastMonth,
@@ -383,7 +398,10 @@ export class ArtistService {
     });
 
     // Group by date
-    const dailyMetrics = new Map<string, { views: number; clicks: number; requests: number }>();
+    const dailyMetrics = new Map<
+      string,
+      { views: number; clicks: number; requests: number }
+    >();
 
     // Initialize all dates with zeros
     for (let i = 0; i < days; i++) {

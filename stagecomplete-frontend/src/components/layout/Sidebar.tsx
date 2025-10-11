@@ -7,20 +7,19 @@ import {
   MessageSquare,
   User,
   Settings,
-  Music,
   MapPin,
   TrendingUp,
   Users,
   LogOut,
   Crown,
   CalendarCheck,
+  IdCard,
 } from "lucide-react";
 import { clsx } from "clsx";
 
 import { useAuthStore } from "../../stores/authStore";
 import { ROUTES } from "../../constants";
 import UpgradePrompt from "../premium/UpgradePrompt";
-
 
 interface NavigationItem {
   id: string;
@@ -56,12 +55,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
           id: "dashboard",
           label: "Dashboard",
           icon: Home,
-          href: "/dashboard",
+          href: "/artist/dashboard",
         },
         {
           id: "portfolio",
-          label: "Mon Portfolio",
-          icon: Music,
+          label: "Fiche Artiste",
+          icon: IdCard,
           href: "/artist/portfolio",
         },
         {
@@ -117,7 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
           id: "dashboard",
           label: "Dashboard",
           icon: Home,
-          href: "/dashboard",
+          href: "/venue/dashboard",
         },
         {
           id: "messages",
@@ -169,7 +168,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
         id: "dashboard",
         label: "Dashboard",
         icon: Home,
-        href: "/dashboard",
+        href: user?.role === "VENUE" ? "/venue/dashboard" : "/artist/dashboard",
       },
     ];
   };
@@ -327,8 +326,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
             <div className="flex items-center gap-3">
               <div className="avatar">
                 <div className="w-8 h-8 rounded-full bg-primary/20">
-                  <span className="text-sm">
-                    {user?.profile?.name?.charAt(0) || "?"}
+                  <span className="flex justify-around">
+                    {user?.profile.avatar || <User />}
                   </span>
                 </div>
               </div>

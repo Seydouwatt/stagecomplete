@@ -143,6 +143,7 @@ export class ArtistController {
     @GetUser() user: AuthenticatedUser,
     @Body() updateArtistProfileDto: UpdateArtistProfileDto,
   ) {
+    console.log('updateArtistProfileDto', updateArtistProfileDto);
     try {
       const updatedProfile = await this.artistService.updateArtistProfile(
         user.userId,
@@ -366,8 +367,9 @@ export class ArtistController {
 
   @Get('metrics')
   @ApiOperation({
-    summary: 'Récupérer les métriques de l\'artiste',
-    description: 'Retourne les statistiques de vues, clics et demandes pour l\'artiste authentifié',
+    summary: "Récupérer les métriques de l'artiste",
+    description:
+      "Retourne les statistiques de vues, clics et demandes pour l'artiste authentifié",
   })
   @ApiOkResponse({
     description: 'Métriques récupérées avec succès',
@@ -388,21 +390,30 @@ export class ArtistController {
                   type: 'object',
                   properties: {
                     value: { type: 'number' },
-                    type: { type: 'string', enum: ['increase', 'decrease', 'stable'] },
+                    type: {
+                      type: 'string',
+                      enum: ['increase', 'decrease', 'stable'],
+                    },
                   },
                 },
                 clicks: {
                   type: 'object',
                   properties: {
                     value: { type: 'number' },
-                    type: { type: 'string', enum: ['increase', 'decrease', 'stable'] },
+                    type: {
+                      type: 'string',
+                      enum: ['increase', 'decrease', 'stable'],
+                    },
                   },
                 },
                 requests: {
                   type: 'object',
                   properties: {
                     value: { type: 'number' },
-                    type: { type: 'string', enum: ['increase', 'decrease', 'stable'] },
+                    type: {
+                      type: 'string',
+                      enum: ['increase', 'decrease', 'stable'],
+                    },
                   },
                 },
               },
@@ -412,7 +423,9 @@ export class ArtistController {
       },
     },
   })
-  @ApiUnauthorizedResponse({ description: 'Non autorisé - réservé aux artistes' })
+  @ApiUnauthorizedResponse({
+    description: 'Non autorisé - réservé aux artistes',
+  })
   async getMetrics(@GetUser() user: AuthenticatedUser) {
     const metrics = await this.artistService.getArtistMetrics(user.userId);
     return {
@@ -424,7 +437,8 @@ export class ArtistController {
   @Get('metrics/history')
   @ApiOperation({
     summary: 'Historique des métriques',
-    description: 'Retourne l\'historique quotidien des métriques sur une période donnée',
+    description:
+      "Retourne l'historique quotidien des métriques sur une période donnée",
   })
   @ApiOkResponse({
     description: 'Historique récupéré avec succès',
@@ -453,13 +467,18 @@ export class ArtistController {
       },
     },
   })
-  @ApiUnauthorizedResponse({ description: 'Non autorisé - réservé aux artistes' })
+  @ApiUnauthorizedResponse({
+    description: 'Non autorisé - réservé aux artistes',
+  })
   async getMetricsHistory(
     @GetUser() user: AuthenticatedUser,
     @Param('days') days: string = '30',
   ) {
     const daysNumber = parseInt(days, 10) || 30;
-    const data = await this.artistService.getMetricsHistory(user.userId, daysNumber);
+    const data = await this.artistService.getMetricsHistory(
+      user.userId,
+      daysNumber,
+    );
     return {
       message: 'Historique récupéré avec succès',
       data,

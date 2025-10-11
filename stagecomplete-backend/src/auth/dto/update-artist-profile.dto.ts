@@ -112,21 +112,21 @@ export class UpdateArtistProfileDto {
   @ApiPropertyOptional({
     description: 'Photo de couverture/bannière (base64)',
     example: 'data:image/jpeg;base64,/9j/4AAQSkZJ...',
-    maxLength: 200000,
+    maxLength: 2000000,
   })
   @IsOptional()
   @IsString()
-  @MaxLength(200000)
+  @MaxLength(2000000)
   coverPhoto?: string;
 
   @ApiPropertyOptional({
     description: "Logo/image d'identité (base64)",
     example: 'data:image/png;base64,iVBORw0KGgoAAA...',
-    maxLength: 200000,
+    maxLength: 2000000,
   })
   @IsOptional()
   @IsString()
-  @MaxLength(200000)
+  @MaxLength(2000000)
   logo?: string;
 
   @ApiPropertyOptional({

@@ -31,7 +31,7 @@ When('I navigate to my dashboard', () => {
   cy.get('[data-testid="sidebar"]').should('be.visible');
 });
 
-When('I navigate to {string}', (page) => {
+When('I navigate to the {string} section', (page) => {
   const pageRoutes = {
     'My Portfolio': '/artist/portfolio',
     'Messages': '/messages',
@@ -46,7 +46,13 @@ When('I navigate to {string}', (page) => {
 Given('I am an artist with a free plan', () => {
   cy.fixture('test-users.json').then((users) => {
     const freeArtist = users.artists.free;
-    cy.loginAsArtist(freeArtist.email, freeArtist.password);
+    // Create the user instead of logging in (user may not exist)
+    cy.registerArtist({
+      name: freeArtist.name,
+      email: freeArtist.email,
+      password: freeArtist.password,
+      role: 'ARTIST'
+    });
     cy.wrap('FREE').as('userPlan');
   });
 });

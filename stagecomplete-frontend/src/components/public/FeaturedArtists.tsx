@@ -68,7 +68,7 @@ export const FeaturedArtists: React.FC<FeaturedArtistsProps> = ({
 
   if (artists.length === 0) {
     return (
-      <div className={`${className}`}>
+      <div className={`${className}`} data-cy="featured-artists">
         <div className="text-center py-12">
           <p className="text-gray-500">
             Aucun artiste mis en avant pour le moment

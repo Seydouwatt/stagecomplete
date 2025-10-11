@@ -67,6 +67,53 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   // Mode legacy : gestion base64 direct
   const isLegacyMode = Boolean(value && !artistPageId);
 
+  // Fonction pour compresser une image avant conversion base64
+  // ATTENTION: Base64 = mauvaise pratique! Augmente taille de 33%. À migrer vers upload binaire.
+  const compressImage = async (file: File, maxWidth = 1024, quality = 0.6): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      const originalSize = file.size;
+      console.log(`🖼️ [COMPRESSION] Image originale: ${(originalSize / 1024 / 1024).toFixed(2)} MB`);
+
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          // Créer un canvas pour redimensionner
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Redimensionner si l'image est trop grande
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width;
+            width = maxWidth;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            reject(new Error('Canvas context not available'));
+            return;
+          }
+
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convertir en base64 avec compression
+          const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+          const compressedSize = compressedBase64.length;
+          console.log(`✅ [COMPRESSION] Image compressée: ${(compressedSize / 1024 / 1024).toFixed(2)} MB (${((1 - compressedSize / (originalSize * 1.33)) * 100).toFixed(0)}% réduction)`);
+          resolve(compressedBase64);
+        };
+        img.onerror = reject;
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleLegacyFileSelect = async (files: File[]) => {
     if (!value || !onChange) return;
 
@@ -113,14 +160,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       const newImages: string[] = [];
 
       for (const file of files) {
-        // Conversion basique en base64 (remplace le service artistService)
-        const reader = new FileReader();
-        const base64 = await new Promise<string>((resolve, reject) => {
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-        newImages.push(base64);
+        // Compression + conversion en base64
+        const compressedBase64 = await compressImage(file);
+        newImages.push(compressedBase64);
       }
 
       // Ajouter les nouvelles images
@@ -142,14 +184,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
 
     try {
       setIsUploading(true);
-      const reader = new FileReader();
-      const base64 = await new Promise<string>((resolve, reject) => {
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(selectedFile);
-      });
-
-      onChange([...value, base64] as string[]);
+      // Compression + conversion en base64
+      const compressedBase64 = await compressImage(selectedFile);
+      onChange([...value, compressedBase64] as string[]);
       cancelPreview();
     } catch (error) {
       console.error("Error converting image:", error);

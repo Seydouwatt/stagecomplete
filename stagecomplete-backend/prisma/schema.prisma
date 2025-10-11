@@ -31,6 +31,7 @@ model User {
 
   profile   Profile?
   sentMessages     Message[] @relation("MessageSender")
+  notifications    Notification[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -104,6 +105,7 @@ model Artist {
   members         ArtistMember[]
   metrics         ArtistMetrics? @relation("ArtistMetrics")
   metricsEvents   ArtistMetricsEvent[] @relation("ArtistMetricsEvents")
+  bookingRequests BookingRequest[]
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -197,6 +199,7 @@ model Venue {
   priceRange  String?  // Budget range they typically pay
   profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
   events      Event[]
+  bookingRequests BookingRequest[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -230,6 +233,7 @@ model Event {
   venue       Venue?        @relation(fields: [venueId], references: [id], onDelete: Cascade)
   artist      Artist        @relation(fields: [artistId], references: [id], onDelete: Cascade)
   messages    Message[]
+  bookingRequest BookingRequest?
 
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -249,6 +253,68 @@ model Message {
   createdAt DateTime @default(now())
 
   @@map("messages")
+}
+
+// NOUVEAU: Demande de booking initiée par venue
+model BookingRequest {
+  id          String   @id @default(cuid())
+
+  // Qui demande quoi
+  venueId     String
+  artistId    String
+
+  // Détails de la demande
+  eventDate   DateTime
+  eventType   String   // "CONCERT", "COMEDY", etc.
+  budget      Float?
+  duration    Int?     // minutes
+  message     String?  // Message initial de la venue
+
+  // Workflow status
+  status      BookingRequestStatus @default(PENDING)
+
+  // Metadata
+  viewedByArtist Boolean @default(false)
+  respondedAt    DateTime?
+
+  // Relations
+  venue       Venue  @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  artist      Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  // Si accepté, référence à l'Event créé
+  eventId     String?  @unique
+  event       Event?   @relation(fields: [eventId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([artistId, status])
+  @@index([venueId, status])
+  @@map("booking_requests")
+}
+
+// NOUVEAU: Notifications système
+model Notification {
+  id          String   @id @default(cuid())
+
+  userId      String   // Destinataire
+  type        NotificationType
+  title       String
+  message     String
+
+  // Context
+  relatedId   String?  // ID de l'objet lié (bookingRequestId, eventId, etc.)
+  relatedType String?  // "BOOKING_REQUEST", "MESSAGE", etc.
+
+  isRead      Boolean  @default(false)
+  readAt      DateTime?
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+
+  @@index([userId, isRead])
+  @@map("notifications")
 }
 
 enum ArtistType {
@@ -296,4 +362,21 @@ enum MetricEventType {
   PROFILE_VIEW
   SEARCH_CLICK
   VENUE_REQUEST
+}
+
+enum BookingRequestStatus {
+  PENDING      // Venue a envoyé, artiste n'a pas encore répondu
+  VIEWED       // Artiste a vu la demande
+  ACCEPTED     // Artiste a accepté → Event créé
+  DECLINED     // Artiste a refusé
+  CANCELLED    // Venue a annulé avant réponse
+  EXPIRED      // Timeout (optionnel pour v2)
+}
+
+enum NotificationType {
+  BOOKING_REQUEST_RECEIVED   // Artiste reçoit une demande
+  BOOKING_REQUEST_ACCEPTED   // Venue : artiste a accepté
+  BOOKING_REQUEST_DECLINED   // Venue : artiste a refusé
+  NEW_MESSAGE                // Nouveau message
+  BOOKING_REMINDER           // Rappel J-7, J-1
 }
