@@ -218,6 +218,10 @@ Then('I should see an error {string}', (_errorMessage) => {
   // For now, just check that we're still on login page which indicates login failed
 });
 
+Then('I should be redirected to {string}', (path) => {
+  cy.url().should('include', path);
+});
+
 // URL verification
 // Note: 'I should be redirected to {string}' and 'I should be redirected to the artist profile page'
 // are now in dashboard.js to avoid duplication

@@ -78,7 +78,7 @@ export const ArtistDashboard: React.FC = () => {
           description: "Utiliser l'assistant guidé",
           icon: Upload,
           color: "bg-purple-500",
-          onClick: () => (window.location.href = "/artist/profile-wizard"),
+          onClick: () => (window.location.href = "/artist/portfolio"),
         },
         {
           id: "add-photos",

@@ -150,9 +150,6 @@ Then('I should see {string} badge on platform bookings', (badge) => {
   });
 });
 
-Then('I should be redirected to {string}', (path) => {
-  cy.url().should('include', path);
-});
 
 Then('I should see {string} in my bookings list', (bookingTitle) => {
   cy.contains('[data-cy="booking-card"]', bookingTitle).should('be.visible');

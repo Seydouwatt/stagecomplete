@@ -24,9 +24,6 @@ Then('I should be redirected to the artist profile page', () => {
   cy.url().should('include', '/artist/portfolio');
 });
 
-Then('I should be redirected to {string}', (url) => {
-  cy.url().should('include', url);
-});
 
 Given('my profile is not complete', () => {
   // Profile completeness determined by actual data
