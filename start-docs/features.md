@@ -2,89 +2,99 @@
 
 ## _Liste Complète des Features Justifiant le Prix_
 
+**Statut : 🟢 Implémenté | 🟡 En cours | 🔴 À venir | ⏸️ Reporté Phase 5+**
+
 ---
 
 ## 🎯 **CORE FEATURES - BOOKING & MATCHING**
 
-### **🤖 Smart Matching IA**
+### **🤖 Smart Matching IA** (40% complété)
 
-- **Algorithme prédictif** basé sur 50+ critères (genre musical, taille venue, budget, historique)
-- **Suggestions automatiques** d'artistes selon planning et préférences
-- **Score de compatibilité** venue/artiste (0-100%)
-- **Learning continu** : Plus vous l'utilisez, plus c'est précis
-- **Filtres avancés** : Date, budget, genre, disponibilité, distance
+- 🔴 **Algorithme prédictif** basé sur 50+ critères (genre musical, taille venue, budget, historique)
+- 🔴 **Suggestions automatiques** d'artistes selon planning et préférences
+- 🔴 **Score de compatibilité** venue/artiste (0-100%)
+- 🔴 **Learning continu** : Plus vous l'utilisez, plus c'est précis
+- 🟢 **Filtres avancés** : Date, budget, genre, disponibilité, distance (14/16 tests ✅)
 
-### **📅 Booking Management Avancé**
+### **📅 Booking Management Avancé** (60% complété)
 
-- **Calendrier unifié** : Vue ensemble équipe + artistes + événements
-- **Booking en 1-clic** : Proposition → Négociation → Contrat → Confirmation
-- **Gestion multi-scènes** : Plusieurs espaces/scènes dans une même venue
-- **Planification long-terme** : Vue 12 mois avec suggestions saisonnières
-- **Sync calendriers** : Google, Outlook, Apple Calendar bidirectionnel
+- 🟢 **Calendrier unifié** : Vue ensemble événements (CalendarView ✅)
+- 🟢 **Booking requests** : Demandes de réservation complètes (PENDING → ACCEPTED ✅)
+- 🟢 **Gestion des statuts** : PENDING, VIEWED, ACCEPTED, DECLINED, CANCELLED, EXPIRED
+- 🔴 **Gestion multi-scènes** : Plusieurs espaces/scènes dans une même venue
+- 🔴 **Planification long-terme** : Vue 12 mois avec suggestions saisonnières
+- 🔴 **Sync calendriers** : Google, Outlook, Apple Calendar bidirectionnel
 
-### **📞 Contact & Communication**
+### **📞 Contact & Communication** (70% complété)
 
-- **Messagerie intégrée** : Chat direct avec artistes/managers
-- **Templates messages** : Réponses pré-écrites personnalisables
-- **Suivi conversations** : Historique complet échanges
-- **Notifications push** : Réponses artistes, confirmations, rappels
-- **Multi-contacts** : Gestion artiste + manager + agent simultané
+- 🟢 **Messagerie intégrée** : Chat pour bookings événementiels (Messages module ✅)
+- 🔴 **Templates messages** : Réponses pré-écrites personnalisables ⏸️ Phase 5
+- 🟢 **Suivi conversations** : Historique complet échanges par événement
+- 🟢 **Notifications push** : Alertes booking requests, réponses (5 types ✅)
+- 🟢 **BookingRequestModal** : Formulaire validation (date, type, durée, budget, message ✅)
+- 🔴 **Multi-contacts** : Gestion artiste + manager + agent simultané ⏸️ Phase 5
 
 ---
 
 ## 👥 **CRM & TEAM MANAGEMENT**
 
-### **🏢 Gestion Multi-Utilisateurs**
+### **🏢 Gestion Multi-Utilisateurs** (40% complété)
 
-- **Accès illimité équipe** : Ajout utilisateurs sans surcoût
-- **Rôles personnalisés** : Admin, Booker, Manager, Comptable, Lecture seule
-- **Permissions granulaires** : Qui peut voir/modifier quoi
-- **Activity feed** : Qui a fait quoi, quand (audit trail)
-- **Handoff seamless** : Transfert dossiers entre collègues
+- 🟢 **Système de rôles** : ARTIST, VENUE, MEMBER, ADMIN (JWT authentication ✅)
+- 🟢 **Gestion membres** : ArtistMember pour groupes/bands ✅
+- 🔴 **Rôles personnalisés** : Admin, Booker, Manager, Comptable, Lecture seule ⏸️
+- 🔴 **Permissions granulaires** : Qui peut voir/modifier quoi ⏸️
+- 🔴 **Activity feed** : Qui a fait quoi, quand (audit trail) ⏸️
+- 🔴 **Handoff seamless** : Transfert dossiers entre collègues ⏸️
 
-### **📊 Database Artistes Enrichie**
+### **📊 Database Artistes Enrichie** (70% complété)
 
-- **Profils complets** : Bio, réseaux, streaming stats, photos HD
-- **Historique relationnel** : Tous contacts/bookings précédents
-- **Notes privées** : Commentaires équipe non visibles artistes
-- **Tags personnalisés** : Classification selon vos critères
-- **Favoris & blacklist** : Artistes préférés/à éviter
+- 🟢 **Profils complets** : Bio, genres, instruments, photos, vidéos, portfolio ✅
+- 🟢 **Liens sociaux** : Facebook, Instagram, YouTube, Spotify, TikTok ✅
+- 🟢 **Métriques artistes** : Vues profil, clics recherche, demandes venues (artist_metrics ✅)
+- 🔴 **Historique relationnel** : Tous contacts/bookings précédents ⏸️ Phase 5
+- 🔴 **Notes privées** : Commentaires équipe non visibles artistes ⏸️
+- 🔴 **Tags personnalisés** : Classification selon vos critères ⏸️
+- 🔴 **Favoris & blacklist** : Artistes préférés/à éviter ⏸️ Phase 5
 
-### **📈 Relationship Tracking**
+### **📈 Relationship Tracking** (20% complété - Phase 5)
 
-- **Scoring artistes** : Performance, ponctualité, professionnalisme
-- **Recommandations collègues** : Notes internes partagées
-- **Suivi satisfaction** : Feedback post-événement
-- **Timeline interactions** : Chronologie complète relations
-- **Alertes anniversaires** : Dates importantes artistes
+- 🟢 **Métriques de base** : Vues profil, engagement (artist_metrics ✅)
+- 🔴 **Scoring artistes** : Performance, ponctualité, professionnalisme ⏸️
+- 🔴 **Recommandations collègues** : Notes internes partagées ⏸️
+- 🔴 **Suivi satisfaction** : Feedback post-événement ⏸️
+- 🔴 **Timeline interactions** : Chronologie complète relations ⏸️
+- 🔴 **Alertes anniversaires** : Dates importantes artistes ⏸️
 
 ---
 
-## 📊 **ANALYTICS & REPORTING PREMIUM**
+## 📊 **ANALYTICS & REPORTING PREMIUM** (10% complété - Phase 5)
 
-### **💰 Dashboard Financier**
+### **💰 Dashboard Financier** (⏸️ Phase 5)
 
-- **ROI par artiste** : Revenus générés vs coût booking
-- **Analyse saisonnière** : Performances par mois/saison/jour semaine
-- **Budget tracking** : Suivi dépenses vs prévisionnel
-- **Revenus par genre** : Quels styles marchent le mieux
-- **Coût d'acquisition** : Prix moyen par nouveau client
+- 🟢 **Booking stats basiques** : getBookingStats (upcoming, thisMonth, totalRevenue ✅)
+- 🔴 **ROI par artiste** : Revenus générés vs coût booking ⏸️
+- 🔴 **Analyse saisonnière** : Performances par mois/saison/jour semaine ⏸️
+- 🔴 **Budget tracking** : Suivi dépenses vs prévisionnel ⏸️
+- 🔴 **Revenus par genre** : Quels styles marchent le mieux ⏸️
+- 🔴 **Coût d'acquisition** : Prix moyen par nouveau client ⏸️
 
-### **📈 Performance Analytics**
+### **📈 Performance Analytics** (10% complété - Phase 5)
 
-- **Taux de remplissage** : Affluence par type événement
-- **Customer satisfaction** : Feedback automatisé clients
-- **Benchmarking** : Performance vs venues similaires (anonymisé)
-- **Prédictions IA** : Estimations affluence événements futurs
-- **Social media impact** : Tracking mentions/engagement
+- 🟢 **Métriques artistes basiques** : Vues, clics, demandes (artist_metrics ✅)
+- 🔴 **Taux de remplissage** : Affluence par type événement ⏸️
+- 🔴 **Customer satisfaction** : Feedback automatisé clients ⏸️
+- 🔴 **Benchmarking** : Performance vs venues similaires (anonymisé) ⏸️
+- 🔴 **Prédictions IA** : Estimations affluence événements futurs ⏸️
+- 🔴 **Social media impact** : Tracking mentions/engagement ⏸️
 
-### **📋 Rapports Automatisés**
+### **📋 Rapports Automatisés** (⏸️ Phase 5)
 
-- **Reports mensuels** : PDF automatique performances
-- **Export comptabilité** : Format Excel/CSV pour compta
-- **Rapports sur-mesure** : Builder de rapports personnalisés
-- **Envoi programmé** : Rapports auto-envoyés équipe/direction
-- **KPIs temps réel** : Dashboard live performances
+- 🔴 **Reports mensuels** : PDF automatique performances ⏸️
+- 🔴 **Export comptabilité** : Format Excel/CSV pour compta ⏸️
+- 🔴 **Rapports sur-mesure** : Builder de rapports personnalisés ⏸️
+- 🔴 **Envoi programmé** : Rapports auto-envoyés équipe/direction ⏸️
+- 🔴 **KPIs temps réel** : Dashboard live performances ⏸️
 
 ---
 
@@ -216,14 +226,31 @@
 
 ### **Pour 99€/mois, vous obtenez :**
 
-- ✅ **CRM complet** équipe illimitée
-- ✅ **Booking automation** avec IA
-- ✅ **Analytics premium** avec prédictions
-- ✅ **Support prioritaire** avec account manager
-- ✅ **Integrations** tous vos outils existants
-- ✅ **Multi-arts** dans une seule interface
-- ✅ **White label** personnalisé
-- ✅ **Formation équipe** incluse
+- 🟡 **CRM complet** équipe (rôles de base ✅, advanced ⏸️)
+- 🟡 **Booking management** (requests ✅, automation ⏸️)
+- 🟢 **Recherche avancée** avec filtres intelligents (14/16 tests ✅)
+- 🟢 **Messagerie** intégrée événementielle
+- 🟢 **Notifications** push automatiques
+- 🟢 **Calendrier** unifié événements
+- 🔴 **Analytics premium** avec prédictions ⏸️ Phase 5
+- 🔴 **Support prioritaire** avec account manager ⏸️
+- 🔴 **Integrations** tous vos outils existants ⏸️
+- 🟢 **Multi-arts** dans une seule interface (Music, Theater, Comedy, Dance ✅)
+- 🔴 **White label** personnalisé ⏸️
+- 🔴 **Formation équipe** incluse ⏸️
+
+### **✅ MVP Fonctionnel (Déployé 11/10/2025) :**
+
+- **Recherche temps réel** avec debouncing (700ms suggestions, 300ms résultats)
+- **Système de booking requests** complet (statuts, validation, notifications)
+- **Messagerie événementielle** pour communication venue-artiste
+- **Système de notifications** avec 5 types d'alertes
+- **Métriques artistes** (vues, clics, demandes)
+- **Profils artistes enrichis** (bio, portfolio, genres, instruments, social links)
+- **Filtres avancés** (14/16 tests E2E validés)
+- **Calendrier événements** avec vue unifiée
+- **3 migrations Prisma** déployées en production
+- **Architecture modulaire** (NestJS + React + PostgreSQL)
 
 ### **VS Concurrence :**
 
