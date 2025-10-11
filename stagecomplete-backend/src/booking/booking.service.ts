@@ -184,7 +184,7 @@ export class BookingService {
         `SUMMARY:${this.escapeICalText(booking.title)}`,
         `DESCRIPTION:${this.escapeICalText(booking.description || '')}`,
         `LOCATION:${this.escapeICalText(booking.location || '')}`,
-        `STATUS:${booking.status === 'CONFIRMED' ? 'CONFIRMED' : 'TENTATIVE'}`,
+        `STATUS:${booking.status === 'CONFIRMED' || booking.status === 'ACCEPTED' ? 'CONFIRMED' : 'TENTATIVE'}`,
         'END:VEVENT',
       ].join('\r\n');
     }).join('\r\n');
@@ -227,7 +227,7 @@ export class BookingService {
         where: {
           artistId: artist.id,
           date: { gte: now },
-          status: { in: ['CONFIRMED', 'TENTATIVE'] },
+          status: { in: ['CONFIRMED', 'ACCEPTED', 'PENDING'] },
         },
       }),
       this.prisma.event.count({

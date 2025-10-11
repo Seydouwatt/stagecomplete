@@ -21,7 +21,7 @@ const bookingSchema = z.object({
   address: z.string().optional(),
   duration: z.coerce.number().optional(),
   budget: z.coerce.number().optional(),
-  status: z.enum(['CONFIRMED', 'TENTATIVE', 'CANCELLED', 'COMPLETED']).optional().default('CONFIRMED'),
+  status: z.enum(['PENDING', 'ACCEPTED', 'REJECTED', 'CONFIRMED', 'CANCELLED', 'COMPLETED']).optional().default('CONFIRMED'),
   eventType: z.string().min(1, 'Type d\'événement requis'),
   notes: z.string().optional(),
   tags: z.string().optional(), // Géré comme string puis splitté
@@ -50,6 +50,7 @@ export const BookingForm: React.FC = () => {
     resolver: zodResolver(bookingSchema),
     defaultValues: {
       status: 'CONFIRMED',
+      eventType: 'CONCERT',
     },
   });
 
@@ -75,28 +76,41 @@ export const BookingForm: React.FC = () => {
 
   const createMutation = useMutation({
     mutationFn: (data: any) => createBooking(token!, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookings'] });
-      queryClient.invalidateQueries({ queryKey: ['booking-stats'] });
+    onSuccess: async () => {
+      // Invalider et attendre que les queries soient rafraîchies
+      await queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      await queryClient.invalidateQueries({ queryKey: ['booking-stats'] });
+      // Petit délai pour s'assurer que React Query a traité les invalidations
+      await new Promise(resolve => setTimeout(resolve, 100));
       navigate('/artist/bookings');
     },
   });
 
   const updateMutation = useMutation({
     mutationFn: (data: any) => updateBooking(token!, id!, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookings'] });
-      queryClient.invalidateQueries({ queryKey: ['booking', id] });
-      queryClient.invalidateQueries({ queryKey: ['booking-stats'] });
+    onSuccess: async () => {
+      // Invalider et attendre que les queries soient rafraîchies
+      await queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      await queryClient.invalidateQueries({ queryKey: ['booking', id] });
+      await queryClient.invalidateQueries({ queryKey: ['booking-stats'] });
+      // Petit délai pour s'assurer que React Query a traité les invalidations
+      await new Promise(resolve => setTimeout(resolve, 100));
       navigate('/artist/bookings');
     },
   });
 
   const onSubmit = (data: any) => {
-    const bookingData = {
+    const bookingData: any = {
       ...data,
+      // Convert datetime-local format to ISO string with seconds
+      date: data.date ? new Date(data.date).toISOString() : data.date,
       tags: data.tags ? data.tags.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
     };
+
+    // Only add endDate if it has a value
+    if (data.endDate && data.endDate !== '') {
+      bookingData.endDate = new Date(data.endDate).toISOString();
+    }
 
     if (isEditing) {
       updateMutation.mutate(bookingData);
@@ -237,8 +251,10 @@ export const BookingForm: React.FC = () => {
               </label>
               <select {...register('status')} className="select select-bordered">
                 <option value="CONFIRMED">✅ Confirmé</option>
-                <option value="TENTATIVE">⏳ Provisoire</option>
-                <option value="CANCELLED">❌ Annulé</option>
+                <option value="PENDING">⏳ En attente</option>
+                <option value="ACCEPTED">👍 Accepté</option>
+                <option value="REJECTED">❌ Refusé</option>
+                <option value="CANCELLED">🚫 Annulé</option>
                 <option value="COMPLETED">✔️ Terminé</option>
               </select>
             </div>

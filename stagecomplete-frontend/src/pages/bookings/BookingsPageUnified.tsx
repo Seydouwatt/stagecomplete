@@ -17,7 +17,6 @@ import { motion } from 'framer-motion';
 // Import des services
 import { getBookings, getBookingStats } from '../../services/bookingService';
 import { bookingRequestService } from '../../services/bookingRequestService';
-import { eventService } from '../../services/eventService';
 
 // Import des composants existants
 import { BookingRequestList } from '../../components/booking-requests/BookingRequestList';
@@ -37,18 +36,11 @@ export const BookingsPageUnified: React.FC = () => {
     enabled: !!token && isArtist,
   });
 
-  // Fetch manual bookings (bookings créés manuellement)
-  const { data: manualBookings, isLoading: loadingManual } = useQuery({
+  // Fetch ALL bookings (manual + platform) - /api/bookings retourne tous les events
+  const { data: allBookingsData, isLoading: loadingBookings } = useQuery({
     queryKey: ['bookings'],
     queryFn: () => getBookings(token!),
     enabled: !!token,
-  });
-
-  // Fetch events (bookings acceptés via la plateforme)
-  const { data: events, isLoading: loadingEvents } = useQuery({
-    queryKey: ['events'],
-    queryFn: () => eventService.getMyEvents(),
-    enabled: !!token && isArtist,
   });
 
   // Stats pour les bookings
@@ -68,22 +60,16 @@ export const BookingsPageUnified: React.FC = () => {
     return item.date || item.startDate;
   };
 
-  // Combiner tous les bookings pour l'onglet "Tous mes bookings"
-  const allBookings = [
-    ...(manualBookings || []).map(b => ({
-      ...b,
-      source: 'manual' as const,
-      type: 'booking' as const
-    })),
-    ...(events || []).map(e => ({
-      ...e,
-      source: 'platform' as const,
-      type: 'event' as const,
-      date: e.startDate, // Normaliser le champ date
-    }))
-  ].sort((a, b) => new Date(getDate(b)).getTime() - new Date(getDate(a)).getTime());
+  // Distinguer manual vs platform bookings basé sur la présence de venueId
+  // Platform bookings = events avec venueId (créés via acceptation de booking requests)
+  // Manual bookings = events sans venueId (créés manuellement)
+  const allBookings = (allBookingsData || []).map(booking => ({
+    ...booking,
+    source: booking.venueId ? 'platform' as const : 'manual' as const,
+    type: booking.venueId ? 'event' as const : 'booking' as const,
+  })).sort((a, b) => new Date(getDate(b)).getTime() - new Date(getDate(a)).getTime());
 
-  const isLoading = loadingRequests || loadingManual || loadingEvents;
+  const isLoading = loadingRequests || loadingBookings;
 
   const getStatusBadge = (status: string) => {
     const badges = {

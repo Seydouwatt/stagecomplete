@@ -347,8 +347,10 @@ enum Role {
 }
 
 enum BookingStatus {
+  PENDING     // En attente de confirmation
+  ACCEPTED    // Accepté par l'artiste
+  REJECTED    // Refusé par l'artiste
   CONFIRMED   // Booking confirmé
-  TENTATIVE   // Provisoire
   CANCELLED   // Annulé
   COMPLETED   // Passé/Terminé
 }

@@ -74,7 +74,7 @@ export const BookingRequestList: React.FC<BookingRequestListProps> = ({
         <p className="text-sm">
           {statusFilter
             ? `Aucune demande avec le statut "${statusFilter}"`
-            : 'Aucune demande de réservation'}
+            : 'Aucune demande en attente'}
         </p>
       </div>
     );

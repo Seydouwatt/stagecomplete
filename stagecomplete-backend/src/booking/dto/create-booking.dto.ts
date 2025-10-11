@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsDateString, IsNumber, IsEnum, IsArray } from 'class-validator';
+import { IsString, IsOptional, IsDateString, IsNumber, IsEnum, IsArray, ValidateIf } from 'class-validator';
 
 export class CreateBookingDto {
   @IsString()
@@ -12,6 +12,7 @@ export class CreateBookingDto {
   date: string;
 
   @IsOptional()
+  @ValidateIf((o) => o.endDate !== '' && o.endDate != null)
   @IsDateString()
   endDate?: string;
 
@@ -32,7 +33,7 @@ export class CreateBookingDto {
   budget?: number;
 
   @IsOptional()
-  @IsEnum(['CONFIRMED', 'TENTATIVE', 'CANCELLED', 'COMPLETED'])
+  @IsEnum(['PENDING', 'ACCEPTED', 'REJECTED', 'CONFIRMED', 'CANCELLED', 'COMPLETED'])
   status?: string;
 
   @IsString()
