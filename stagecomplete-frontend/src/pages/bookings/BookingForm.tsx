@@ -66,7 +66,7 @@ export const BookingForm: React.FC = () => {
         address: existingBooking.address || '',
         duration: existingBooking.duration,
         budget: existingBooking.budget,
-        status: existingBooking.status,
+        status: existingBooking.status as any,
         eventType: existingBooking.eventType,
         notes: existingBooking.notes || '',
         tags: existingBooking.tags ? existingBooking.tags.join(', ') : '',

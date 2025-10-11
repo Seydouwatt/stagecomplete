@@ -63,10 +63,10 @@ export const BookingsPageUnified: React.FC = () => {
   // Distinguer manual vs platform bookings basé sur la présence de venueId
   // Platform bookings = events avec venueId (créés via acceptation de booking requests)
   // Manual bookings = events sans venueId (créés manuellement)
-  const allBookings = (allBookingsData || []).map(booking => ({
+  const allBookings = (allBookingsData || []).map((booking: any) => ({
     ...booking,
-    source: booking.venueId ? 'platform' as const : 'manual' as const,
-    type: booking.venueId ? 'event' as const : 'booking' as const,
+    source: (booking as any).venueId ? 'platform' as const : 'manual' as const,
+    type: (booking as any).venueId ? 'event' as const : 'booking' as const,
   })).sort((a, b) => new Date(getDate(b)).getTime() - new Date(getDate(a)).getTime());
 
   const isLoading = loadingRequests || loadingBookings;
@@ -282,10 +282,10 @@ export const BookingsPageUnified: React.FC = () => {
                               </div>
                             )}
 
-                            {booking.type === 'event' && booking.venue && (
+                            {booking.type === 'event' && (booking as any).venue && (
                               <div className="flex items-center gap-1">
                                 <span className="text-base-content/70">
-                                  Avec: {booking.venue.profile?.name || 'Venue'}
+                                  Avec: {((booking as any).venue as any).profile?.name || 'Venue'}
                                 </span>
                               </div>
                             )}
