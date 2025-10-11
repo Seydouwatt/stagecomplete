@@ -86,14 +86,59 @@ export async function createTestUser(type = 'ARTIST') {
 
     const loginData = await loginResponse.json();
 
-    return {
+    const result = {
       user: loginData.user,
       token: loginData.access_token,
       email: userData.email,
       password: userData.password
     };
+
+    // If this is an artist, make their profile public so they can receive booking requests
+    if (type === 'ARTIST' && loginData.access_token) {
+      try {
+        await makeAuthRequest('PUT', '/artist/profile', loginData.access_token, {
+          isPublic: true
+        });
+        console.log(`✓ Made artist profile public for ${email}`);
+      } catch (error) {
+        console.error('Warning: Could not make artist profile public:', error);
+      }
+    }
+
+    return result;
   } catch (error) {
     console.error('Error creating test user:', error);
+    return null;
+  }
+}
+
+// Helper to get artist profile ID from token
+async function getArtistIdFromToken(token) {
+  try {
+    const response = await fetch(`${API_URL}/auth/me`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      console.error('Failed to get user from token:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    // The /auth/me endpoint returns { message, user }
+    // where user contains { profile: { artist: { id } } }
+    const artistId = data.user?.profile?.artist?.id;
+
+    if (!artistId) {
+      console.error('No artist ID found in user data. User may not be an artist.');
+    }
+
+    return artistId || null;
+  } catch (error) {
+    console.error('Error getting artist ID from token:', error);
     return null;
   }
 }
@@ -102,19 +147,25 @@ export async function createTestUser(type = 'ARTIST') {
 export async function createBookingRequests(artistToken, count = 3, status = 'PENDING') {
   const requests = [];
 
-  // First create a venue user
+  // Get the artist ID from the provided token
+  const artistId = await getArtistIdFromToken(artistToken);
+  if (!artistId) {
+    console.error('Could not get artist ID from token');
+    return [];
+  }
+
+  // Create a venue user to make the requests
   const venue = await createTestUser('VENUE');
   if (!venue) return [];
 
   for (let i = 0; i < count; i++) {
     const requestData = {
-      artistId: null, // Will be set from token
+      artistId: artistId,  // ✅ Use the correct Artist table ID
       eventDate: new Date(Date.now() + (i + 1) * 24 * 60 * 60 * 1000).toISOString(),
       eventType: 'CONCERT',
       duration: 120,
       budget: 500 + (i * 100),
-      message: `Test booking request ${i + 1}`,
-      status
+      message: `Test booking request ${i + 1}`
     };
 
     try {
@@ -138,10 +189,11 @@ export async function createManualBookings(artistToken, count = 2) {
     const bookingData = {
       title: `Manual Booking ${i + 1}`,
       date: new Date(Date.now() + (i + 1) * 24 * 60 * 60 * 1000).toISOString(),
+      eventType: 'CONCERT',  // Required field
       location: `Venue ${i + 1}`,
       description: `Description for manual booking ${i + 1}`,
       status: 'CONFIRMED',
-      price: 300 + (i * 50)
+      budget: 300 + (i * 50)
     };
 
     try {
@@ -160,7 +212,7 @@ export async function createManualBookings(artistToken, count = 2) {
 // Accept a booking request to create a platform event
 export async function acceptBookingRequest(requestId, artistToken, message = 'Accepted!') {
   try {
-    const response = await makeAuthRequest('POST', `/booking-requests/${requestId}/respond`, artistToken, {
+    const response = await makeAuthRequest('PUT', `/booking-requests/${requestId}/respond`, artistToken, {
       action: 'accept',
       reason: message
     });
@@ -187,6 +239,42 @@ export async function createPlatformEvents(artistToken, count = 1) {
   }
 
   return events;
+}
+
+// Create a single platform event with a specific date
+export async function createPlatformEventWithDate(artistToken, date) {
+  // Get the artist ID from the provided token
+  const artistId = await getArtistIdFromToken(artistToken);
+  if (!artistId) {
+    console.error('Could not get artist ID from token');
+    return null;
+  }
+
+  // Create a venue user to make the request
+  const venue = await createTestUser('VENUE');
+  if (!venue) return null;
+
+  // Create a booking request with the specific date
+  const requestData = {
+    artistId: artistId,
+    eventDate: date,
+    eventType: 'CONCERT',
+    duration: 120,
+    budget: 500,
+    message: `Test booking request for ${date}`
+  };
+
+  try {
+    const request = await makeAuthRequest('POST', '/booking-requests', venue.token, requestData);
+    if (!request) return null;
+
+    // Accept the request to create the event
+    const event = await acceptBookingRequest(request.id, artistToken);
+    return event;
+  } catch (error) {
+    console.error('Error creating platform event with date:', error);
+    return null;
+  }
 }
 
 // Get artist's events
@@ -308,6 +396,7 @@ export default {
   createBookingRequests,
   createManualBookings,
   createPlatformEvents,
+  createPlatformEventWithDate,
   acceptBookingRequest,
   getArtistEvents,
   getArtistBookings,
@@ -315,5 +404,6 @@ export default {
   cleanupTestData,
   loginUser,
   createMessages,
-  completeArtistProfile
+  completeArtistProfile,
+  makeAuthRequest  // Export for external use
 };

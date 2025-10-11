@@ -219,6 +219,16 @@ Then('I should see an error {string}', (_errorMessage) => {
 });
 
 Then('I should be redirected to {string}', (path) => {
+  // Special handling for dynamic event IDs (e.g., /messages/event-123)
+  if (path.includes('/messages/event-')) {
+    const actualEventId = Cypress.env('lastCreatedEventId');
+    if (actualEventId) {
+      cy.url().should('include', `/messages/${actualEventId}`);
+      cy.log(`✅ Verified redirect to /messages/${actualEventId}`);
+      return;
+    }
+  }
+  // Default behavior for all other paths
   cy.url().should('include', path);
 });
 
@@ -279,6 +289,48 @@ Given('I am logged in as an artist', () => {
 
   // Should be redirected to dashboard after successful registration
   cy.url().should('include', '/dashboard', { timeout: 10000 });
+
+  // Store credentials and get token from localStorage for later use
+  cy.window().then((win) => {
+    // ✅ FIXED: Use correct localStorage key "stagecomplete-auth" (not "auth-storage")
+    const authStore = JSON.parse(win.localStorage.getItem('stagecomplete-auth') || '{}');
+    const token = authStore.state?.token;
+
+    // Debug logging
+    cy.log(`🔍 DEBUG: Retrieved token from localStorage: ${token ? 'EXISTS (' + token.substring(0, 30) + '...)' : '❌ UNDEFINED'}`);
+
+    // Store for use in other steps
+    Cypress.env('currentArtistEmail', uniqueEmail);
+    Cypress.env('currentArtistPassword', password);
+    Cypress.env('currentArtistToken', token);
+
+    cy.log(`✅ Artist logged in: ${uniqueEmail}`);
+    cy.log(`✅ Token stored for API calls`);
+    cy.log(`🔍 DEBUG: Verify Cypress.env token: ${Cypress.env('currentArtistToken') ? 'EXISTS' : '❌ UNDEFINED'}`);
+  });
+
+  // ✅ NEW: Make artist profile public so they can receive booking requests
+  cy.then(() => {
+    const token = Cypress.env('currentArtistToken');
+    if (token) {
+      cy.request({
+        method: 'PUT',
+        url: Cypress.env('apiUrl') + '/artist/profile',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: { isPublic: true },
+        failOnStatusCode: false
+      }).then((response) => {
+        if (response.status === 200 || response.status === 201) {
+          cy.log('✅ Artist profile set to public');
+        } else {
+          cy.log(`⚠️ Could not set profile to public: ${response.status}`);
+        }
+      });
+    }
+  });
 });
 
 Given('an artist exists with email {string} and password {string}', (_email, password) => {
@@ -646,10 +698,8 @@ When('I cleanup test data', () => {
 
 // ===== Filtering System Steps (consolidated from multiple files) =====
 
-// Simple button click without mapping logic
-When('I click {string}', (buttonText) => {
-  cy.contains('button', buttonText).click();
-});
+// NOTE: "I click {string}" is defined in browse-navigation.js to avoid duplication
+// Use "I click on {string}" (line 98) for complex button mapping logic
 
 When('I click on the filters button', () => {
   cy.get('[data-cy="filters-button"]').click();

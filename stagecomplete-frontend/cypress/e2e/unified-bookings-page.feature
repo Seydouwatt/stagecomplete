@@ -12,10 +12,10 @@ Feature: Unified Bookings Page
     When I navigate to "/artist/bookings"
     Then I should see the page title "Mes Bookings"
     And I should see 3 tabs:
-      | Tab Name         |
-      | Demandes reçues  |
+      | Tab Name          |
+      | Demandes reçues   |
       | Tous mes bookings |
-      | Calendrier       |
+      | Calendrier        |
     And the "Demandes reçues" tab should be active by default
 
   Scenario: Artist switches between tabs
@@ -51,12 +51,12 @@ Feature: Unified Bookings Page
     When I click on "Ajouter un booking"
     Then I should be redirected to "/artist/bookings/new"
     When I fill in the booking form:
-      | Field       | Value                     |
-      | title       | Concert au Blue Note      |
-      | date        | 2025-01-15T20:00         |
-      | location    | Blue Note Jazz Club       |
-      | budget      | 500                       |
-      | description | Soirée jazz acoustique    |
+      | Field       | Value                  |
+      | title       | Concert au Blue Note   |
+      | date        | 2025-01-15T20:00       |
+      | location    | Blue Note Jazz Club    |
+      | budget      | 500                    |
+      | description | Soirée jazz acoustique |
     And I click "Enregistrer"
     Then I should be redirected to "/artist/bookings"
     And I should see "Concert au Blue Note" in my bookings list
@@ -92,15 +92,15 @@ Feature: Unified Bookings Page
   Scenario: Stats cards display correct information
     Given I am logged in as an artist
     And I have:
-      | Type                  | Count |
-      | Pending requests      | 2     |
-      | Upcoming bookings     | 5     |
-      | This month bookings   | 3     |
-      | Total revenue         | 1500  |
+      | Type                | Count |
+      | Pending requests    | 2     |
+      | Upcoming bookings   | 5     |
+      | This month bookings | 3     |
+      | Total revenue       | 1500  |
     When I navigate to "/artist/bookings"
     Then I should see stats cards with:
-      | Stat                | Value |
-      | Nouvelles demandes  | 2     |
+      | Stat               | Value |
+      | Nouvelles demandes | 2     |
       | À venir            | 5     |
       | Ce mois            | 3     |
       | Revenue total      | 1500€ |

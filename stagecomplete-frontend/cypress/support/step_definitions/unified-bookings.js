@@ -26,47 +26,99 @@ Given('I am logged in as a new artist with no bookings', () => {
 });
 
 Given('I have {int} pending booking requests', (count) => {
-  // This would need to be set up through API or database seeding
-  cy.task('seedBookingRequests', { artistId: testArtist.id, count, status: 'PENDING' });
+  // Use the currently logged-in artist's token
+  // IMPORTANT: Wrap in cy.then() to ensure it executes AFTER the token is stored
+  cy.then(() => {
+    const artistToken = Cypress.env('currentArtistToken');
+    const artistEmail = Cypress.env('currentArtistEmail');
+
+    // Debug logging
+    cy.log(`🔍 DEBUG: artistToken = ${artistToken ? 'EXISTS (' + artistToken.substring(0, 30) + '...)' : '❌ UNDEFINED'}`);
+    cy.log(`🔍 DEBUG: artistEmail = ${artistEmail || '❌ UNDEFINED'}`);
+
+    return cy.task('seedBookingRequests', { artistToken, count, status: 'PENDING' }).then((result) => {
+      cy.log(`✅ Created ${count} pending booking requests for logged-in artist`);
+    });
+  });
 });
 
 Given('I have {int} manual bookings', (count) => {
-  cy.task('seedManualBookings', { artistId: testArtist.id, count });
+  cy.then(() => {
+    const artistToken = Cypress.env('currentArtistToken');
+    const artistEmail = Cypress.env('currentArtistEmail');
+
+    // Debug logging
+    cy.log(`🔍 DEBUG: artistToken = ${artistToken ? 'EXISTS (' + artistToken.substring(0, 30) + '...)' : '❌ UNDEFINED'}`);
+    cy.log(`🔍 DEBUG: artistEmail = ${artistEmail || '❌ UNDEFINED'}`);
+
+    return cy.task('seedManualBookings', { artistToken, count }).then(() => {
+      cy.log(`✅ Created ${count} manual bookings for logged-in artist`);
+    });
+  });
 });
 
 Given('I have {int} accepted platform booking', (count) => {
-  cy.task('seedPlatformEvents', { artistId: testArtist.id, count, status: 'CONFIRMED' });
+  cy.then(() => {
+    const artistToken = Cypress.env('currentArtistToken');
+    return cy.task('seedPlatformEvents', { artistToken, count, status: 'CONFIRMED' }).then(() => {
+      cy.log(`✅ Created ${count} platform events for logged-in artist`);
+    });
+  });
 });
 
-Given('I have an accepted platform booking with id {string}', (eventId) => {
-  cy.task('seedPlatformEvent', {
-    artistId: testArtist.id,
-    eventId,
-    status: 'CONFIRMED'
+Given('I have an accepted platform booking with id {string}', (expectedEventId) => {
+  cy.then(() => {
+    const artistToken = Cypress.env('currentArtistToken');
+    return cy.task('seedPlatformEvent', {
+      artistToken,
+      eventId: expectedEventId,
+      status: 'CONFIRMED'
+    }).then((event) => {
+      // Store the actual event ID that was created (database generates the ID)
+      if (event && event.id) {
+        Cypress.env('lastCreatedEventId', event.id);
+        cy.log(`✅ Created platform event with ID: ${event.id} for logged-in artist`);
+      }
+    });
   });
 });
 
 Given('I have {int} manual booking on {string}', (count, date) => {
-  cy.task('seedManualBooking', {
-    artistId: testArtist.id,
-    date: new Date(date).toISOString()
+  cy.then(() => {
+    const artistToken = Cypress.env('currentArtistToken');
+    return cy.task('seedManualBooking', {
+      artistToken,
+      date: new Date(date).toISOString()
+    }).then(() => {
+      cy.log(`✅ Created manual booking on ${date} for logged-in artist`);
+    });
   });
 });
 
 Given('I have {int} platform event on {string}', (count, date) => {
-  cy.task('seedPlatformEvent', {
-    artistId: testArtist.id,
-    date: new Date(date).toISOString(),
-    status: 'CONFIRMED'
+  cy.then(() => {
+    const artistToken = Cypress.env('currentArtistToken');
+    return cy.task('seedPlatformEvent', {
+      artistToken,
+      date: new Date(date).toISOString(),
+      status: 'CONFIRMED'
+    }).then(() => {
+      cy.log(`✅ Created platform event on ${date} for logged-in artist`);
+    });
   });
 });
 
 Given('I have:', (dataTable) => {
-  const data = {};
-  dataTable.hashes().forEach(row => {
-    data[row.Type] = parseInt(row.Count);
+  cy.then(() => {
+    const artistToken = Cypress.env('currentArtistToken');
+    const data = {};
+    dataTable.hashes().forEach(row => {
+      data[row.Type] = parseInt(row.Count);
+    });
+    return cy.task('seedArtistData', { artistToken, data }).then(() => {
+      cy.log(`✅ Created artist data for logged-in artist`);
+    });
   });
-  cy.task('seedArtistData', { artistId: testArtist.id, data });
 });
 
 // When steps
@@ -148,6 +200,11 @@ Then('I should see {string} badge on platform bookings', (badge) => {
 
 
 Then('I should see {string} in my bookings list', (bookingTitle) => {
+  // S'assurer qu'on est sur l'onglet "Tous mes bookings"
+  cy.contains('.tabs button', 'Tous mes bookings').click();
+  // Attendre un peu que le contenu se charge
+  cy.wait(500);
+  // Chercher le booking card avec le titre
   cy.contains('[data-cy="booking-card"]', bookingTitle).should('be.visible');
 });
 
@@ -164,10 +221,7 @@ Then('I should see {string} in the requests tab', (text) => {
 });
 
 // Note: "Then I should see {string}" is already defined in common.js
-
-Then('I should see a {string} button', (buttonText) => {
-  cy.contains('button', buttonText).should('be.visible');
-});
+// Note: "Then I should see a {string} button" is already defined in public-search.js
 
 Then('I should see an empty calendar', () => {
   cy.get('[data-cy="calendar-view"]').should('be.visible');

@@ -32,10 +32,12 @@ export default defineConfig({
 
         // Booking request tasks - now using real API
         async seedBookingRequests({ artistToken, count, status }) {
+          console.log(`🔍 DEBUG seedBookingRequests: artistToken = ${artistToken ? 'EXISTS (' + artistToken.substring(0, 30) + '...)' : '❌ UNDEFINED'}`);
           console.log(`Creating ${count} real booking requests with status ${status}`);
           // If no token provided, create a test artist first
           let token = artistToken;
           if (!token) {
+            console.log('⚠️ No artistToken provided, creating new test artist...');
             const artist = await apiHelpers.createTestUser('ARTIST');
             token = artist?.token;
           }
@@ -51,10 +53,12 @@ export default defineConfig({
 
         // Manual bookings tasks - now using real API
         async seedManualBookings({ artistToken, count }) {
+          console.log(`🔍 DEBUG seedManualBookings: artistToken = ${artistToken ? 'EXISTS (' + artistToken.substring(0, 30) + '...)' : '❌ UNDEFINED'}`);
           console.log(`Creating ${count} real manual bookings in database`);
           // If no token provided, create a test artist first
           let token = artistToken;
           if (!token) {
+            console.log('⚠️ No artistToken provided, creating new test artist...');
             const artist = await apiHelpers.createTestUser('ARTIST');
             token = artist?.token;
           }
@@ -77,10 +81,11 @@ export default defineConfig({
           const bookingData = {
             title: 'Concert',
             date: date,
+            eventType: 'CONCERT',  // Required field
             location: 'Test Venue',
             description: 'Test booking for E2E',
             status: 'CONFIRMED',
-            price: 500
+            budget: 500
           };
 
           const response = await apiHelpers.makeAuthRequest('POST', '/bookings', token, bookingData);
@@ -103,7 +108,7 @@ export default defineConfig({
         },
 
         async seedPlatformEvent({ artistToken, eventId, status, date }) {
-          console.log(`Creating real platform event ${eventId} with status ${status} in database`);
+          console.log(`Creating real platform event ${eventId || 'with date ' + date} with status ${status} in database`);
           // If no token provided, create a test artist first
           let token = artistToken;
           if (!token) {
@@ -113,8 +118,14 @@ export default defineConfig({
           if (!token) return null;
 
           // Create a platform event by accepting a booking request
-          const events = await apiHelpers.createPlatformEvents(token, 1);
-          return events[0] || null;
+          // If date is provided, use createPlatformEventWithDate, otherwise use createPlatformEvents
+          if (date) {
+            const event = await apiHelpers.createPlatformEventWithDate(token, date);
+            return event;
+          } else {
+            const events = await apiHelpers.createPlatformEvents(token, 1);
+            return events[0] || null;
+          }
         },
 
         // Artist data seeding - now returns real data from database
