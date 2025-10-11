@@ -3,6 +3,9 @@ import { addCucumberPreprocessorPlugin } from '@badeball/cypress-cucumber-prepro
 import { createEsbuildPlugin } from '@badeball/cypress-cucumber-preprocessor/esbuild';
 import createBundler from '@bahmutov/cypress-esbuild-preprocessor';
 
+// Import API helpers for database operations
+import * as apiHelpers from './cypress/support/api-helpers.js';
+
 export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:5173',
@@ -19,104 +22,127 @@ export default defineConfig({
         })
       );
 
-      // Add custom tasks
+      // Add custom tasks with real database operations
       on('task', {
-        createTestUser({ email, password, type }) {
-          console.log(`Creating test user: ${email} (${type})`);
-          // In a real implementation, this would create a user in the database
-          // For now, just return success
-          return { success: true, user: { email, type } };
+        async createTestUser({ email, password, type }) {
+          console.log(`Creating real test user: ${email || 'auto-generated'} (${type})`);
+          const user = await apiHelpers.createTestUser(type);
+          return user || { success: false };
         },
 
-        // Booking request tasks
-        seedBookingRequests({ artistId, count, status }) {
-          console.log(`Creating ${count} booking requests with status ${status}`);
-          const requests = [];
-          for (let i = 1; i <= count; i++) {
-            requests.push({
-              id: `request-${i}`,
-              status: status || 'PENDING',
-              eventDate: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString(),
-              eventType: 'CONCERT',
-              venue: { profile: { name: `Venue ${i}` } },
-              artist: { profile: { name: 'Test Artist' } },
-              createdAt: new Date().toISOString(),
-            });
+        // Booking request tasks - now using real API
+        async seedBookingRequests({ artistToken, count, status }) {
+          console.log(`Creating ${count} real booking requests with status ${status}`);
+          // If no token provided, create a test artist first
+          let token = artistToken;
+          if (!token) {
+            const artist = await apiHelpers.createTestUser('ARTIST');
+            token = artist?.token;
           }
+          if (!token) return [];
+
+          const requests = await apiHelpers.createBookingRequests(token, count, status);
           return requests;
         },
 
-        seedPendingRequests({ count }) {
+        async seedPendingRequests({ count }) {
           return this.seedBookingRequests({ count, status: 'PENDING' });
         },
 
-        // Manual bookings tasks
-        seedManualBookings({ artistId, count }) {
-          console.log(`Creating ${count} manual bookings`);
-          const bookings = [];
-          for (let i = 1; i <= count; i++) {
-            bookings.push({
-              id: `manual-booking-${i}`,
-              title: `Concert #${i}`,
-              date: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString(),
-              location: `Venue ${i}`,
-              status: 'CONFIRMED',
-              type: 'manual',
-              createdAt: new Date().toISOString(),
-            });
+        // Manual bookings tasks - now using real API
+        async seedManualBookings({ artistToken, count }) {
+          console.log(`Creating ${count} real manual bookings in database`);
+          // If no token provided, create a test artist first
+          let token = artistToken;
+          if (!token) {
+            const artist = await apiHelpers.createTestUser('ARTIST');
+            token = artist?.token;
           }
+          if (!token) return [];
+
+          const bookings = await apiHelpers.createManualBookings(token, count);
           return bookings;
         },
 
-        seedManualBooking({ artistId, date }) {
-          console.log(`Creating manual booking on ${date}`);
-          return {
-            id: 'manual-booking-single',
+        async seedManualBooking({ artistToken, date }) {
+          console.log(`Creating real manual booking on ${date} in database`);
+          // If no token provided, create a test artist first
+          let token = artistToken;
+          if (!token) {
+            const artist = await apiHelpers.createTestUser('ARTIST');
+            token = artist?.token;
+          }
+          if (!token) return null;
+
+          const bookingData = {
             title: 'Concert',
             date: date,
             location: 'Test Venue',
+            description: 'Test booking for E2E',
             status: 'CONFIRMED',
-            type: 'manual',
+            price: 500
           };
+
+          const response = await apiHelpers.makeAuthRequest('POST', '/bookings', token, bookingData);
+          return response;
         },
 
-        // Platform events tasks
-        seedPlatformEvents({ artistId, count, status }) {
-          console.log(`Creating ${count} platform events with status ${status}`);
-          const events = [];
-          for (let i = 1; i <= count; i++) {
-            events.push({
-              id: `platform-event-${i}`,
-              title: `Platform Event ${i}`,
-              startDate: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString(),
-              endDate: new Date(Date.now() + i * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(),
-              status: status || 'CONFIRMED',
-              venue: { profile: { name: `Venue ${i}` } },
-              artist: { profile: { name: 'Test Artist' } },
-              type: 'platform',
-              createdAt: new Date().toISOString(),
-            });
+        // Platform events tasks - now using real API (by accepting booking requests)
+        async seedPlatformEvents({ artistToken, count, status }) {
+          console.log(`Creating ${count} real platform events in database`);
+          // If no token provided, create a test artist first
+          let token = artistToken;
+          if (!token) {
+            const artist = await apiHelpers.createTestUser('ARTIST');
+            token = artist?.token;
           }
+          if (!token) return [];
+
+          const events = await apiHelpers.createPlatformEvents(token, count);
           return events;
         },
 
-        seedPlatformEvent({ artistId, eventId, status, date }) {
-          console.log(`Creating platform event ${eventId} with status ${status}`);
-          return {
-            id: eventId || 'platform-event-single',
-            title: 'Platform Event',
-            startDate: date || new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-            endDate: new Date(Date.now() + 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000).toISOString(),
-            status: status || 'CONFIRMED',
-            venue: { profile: { name: 'Test Venue' } },
-            artist: { profile: { name: 'Test Artist' } },
-            type: 'platform',
-          };
+        async seedPlatformEvent({ artistToken, eventId, status, date }) {
+          console.log(`Creating real platform event ${eventId} with status ${status} in database`);
+          // If no token provided, create a test artist first
+          let token = artistToken;
+          if (!token) {
+            const artist = await apiHelpers.createTestUser('ARTIST');
+            token = artist?.token;
+          }
+          if (!token) return null;
+
+          // Create a platform event by accepting a booking request
+          const events = await apiHelpers.createPlatformEvents(token, 1);
+          return events[0] || null;
         },
 
-        // Artist data seeding
-        seedArtistData({ artistId, data }) {
-          console.log(`Seeding artist data:`, data);
+        // Artist data seeding - now returns real data from database
+        async seedArtistData({ artistToken, data }) {
+          console.log(`Setting up real artist data in database:`, data);
+          // If no token provided, create a test artist first
+          let token = artistToken;
+          if (!token) {
+            const artist = await apiHelpers.createTestUser('ARTIST');
+            token = artist?.token;
+          }
+          if (!token) return { success: false };
+
+          // Create the requested data
+          const promises = [];
+
+          if (data['Demandes en attente']) {
+            promises.push(apiHelpers.createBookingRequests(token, data['Demandes en attente'], 'PENDING'));
+          }
+          if (data['Bookings manuels']) {
+            promises.push(apiHelpers.createManualBookings(token, data['Bookings manuels']));
+          }
+          if (data['Bookings plateforme']) {
+            promises.push(apiHelpers.createPlatformEvents(token, data['Bookings plateforme']));
+          }
+
+          await Promise.all(promises);
+
           return {
             pendingRequests: data['Demandes en attente'] || 0,
             manualBookings: data['Bookings manuels'] || 0,
@@ -125,45 +151,55 @@ export default defineConfig({
           };
         },
 
-        // Messages tasks
-        seedConfirmedEvents({ count }) {
-          console.log(`Creating ${count} confirmed events`);
-          const events = [];
-          for (let i = 1; i <= count; i++) {
-            events.push({
-              id: `event-${i}`,
-              title: `Event ${i}`,
-              startDate: new Date(Date.now() + i * 24 * 60 * 60 * 1000).toISOString(),
-              status: 'CONFIRMED',
-              venue: { profile: { name: `Venue ${i}` } },
-            });
+        // Messages tasks - now using real database
+        async seedConfirmedEvents({ artistToken, count }) {
+          console.log(`Creating ${count} real confirmed events in database`);
+          // If no token provided, create a test artist first
+          let token = artistToken;
+          if (!token) {
+            const artist = await apiHelpers.createTestUser('ARTIST');
+            token = artist?.token;
           }
+          if (!token) return [];
+
+          // Create platform events which are confirmed by default
+          const events = await apiHelpers.createPlatformEvents(token, count);
           return events;
         },
 
-        seedConfirmedEvent({ eventName, venueName }) {
-          console.log(`Creating confirmed event: ${eventName} at ${venueName}`);
-          return {
-            id: 'event-confirmed',
-            title: eventName,
-            startDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-            status: 'CONFIRMED',
-            venue: { profile: { name: venueName } },
-          };
+        async seedConfirmedEvent({ artistToken, eventName, venueName }) {
+          console.log(`Creating real confirmed event: ${eventName} at ${venueName} in database`);
+          // If no token provided, create a test artist first
+          let token = artistToken;
+          if (!token) {
+            const artist = await apiHelpers.createTestUser('ARTIST');
+            token = artist?.token;
+          }
+          if (!token) return null;
+
+          // Create a confirmed platform event
+          const events = await apiHelpers.createPlatformEvents(token, 1);
+          if (events[0]) {
+            events[0].title = eventName;
+            // Note: venue name would be set during the booking request creation
+          }
+          return events[0] || null;
         },
 
-        seedMessagesInThread({ count }) {
-          console.log(`Creating ${count} messages in thread`);
+        async seedMessagesInThread({ eventId, token, count }) {
+          console.log(`Creating ${count} real messages in thread for event ${eventId}`);
+          if (!token || !eventId) return [];
+
           const messages = [];
           for (let i = 1; i <= count; i++) {
             messages.push({
-              id: `message-${i}`,
               content: `Message ${i}`,
-              createdAt: new Date(Date.now() - (count - i) * 60000).toISOString(),
-              sender: i % 2 === 0 ? 'artist' : 'venue',
+              sentAt: new Date(Date.now() - (count - i) * 60000).toISOString()
             });
           }
-          return messages;
+
+          const createdMessages = await apiHelpers.createMessages(eventId, token, messages);
+          return createdMessages;
         },
 
         seedVenueEvents({ count }) {
@@ -253,10 +289,17 @@ export default defineConfig({
           return { success: true };
         },
 
-        // Helper for registering artist
-        registerArtist(artist) {
-          console.log(`Registering artist: ${artist.email}`);
-          return { success: true, artist };
+        // Helper for registering artist - now using real API
+        async registerArtist(artistData) {
+          console.log(`Registering real artist: ${artistData.email} in database`);
+          const result = await apiHelpers.createTestUser('ARTIST');
+          if (result) {
+            // Update with custom data if provided
+            if (artistData.name && result.token) {
+              await apiHelpers.completeArtistProfile(result.token);
+            }
+          }
+          return result || { success: false };
         }
       });
 
