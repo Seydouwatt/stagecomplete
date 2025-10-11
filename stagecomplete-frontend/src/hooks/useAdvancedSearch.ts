@@ -24,6 +24,11 @@ export const useAdvancedSearch = (initialQuery: AdvancedSearchQuery = {}) => {
   const [debouncedQuery, setDebouncedQuery] =
     useState<AdvancedSearchQuery>(initialQuery);
 
+  // Sync initialQuery changes to internal query state
+  useEffect(() => {
+    setQuery(initialQuery);
+  }, [JSON.stringify(initialQuery)]);
+
   // Debouncing de la recherche textuelle (300ms)
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -101,11 +106,11 @@ export const useSearchSuggestions = (
 ) => {
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
 
-  // Debouncing (200ms pour suggestions - plus rapide)
+  // Debouncing (700ms pour suggestions)
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(searchQuery);
-    }, 200);
+    }, 700);
 
     return () => clearTimeout(timer);
   }, [searchQuery]);

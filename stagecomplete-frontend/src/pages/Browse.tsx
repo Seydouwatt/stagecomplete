@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { SearchBar } from "../components/search/SearchBar";
 import { FilterPanel } from "../components/search/FilterPanel";
 import { BrowseGrid } from "../components/browse/BrowseGrid";
+import { BookingRequestModal } from "../components/booking-requests/BookingRequestModal";
 import { useAuthStore } from "../stores/authStore";
 import { motion } from "framer-motion";
 import {
@@ -20,6 +21,11 @@ export const Browse: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [selectedArtist, setSelectedArtist] = useState<{
+    id: string;
+    name: string;
+    avatar?: string;
+  } | null>(null);
 
   // Type de contenu basé sur le rôle utilisateur
   const browseType = user?.role === "ARTIST" ? "venue" : "artist";
@@ -70,11 +76,36 @@ export const Browse: React.FC = () => {
   const { suggestions: apiSuggestions, isLoading: suggestionsLoading } =
     useSearchSuggestions(searchQuery, browseType === "artist");
 
-  // Keep local searchQuery in sync with URL param changes (back/forward)
+  // Sync URL params back to local state (for back/forward navigation)
   useEffect(() => {
     const urlQuery = searchParams.get("q") || "";
-    if (urlQuery !== searchQuery) setSearchQuery(urlQuery);
-  }, [searchParams]);
+    // Only update if URL changed (not from our own update)
+    if (urlQuery !== searchQuery) {
+      setSearchQuery(urlQuery);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.get("q")]);
+
+  // Sync local searchQuery to URL (debounced to avoid too many updates during typing)
+  useEffect(() => {
+    const urlQuery = searchParams.get("q") || "";
+
+    // Only update URL if searchQuery is different from URL
+    if (searchQuery !== urlQuery) {
+      const timer = setTimeout(() => {
+        const newSearchParams = new URLSearchParams(searchParams);
+        if (searchQuery) {
+          newSearchParams.set('q', searchQuery);
+        } else {
+          newSearchParams.delete('q');
+        }
+        setSearchParams(newSearchParams, { replace: true });
+      }, 1000); // Wait 1s after last keystroke
+
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
 
   // Mapper les suggestions API au format du composant SearchBar
   const searchSuggestions = useMemo(() => {
@@ -115,9 +146,15 @@ export const Browse: React.FC = () => {
   }, [results, browseType]);
 
   // Handlers
-  const handleSearch = (query: string) => {
+  const handleSearchChange = (query: string) => {
+    // Mise à jour immédiate pour la recherche en direct
     setSearchQuery(query);
-    
+  };
+
+  const handleSearch = (query: string) => {
+    // Submit explicite: met à jour immédiatement searchQuery et l'URL
+    setSearchQuery(query);
+
     // Préserver les filtres existants lors d'une nouvelle recherche
     const newSearchParams = new URLSearchParams(searchParams);
     if (query) {
@@ -125,7 +162,8 @@ export const Browse: React.FC = () => {
     } else {
       newSearchParams.delete('q');
     }
-    setSearchParams(newSearchParams);
+    // Utiliser replace pour ne pas ajouter dans l'historique
+    setSearchParams(newSearchParams, { replace: true });
   };
 
   const handleFiltersChange = (newFilters: AdvancedSearchQuery) => {
@@ -151,8 +189,15 @@ export const Browse: React.FC = () => {
   };
 
   const handleContact = (id: string) => {
-    console.log("Contact:", id);
-    // Implémenter navigation vers message ou modal contact
+    // Trouver l'artiste dans les résultats
+    const artist = filteredItems.find((item) => item.id === id);
+    if (artist) {
+      setSelectedArtist({
+        id: artist.id,
+        name: artist.name,
+        avatar: artist.avatar,
+      });
+    }
   };
 
   const handleFavorite = (id: string) => {
@@ -190,6 +235,7 @@ export const Browse: React.FC = () => {
                   browseType === "artist" ? "des venues" : "des artistes"
                 }...`}
                 value={searchQuery}
+                onChange={handleSearchChange}
                 onSearch={handleSearch}
                 onFilterClick={() => setShowFilters(true)}
                 suggestions={searchSuggestions}
@@ -227,6 +273,17 @@ export const Browse: React.FC = () => {
         filters={filters}
         onFiltersChange={handleFiltersChange}
       />
+
+      {/* Booking Request Modal */}
+      {selectedArtist && (
+        <BookingRequestModal
+          isOpen={!!selectedArtist}
+          onClose={() => setSelectedArtist(null)}
+          artistId={selectedArtist.id}
+          artistName={selectedArtist.name}
+          artistAvatar={selectedArtist.avatar}
+        />
+      )}
     </div>
   );
 };

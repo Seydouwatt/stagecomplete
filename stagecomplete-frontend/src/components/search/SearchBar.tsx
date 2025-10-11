@@ -13,6 +13,7 @@ export interface SearchSuggestion {
 interface SearchBarProps {
   placeholder?: string;
   onSearch: (query: string) => void;
+  onChange?: (query: string) => void; // Called on every keystroke for live search
   onFilterClick?: () => void;
   suggestions?: SearchSuggestion[];
   isLoading?: boolean;
@@ -23,6 +24,7 @@ interface SearchBarProps {
 export const SearchBar: React.FC<SearchBarProps> = ({
   placeholder = "Rechercher des artistes, venues, genres...",
   onSearch,
+  onChange,
   onFilterClick,
   suggestions = [],
   isLoading = false,
@@ -94,11 +96,18 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             ref={inputRef}
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              const newValue = e.target.value;
+              setQuery(newValue);
+              // Call onChange for live search updates
+              if (onChange) {
+                onChange(newValue);
+              }
+            }}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setTimeout(() => setIsFocused(false), 200)}
             placeholder={placeholder}
-            className="input input-bordered w-full pl-12 pr-20 py-3 text-lg focus:ring-2 focus:ring-primary"
+            className="input input-bordered w-full pl-12 pr-80 py-3 text-lg focus:ring-2 focus:ring-primary"
             data-cy="search-input"
           />
 
@@ -112,6 +121,15 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 <X className="w-4 h-4" />
               </button>
             )}
+
+            <button
+              type="submit"
+              className="btn btn-primary btn-sm"
+              data-cy="search-button"
+            >
+              <Search className="w-4 h-4" />
+              Rechercher
+            </button>
 
             {showFilters && (
               <button
