@@ -237,6 +237,8 @@ export const BookingsPageUnified: React.FC = () => {
                 allBookings.map((booking, index) => (
                   <motion.div
                     key={booking.id}
+                    data-cy={booking.source === 'platform' ? 'platform-booking' : 'manual-booking'}
+                    data-testid="booking-card"
                     className="card bg-base-100 shadow-lg border border-base-300 hover:shadow-xl transition-shadow"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -308,6 +310,7 @@ export const BookingsPageUnified: React.FC = () => {
                           {booking.type === 'event' && (
                             <Link
                               to={`/messages/${booking.id}`}
+                              data-cy="platform-booking-message-icon"
                               className="btn btn-sm btn-ghost btn-square"
                               title="Messages"
                             >
@@ -334,7 +337,7 @@ export const BookingsPageUnified: React.FC = () => {
 
           {/* Tab 3: Calendrier */}
           {activeTab === 'calendar' && (
-            <div className="card bg-base-100 shadow-lg border border-base-300 p-6">
+            <div data-cy="calendar-view" className="card bg-base-100 shadow-lg border border-base-300 p-6">
               <CalendarView
                 bookings={allBookings.map(item => ({
                   ...item,

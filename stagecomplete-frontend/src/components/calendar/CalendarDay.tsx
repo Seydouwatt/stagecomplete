@@ -54,6 +54,7 @@ export const CalendarDayCell: React.FC<CalendarDayProps> = ({
         {dayBookings.slice(0, 3).map((booking) => (
           <div
             key={booking.id}
+            data-cy="calendar-event"
             className={clsx(
               'text-xs px-2 py-1 rounded cursor-pointer',
               'hover:opacity-80 transition-opacity truncate',

@@ -54,7 +54,7 @@ export const BookingRequestCard: React.FC<BookingRequestCardProps> = ({
   const canCancel = request.status === 'PENDING' || request.status === 'VIEWED';
 
   return (
-    <div className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow">
+    <div data-cy="booking-request-card" className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow">
       <div className="card-body">
         {/* En-tête avec statut */}
         <div className="flex items-start justify-between mb-4">
@@ -148,6 +148,7 @@ export const BookingRequestCard: React.FC<BookingRequestCardProps> = ({
               <>
                 <button
                   onClick={onDecline}
+                  data-cy="booking-request-decline"
                   className="btn btn-error btn-sm"
                 >
                   <XCircle className="w-4 h-4" />
@@ -155,6 +156,7 @@ export const BookingRequestCard: React.FC<BookingRequestCardProps> = ({
                 </button>
                 <button
                   onClick={onAccept}
+                  data-cy="booking-request-accept"
                   className="btn btn-success btn-sm"
                 >
                   <CheckCircle className="w-4 h-4" />
