@@ -237,8 +237,8 @@ export const BookingsPageUnified: React.FC = () => {
                 allBookings.map((booking, index) => (
                   <motion.div
                     key={booking.id}
-                    data-cy={booking.source === 'platform' ? 'platform-booking' : 'manual-booking'}
-                    data-testid="booking-card"
+                    data-cy="booking-card"
+                    data-booking-type={booking.source === 'platform' ? 'platform-booking' : 'manual-booking'}
                     className="card bg-base-100 shadow-lg border border-base-300 hover:shadow-xl transition-shadow"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

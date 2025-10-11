@@ -124,11 +124,7 @@ Then('I should see the calendar view', () => {
   cy.get('[data-cy="calendar-view"]').should('be.visible');
 });
 
-Then('I should see a badge with {string} on the {string} tab', (count, tabName) => {
-  cy.contains('.tabs button', tabName)
-    .find('.badge')
-    .should('contain', count);
-});
+// Note: "Then I should see a badge with {string} on the {string} tab" is already defined in booking-workflow.js
 
 Then('I should see {int} booking request cards when viewing the requests tab', (count) => {
   cy.get('[data-cy="booking-request-card"]').should('have.length', count);
@@ -139,13 +135,13 @@ Then('I should see {int} total bookings', (count) => {
 });
 
 Then('I should see {string} badge on manual bookings', (badge) => {
-  cy.get('[data-cy="manual-booking"]').each($el => {
+  cy.get('[data-booking-type="manual-booking"]').each($el => {
     cy.wrap($el).contains('.badge', badge).should('be.visible');
   });
 });
 
 Then('I should see {string} badge on platform bookings', (badge) => {
-  cy.get('[data-cy="platform-booking"]').each($el => {
+  cy.get('[data-booking-type="platform-booking"]').each($el => {
     cy.wrap($el).contains('.badge', badge).should('be.visible');
   });
 });
