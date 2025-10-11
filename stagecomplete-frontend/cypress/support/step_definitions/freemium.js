@@ -265,7 +265,8 @@ When('I try to access {string} directly', (route) => {
 });
 
 Then('I should be redirected to an upgrade page', () => {
-  cy.url().should('include', '/messages');
+  // Just verify the upgrade prompt is visible, not the specific URL
+  // (URL can be /calendar, /analytics, etc. depending on what premium feature was accessed)
   cy.get('[data-testid="upgrade-prompt"]').should('be.visible');
 });
 

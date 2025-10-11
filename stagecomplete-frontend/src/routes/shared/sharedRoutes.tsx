@@ -4,6 +4,7 @@ import { ProtectedRoute } from "../../components";
 import { PremiumRoute } from "../../components/auth/PremiumRoute";
 import { User } from "../../pages/profile";
 import { Settings } from "../../pages/settings";
+import { MessagesPage } from "../../pages/MessagesPage";
 
 const ComingSoon: React.FC<{ title: string }> = ({ title }) => (
   <div className="min-h-[60vh] flex items-center justify-center">
@@ -36,9 +37,16 @@ export const sharedRoutes = [
     path="/messages"
     element={
       <ProtectedRoute>
-        <PremiumRoute>
-          <ComingSoon title="Messages" />
-        </PremiumRoute>
+        <MessagesPage />
+      </ProtectedRoute>
+    }
+  />,
+  <Route
+    key="messages-thread"
+    path="/messages/:eventId"
+    element={
+      <ProtectedRoute>
+        <MessagesPage />
       </ProtectedRoute>
     }
   />,
@@ -47,7 +55,9 @@ export const sharedRoutes = [
     path="/calendar"
     element={
       <ProtectedRoute>
-        <ComingSoon title="Calendrier" />
+        <PremiumRoute>
+          <ComingSoon title="Calendrier" />
+        </PremiumRoute>
       </ProtectedRoute>
     }
   />,

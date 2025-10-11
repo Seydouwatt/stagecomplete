@@ -17,10 +17,10 @@ Feature: Freemium Features for Artists
       | Dashboard    | Yes     |
       | My Portfolio | Yes     |
       | My Bookings  | Yes     |
+      | Messages     | Yes     |
       | My Info      | Yes     |
       | Settings     | Yes     |
       | Logout       | Yes     |
-      | Messages     | No      |
       | Calendar     | No      |
       | Find Venues  | No      |
       | Analytics    | No      |
@@ -38,7 +38,7 @@ Feature: Freemium Features for Artists
   Scenario: Free artist - Attempt to access premium features
     Given I am an artist with a free plan
     And I am logged in to my account
-    When I try to access "/messages" directly
+    When I try to access "/calendar" directly
     Then I should be redirected to an upgrade page
     And I should see the "UpgradePrompt" component
     And I should see the price "€9/month"

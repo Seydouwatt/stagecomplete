@@ -92,7 +92,6 @@ const Home: React.FC = () => {
                 partage réseaux sociaux - 100% gratuit !
               </motion.p>
 
-
               {/* CTAs */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -101,7 +100,7 @@ const Home: React.FC = () => {
                 className="flex flex-col sm:flex-row gap-4 justify-center items-center"
               >
                 <Link
-                  to="/artistes"
+                  to="/register?from=artist"
                   className="bg-white text-purple-900 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center gap-2"
                 >
                   <SparklesIcon className="w-5 h-5" />
@@ -226,7 +225,7 @@ const Home: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                to="/artistes"
+                to="/register"
                 className="bg-white text-purple-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center gap-2"
               >
                 <SparklesIcon className="w-5 h-5" />

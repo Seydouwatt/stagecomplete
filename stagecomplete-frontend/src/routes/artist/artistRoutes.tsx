@@ -4,7 +4,7 @@ import { ProtectedRoute } from "../../components";
 // Import direct des pages artistes
 import { ArtistDashboard } from "../../pages/dashboard";
 import { ArtistProfileForm } from "../../pages/artist/ArtistProfileForm";
-import { BookingsList, BookingForm } from "../../pages/bookings";
+import { BookingsPageUnified, BookingForm } from "../../pages/bookings";
 
 const ComingSoon: React.FC<{ title: string }> = ({ title }) => (
   <div className="min-h-[60vh] flex items-center justify-center">
@@ -37,7 +37,7 @@ export const artistRoutes = [
     path="/artist/bookings"
     element={
       <ProtectedRoute requiredRole="ARTIST">
-        <BookingsList />
+        <BookingsPageUnified />
       </ProtectedRoute>
     }
   />,

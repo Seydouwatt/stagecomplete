@@ -69,18 +69,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
           icon: CalendarCheck,
           href: "/artist/bookings",
         },
-      ];
-
-      // Sections premium pour les artistes
-      const premiumArtistItems: NavigationItem[] = [
         {
           id: "messages",
           label: "Messages",
           icon: MessageSquare,
           href: "/messages",
           badge: 3,
-          isPremium: true,
         },
+      ];
+
+      // Sections premium pour les artistes
+      const premiumArtistItems: NavigationItem[] = [
         {
           id: "calendar",
           label: "Calendrier",
@@ -162,13 +161,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
       ];
     }
 
-    // Default pour autres rôles
+    // Default pour autres rôles (MEMBER, ADMIN)
     return [
       {
         id: "dashboard",
         label: "Dashboard",
         icon: Home,
-        href: user?.role === "VENUE" ? "/venue/dashboard" : "/artist/dashboard",
+        href: "/artist/dashboard", // Default to artist dashboard
       },
     ];
   };
