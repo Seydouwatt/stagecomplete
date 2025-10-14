@@ -10,7 +10,13 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+dev-dist
 *.local
+
+# Cypress/Cucumber reports (generated)
+cucumber-messages.ndjson
+cucumber-report.html
+cypress/cucumber-report.json
 
 # Editor directories and files
 .vscode/*
