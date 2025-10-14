@@ -8,6 +8,13 @@
 const { Client } = require('pg');
 
 async function fixFailedMigration() {
+  // Check if DATABASE_URL is defined
+  if (!process.env.DATABASE_URL) {
+    console.log('⚠️  DATABASE_URL not set, skipping migration fix check');
+    console.log('ℹ️  This is normal if you haven\'t configured the database yet\n');
+    return; // Exit gracefully without error
+  }
+
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
   });
