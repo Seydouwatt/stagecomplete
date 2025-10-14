@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Gradient background -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Radial gradient for center glow -->
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0" />
+    </radialGradient>
+
+    <!-- Pattern for stage lights effect -->
+    <pattern id="lights" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="10" cy="10" r="2" fill="#ffffff" opacity="0.1"/>
+      <circle cx="30" cy="30" r="2" fill="#ffffff" opacity="0.1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background with rounded corners -->
+  <rect width="512" height="512" rx="90" fill="url(#bgGradient)"/>
+
+  <!-- Pattern overlay -->
+  <rect width="512" height="512" rx="90" fill="url(#lights)"/>
+
+  <!-- Center glow effect -->
+  <circle cx="256" cy="256" r="200" fill="url(#centerGlow)"/>
+
+  <!-- Abstract stage waves (bottom) -->
+  <path d="M 0 350 Q 128 330, 256 350 T 512 350 L 512 512 L 0 512 Z"
+        fill="#7c3aed" opacity="0.4"/>
+  <path d="M 0 380 Q 128 360, 256 380 T 512 380 L 512 512 L 0 512 Z"
+        fill="#6d28d9" opacity="0.3"/>
+
+  <!-- Circular stage spotlight effect (top-right) -->
+  <circle cx="400" cy="120" r="60" fill="#ffffff" opacity="0.08"/>
+  <circle cx="400" cy="120" r="40" fill="#ffffff" opacity="0.05"/>
+
+  <!-- Letter S -->
+  <text x="160" y="320"
+        font-family="system-ui, -apple-system, sans-serif"
+        font-size="200"
+        font-weight="900"
+        fill="#ffffff"
+        opacity="0.95"
+        letter-spacing="-10">S</text>
+
+  <!-- Letter C -->
+  <text x="270" y="320"
+        font-family="system-ui, -apple-system, sans-serif"
+        font-size="200"
+        font-weight="900"
+        fill="#ffffff"
+        opacity="0.95"
+        letter-spacing="-10">C</text>
+
+  <!-- Decorative elements: music/stage icons (subtle) -->
+  <!-- Microphone icon (simplified) -->
+  <g transform="translate(100, 100)" opacity="0.15">
+    <circle cx="0" cy="0" r="12" fill="#ffffff"/>
+    <rect x="-2" y="10" width="4" height="30" fill="#ffffff"/>
+    <rect x="-8" y="40" width="16" height="4" fill="#ffffff"/>
+  </g>
+
+  <!-- Guitar icon (simplified) -->
+  <g transform="translate(380, 380)" opacity="0.15">
+    <ellipse cx="0" cy="0" rx="20" ry="25" fill="#ffffff"/>
+    <rect x="-3" y="-40" width="6" height="40" fill="#ffffff"/>
+    <circle cx="0" cy="-40" r="8" fill="#ffffff"/>
+  </g>
+
+  <!-- Stage curtain accent (top) -->
+  <path d="M 0 0 Q 64 20, 128 0 T 256 0 T 384 0 T 512 0 L 512 40 Q 448 60, 384 40 T 256 40 T 128 40 T 0 40 Z"
+        fill="#6d28d9" opacity="0.3"/>
+</svg>

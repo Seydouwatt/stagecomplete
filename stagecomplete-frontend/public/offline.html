@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hors ligne - StageComplete</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        color: #ffffff;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        text-align: center;
+      }
+
+      .container {
+        max-width: 500px;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 40px 30px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      }
+
+      .icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.8;
+        }
+      }
+
+      h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #ffffff;
+      }
+
+      p {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 30px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .tips {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 30px;
+        text-align: left;
+      }
+
+      .tips h2 {
+        font-size: 18px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tips ul {
+        list-style: none;
+        margin-left: 0;
+      }
+
+      .tips li {
+        padding: 8px 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 14px;
+      }
+
+      .tips li:before {
+        content: '✓';
+        font-weight: bold;
+        color: #10b981;
+        flex-shrink: 0;
+      }
+
+      .retry-button {
+        display: inline-block;
+        background: #ffffff;
+        color: #8b5cf6;
+        padding: 12px 30px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        margin-top: 10px;
+      }
+
+      .retry-button:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          padding: 30px 20px;
+        }
+
+        h1 {
+          font-size: 24px;
+        }
+
+        .icon {
+          font-size: 60px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="icon">📡</div>
+      <h1>Vous êtes hors ligne</h1>
+      <p>
+        Impossible de se connecter à StageComplete pour le moment.
+        Vérifiez votre connexion internet et réessayez.
+      </p>
+
+      <button class="retry-button" onclick="window.location.reload()">
+        🔄 Réessayer
+      </button>
+
+      <div class="tips">
+        <h2>💡 Le saviez-vous ?</h2>
+        <ul>
+          <li>Vos données consultées récemment restent accessibles hors ligne</li>
+          <li>Les messages et profils déjà chargés sont disponibles en cache</li>
+          <li>La connexion sera restaurée automatiquement dès que possible</li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      // Tenter de reconnecter automatiquement
+      window.addEventListener('online', () => {
+        window.location.reload();
+      });
+
+      // Afficher l'état de connexion
+      if (navigator.onLine) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    </script>
+  </body>
+</html>

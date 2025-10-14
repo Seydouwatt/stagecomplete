@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useAuthStore } from "../../stores/authStore";
 import { ROUTES } from "../../constants";
+import { InstallPWAButton } from "../common/InstallPWAButton";
 
 interface HeaderProps {
   onToggleSidebar?: () => void;
@@ -131,6 +132,9 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
             </div>
           </div>
         </div>
+
+        {/* Install PWA Button */}
+        <InstallPWAButton />
 
         {/* User menu */}
         <div className="dropdown dropdown-end">
