@@ -152,13 +152,14 @@ export default defineConfig({
           }
         ],
 
-        // Page offline de fallback
+        // Page offline de fallback - seulement pour vraies 404
+        // Ne PAS intercepter les routes React Router (/, /home, /login, etc.)
         navigateFallback: '/offline.html',
-        navigateFallbackDenylist: [/^\/api\//]
+        navigateFallbackDenylist: [/^\/api\//, /^\/$/, /^\/home/, /^\/login/, /^\/register/, /^\/artist\//, /^\/venue\//, /^\/directory/, /^\/artistes/]
       },
 
       devOptions: {
-        enabled: true,
+        enabled: false, // Désactivé en dev pour éviter problèmes de cache/routing
         type: 'module'
       }
     })

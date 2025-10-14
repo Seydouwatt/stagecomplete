@@ -220,6 +220,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ToastContainer from "./components/ui/Toast";
 import { AppRoutes } from "./routes/AppRoutes";
+import { AuthInitializer } from "./components/auth";
 import { useDebugLog } from "./hooks/useDebugLog";
 
 // Create a client
@@ -240,8 +241,10 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <div data-theme="stagecomplete">
           <Router>
-            <AppRoutes />
-            <ToastContainer />
+            <AuthInitializer>
+              <AppRoutes />
+              <ToastContainer />
+            </AuthInitializer>
           </Router>
         </div>
       </QueryClientProvider>

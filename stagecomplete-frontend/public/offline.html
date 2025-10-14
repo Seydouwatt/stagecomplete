@@ -160,17 +160,18 @@
     </div>
 
     <script>
-      // Tenter de reconnecter automatiquement
+      // Recharger uniquement quand l'utilisateur revient en ligne
+      // (pas de rechargement automatique pour éviter les boucles)
       window.addEventListener('online', () => {
-        window.location.reload();
+        // Afficher un message que la connexion est rétablie
+        const container = document.querySelector('.container');
+        if (container) {
+          const message = document.createElement('div');
+          message.style.cssText = 'background: rgba(16, 185, 129, 0.2); padding: 15px; border-radius: 8px; margin-top: 20px;';
+          message.innerHTML = '<p style="margin: 0; color: #10b981; font-weight: 600;">✅ Connexion rétablie ! Cliquez sur Réessayer pour continuer.</p>';
+          container.appendChild(message);
+        }
       });
-
-      // Afficher l'état de connexion
-      if (navigator.onLine) {
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      }
     </script>
   </body>
 </html>
