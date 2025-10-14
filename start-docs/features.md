@@ -57,6 +57,19 @@
 - 🔴 **Tags personnalisés** : Classification selon vos critères ⏸️
 - 🔴 **Favoris & blacklist** : Artistes préférés/à éviter ⏸️ Phase 5
 
+### **📢 Promotion & Partage (Artiste Premium 9€)** (0% - Phase 5.1)
+
+- 🔴 **Partage fiche artiste** : Génération cartes visuelles pour réseaux sociaux ⏸️ Phase 5.1
+- 🔴 **Templates réseaux sociaux** : Stories Instagram, Posts Facebook/LinkedIn ⏸️ Phase 5.1
+- 🔴 **QR Code personnalisé** : Code unique avec analytics vers profil ⏸️ Phase 5.1
+- 🔴 **Lien court custom** : stagecomplete.app/nom-artiste ⏸️ Phase 5.1
+- 🔴 **Share buttons** : Partage 1-clic Instagram, Facebook, WhatsApp, LinkedIn ⏸️ Phase 5.1
+- 🔴 **Stats de partage** : Vues, clics, conversions par canal ⏸️ Phase 5.1
+- 🔴 **Kit média téléchargeable** : Export PDF/PNG haute résolution ⏸️ Phase 5.2
+- 🔴 **Textes de légendes IA** : Génération automatique posts optimisés ⏸️ Phase 5.2
+- 🔴 **Watermark personnalisé** : "Powered by StageComplete" optionnel ⏸️ Phase 5.2
+- 🔴 **Planification posts** : Schedule publication réseaux (Buffer-like) ⏸️ Phase 5.3
+
 ### **📈 Relationship Tracking** (20% complété - Phase 5)
 
 - 🟢 **Métriques de base** : Vues profil, engagement (artist_metrics ✅)

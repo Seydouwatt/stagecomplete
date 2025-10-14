@@ -164,11 +164,47 @@
 ### 🔄 **PHASE 5 : PREMIUM FEATURES** (EN COURS)
 **Objectif :** Monétisation + fonctionnalités avancées
 
-**Sprint actuel :** Premium Contact System
+**Sprint 5 :** Premium Contact & Booking System
 - 📋 Système de comptes premium/gratuit
 - 📋 Messagerie directe premium (base complétée ✅)
 - 📋 Analytics avancées venues
 - 📋 Intégration paiements (Stripe)
+
+### 🆕 **PHASE 5.1 : ARTIST PREMIUM - SOCIAL PROMOTION** (PLANIFIÉ)
+**Objectif :** Justifier l'offre Artiste Premium 9€/mois avec outils de promotion
+
+**Durée estimée :** 15 jours
+**Priorité :** MEDIUM (après MVP core features)
+
+**Features Phase 5.1 - MVP Social Sharing :**
+- 🔴 **Partage profil en 1 clic** : Instagram, Facebook, WhatsApp, LinkedIn, Twitter/X
+- 🔴 **Générateur de cartes visuelles** : 3 templates (Modern, Elegant, Vibrant) pour réseaux sociaux
+- 🔴 **QR Code personnalisé** : Code unique avec analytics vers profil artiste
+- 🔴 **Liens courts custom** : `stagecomplete.app/nom-artiste` avec tracking
+- 🔴 **Dashboard analytics** : Vues, clics, scans QR, conversions par canal
+- 🔴 **Share buttons** : Partage instantané depuis profil public
+
+**Business Value :**
+- Augmente valeur perçue offre Artiste Premium
+- Génère trafic qualifié via partage social (effet réseau)
+- Acquisition artistes par viralité
+- Différenciation vs concurrents
+
+**Success Metrics :**
+- 40% adoption feature par artistes Premium (mois 1)
+- 500+ profils partagés (3 premiers mois)
+- 25% augmentation trafic organique
+- 15% conversion visiteurs externes → inscriptions
+
+**Features Phase 5.2 - Advanced** (Futur) :
+- 🔴 Kit média téléchargeable (PDF haute résolution)
+- 🔴 Légendes IA pour posts optimisés
+- 🔴 Watermark personnalisé optionnel
+
+**Features Phase 5.3 - Pro** (Futur) :
+- 🔴 Planification posts réseaux sociaux (Buffer-like)
+- 🔴 A/B testing visuels
+- 🔴 Analytics avancées (conversion funnels)
 
 ---
 
