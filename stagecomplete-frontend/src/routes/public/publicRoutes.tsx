@@ -9,10 +9,18 @@ import { DiscoveryPage } from "../../pages/public/DiscoveryPage";
 import { GenreDirectory } from "../../pages/public/GenreDirectory";
 import ErrorHandlingDemo from "../../pages/ErrorHandlingDemo";
 
+// Landing pages de validation
+import { VenueLandingPage } from "../../pages/validation/VenueLandingPage";
+import { ArtistLandingPage } from "../../pages/validation/ArtistLandingPage";
+
 export const publicRoutes = [
   // Homepage
   <Route key="home" path="/" element={<Home />} />,
   <Route key="home-alt" path="/home" element={<Home />} />,
+
+  // Landing pages de validation (Lean Startup approach)
+  <Route key="venues-validation" path="/venues/validation" element={<VenueLandingPage />} />,
+  <Route key="artistes-validation" path="/artistes/validation" element={<ArtistLandingPage />} />,
 
   // Discovery page - single point of entry for finding artists
   <Route key="directory" path="/directory" element={<DiscoveryPage />} />,
