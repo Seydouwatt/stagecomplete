@@ -9,6 +9,8 @@ import {
   ChartBarIcon,
 } from "@heroicons/react/24/outline";
 import { SEOHead } from "../../components/seo/SEOHead";
+import { API_URL, API_ENDPOINTS } from "../../constants";
+import { FacebookPixel, trackFacebookEvent } from "../../components/tracking/FacebookPixel";
 
 interface FormData {
   artistName: string;
@@ -47,11 +49,43 @@ export const ArtistLandingPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // TODO: Intégrer avec backend ou service d'email
-      console.log("📊 [ARTIST VALIDATION] Form submitted:", formData);
+      // Envoyer au backend
+      const response = await fetch(`${API_URL}${API_ENDPOINTS.VALIDATION_LEADS.CREATE}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'ARTIST',
+          email: formData.email,
+          phone: formData.phone,
+          contactName: formData.contactName,
+          artistName: formData.artistName,
+          artistType: formData.artistType,
+          discipline: formData.discipline,
+          experience: formData.experience,
+          currentPromotion: formData.currentPromotion,
+          monthlyGigs: formData.monthlyGigs,
+          desiredPrice: formData.desiredPrice,
+          artistMainGoal: formData.mainGoal,
+          source: 'landing_page',
+        }),
+      });
 
-      // Simuler l'envoi
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de l\'envoi');
+      }
+
+      console.log("✅ [ARTIST VALIDATION] Form submitted successfully");
+
+      // Track avec Facebook Pixel
+      trackFacebookEvent('Lead', {
+        content_name: 'Artist Validation',
+        content_category: 'Artist',
+        artist_type: formData.artistType,
+        discipline: formData.discipline,
+      });
 
       // Track avec Google Analytics
       if (window.gtag) {
@@ -108,13 +142,13 @@ export const ArtistLandingPage: React.FC = () => {
             <ul className="text-left space-y-2 text-gray-700">
               <li className="flex items-start gap-2">
                 <CheckCircleIcon className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
-                <span>Votre URL personnalisée (ex: stagecomplete.app/votre-nom)</span>
+                <span>
+                  Votre URL personnalisée (ex: stagecomplete.app/votre-nom)
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircleIcon className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
-                <span>
-                  Portfolio professionnel avec photos/vidéos
-                </span>
+                <span>Portfolio professionnel avec photos/vidéos</span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircleIcon className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
@@ -129,12 +163,14 @@ export const ArtistLandingPage: React.FC = () => {
           <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl p-6 text-white">
             <h3 className="font-bold text-xl mb-2">🎁 Bonus Early Adopter</h3>
             <p className="text-purple-100">
-              En tant que testeur beta, vous bénéficiez de <strong>6 mois gratuits</strong> de
-              fonctionnalités premium (valeur 54€) !
+              En tant que testeur beta, vous bénéficiez de{" "}
+              <strong>6 mois gratuits</strong> de fonctionnalités premium
+              (valeur 54€) !
             </p>
           </div>
           <p className="text-sm text-gray-500 mt-6">
-            📧 Surveillez votre boîte mail (et vos spams) pour l'email d'activation
+            📧 Surveillez votre boîte mail (et vos spams) pour l'email
+            d'activation
           </p>
         </motion.div>
       </div>
@@ -146,9 +182,12 @@ export const ArtistLandingPage: React.FC = () => {
       <SEOHead
         title="Artistes : Créez votre vitrine professionnelle gratuite | StageComplete"
         description="Musiciens, comédiens, danseurs : portfolio en ligne gratuit avec URL personnalisée. Visible par 100+ venues. Partagez en 1 clic sur les réseaux."
-        keywords="profil artiste, portfolio musicien, vitrine artiste, booking artiste, promotion artiste"
+        keywords={[
+          "profil artiste, portfolio musicien, vitrine artiste, booking artiste, promotion artiste",
+        ]}
         url="/artistes/validation"
       />
+      <FacebookPixel />
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-12 md:py-20">
@@ -175,8 +214,11 @@ export const ArtistLandingPage: React.FC = () => {
 
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Musiciens, comédiens, danseurs : créez votre profil complet avec
-              <strong> URL personnalisée, portfolio, partage réseaux sociaux</strong>.
-              100% gratuit, toujours.
+              <strong>
+                {" "}
+                URL personnalisée, portfolio, partage réseaux sociaux
+              </strong>
+              . 100% gratuit, toujours.
             </p>
 
             {/* Benefits */}
@@ -259,9 +301,7 @@ export const ArtistLandingPage: React.FC = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 Créer mon profil gratuit
               </h2>
-              <p className="text-gray-600">
-                Accès beta - Profil créé en 24h
-              </p>
+              <p className="text-gray-600">Accès beta - Profil créé en 24h</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -427,7 +467,9 @@ export const ArtistLandingPage: React.FC = () => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="">Sélectionnez...</option>
-                  <option value="0">0 (je recherche mes premières dates)</option>
+                  <option value="0">
+                    0 (je recherche mes premières dates)
+                  </option>
                   <option value="1-2">1-2 par mois</option>
                   <option value="3-5">3-5 par mois</option>
                   <option value="6-10">6-10 par mois</option>
@@ -508,7 +550,8 @@ export const ArtistLandingPage: React.FC = () => {
               </button>
 
               <p className="text-xs text-gray-500 text-center">
-                🎁 Bonus early adopter : 6 mois de fonctionnalités premium offertes (valeur 54€)
+                🎁 Bonus early adopter : 6 mois de fonctionnalités premium
+                offertes (valeur 54€)
               </p>
             </form>
           </motion.div>
@@ -538,8 +581,7 @@ export const ArtistLandingPage: React.FC = () => {
               {
                 icon: "📱",
                 title: "Partage 1-clic",
-                description:
-                  "Boutons Instagram, Facebook, WhatsApp intégrés",
+                description: "Boutons Instagram, Facebook, WhatsApp intégrés",
               },
               {
                 icon: "📊",

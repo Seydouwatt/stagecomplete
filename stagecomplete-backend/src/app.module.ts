@@ -13,6 +13,7 @@ import { BookingModule } from './booking/booking.module';
 import { MessageModule } from './message/message.module';
 import { BookingRequestModule } from './booking-request/booking-request.module';
 import { NotificationModule } from './notification/notification.module';
+import { ValidationLeadModule } from './validation-lead/validation-lead.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { NotificationModule } from './notification/notification.module';
     PublicModule,
     SearchModule, // Advanced search with full-text capabilities
     BookingModule, MessageModule, BookingRequestModule, NotificationModule, // Artist calendar and bookings management
+    ValidationLeadModule, // Lean Startup validation - Landing page leads
   ],
   controllers: [AppController],
   providers: [AppService],

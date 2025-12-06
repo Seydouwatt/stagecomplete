@@ -9,6 +9,8 @@ import {
   ClockIcon,
 } from "@heroicons/react/24/outline";
 import { SEOHead } from "../../components/seo/SEOHead";
+import { API_URL, API_ENDPOINTS } from "../../constants";
+import { FacebookPixel, trackFacebookEvent } from "../../components/tracking/FacebookPixel";
 
 interface FormData {
   venueName: string;
@@ -43,11 +45,41 @@ export const VenueLandingPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // TODO: Intégrer avec votre backend ou service d'email
-      console.log("📊 [VENUE VALIDATION] Form submitted:", formData);
+      // Envoyer au backend
+      const response = await fetch(`${API_URL}${API_ENDPOINTS.VALIDATION_LEADS.CREATE}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'VENUE',
+          email: formData.email,
+          phone: formData.phone,
+          contactName: formData.contactName,
+          venueName: formData.venueName,
+          venueType: formData.venueType,
+          currentBookingMethod: formData.currentBookingMethod,
+          averageBookingsPerMonth: formData.averageBookingsPerMonth,
+          venueMainPainPoint: formData.mainPainPoint,
+          venueMaxBudget: formData.maxBudget,
+          source: 'landing_page',
+        }),
+      });
 
-      // Simuler l'envoi (remplacer par vrai API call)
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erreur lors de l\'envoi');
+      }
+
+      console.log("✅ [VENUE VALIDATION] Form submitted successfully");
+
+      // Track avec Facebook Pixel
+      trackFacebookEvent('Lead', {
+        content_name: 'Venue Validation',
+        content_category: 'Venue',
+        venue_type: formData.venueType,
+        bookings_per_month: formData.averageBookingsPerMonth,
+      });
 
       // Track avec Google Analytics si configuré
       if (window.gtag) {
@@ -132,9 +164,12 @@ export const VenueLandingPage: React.FC = () => {
       <SEOHead
         title="Venues : Trouvez des artistes vérifiés en 5 minutes | StageComplete"
         description="Bars, théâtres, clubs : réservez des artistes professionnels sans commission. Accès à +500 profils vérifiés. Essai gratuit 30 jours."
-        keywords="booking artistes, réservation spectacles, programmation culturelle, artistes bars, booking théâtre"
+        keywords={[
+          "booking artistes, réservation spectacles, programmation culturelle, artistes bars, booking théâtre",
+        ]}
         url="/venues/validation"
       />
+      <FacebookPixel />
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-12 md:py-20">
@@ -160,9 +195,8 @@ export const VenueLandingPage: React.FC = () => {
             </h1>
 
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              Bars, théâtres, clubs : accédez à +500 artistes vérifiés (musique,
-              théâtre, stand-up, danse). <strong>0% de commission</strong> sur
-              les réservations.
+              Accédez à +500 artistes vérifiés (musique, théâtre, stand-up,
+              danse...). <strong>0% de commission</strong> sur les réservations.
             </p>
 
             {/* Benefits */}
@@ -170,7 +204,7 @@ export const VenueLandingPage: React.FC = () => {
               {[
                 {
                   icon: UserGroupIcon,
-                  text: "500+ artistes professionnels vérifiés",
+                  text: "+ de 500 artistes professionnels vérifiés",
                 },
                 {
                   icon: CurrencyEuroIcon,
@@ -370,7 +404,9 @@ export const VenueLandingPage: React.FC = () => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="">Sélectionnez...</option>
-                  <option value="0">Pas encore de programmation régulière</option>
+                  <option value="0">
+                    Pas encore de programmation régulière
+                  </option>
                   <option value="1-2">1-2 par mois</option>
                   <option value="3-5">3-5 par mois</option>
                   <option value="6-10">6-10 par mois</option>
@@ -403,7 +439,9 @@ export const VenueLandingPage: React.FC = () => {
                   <option value="pricing">
                     Négocier les tarifs / commissions élevées
                   </option>
-                  <option value="contracts">Gestion administrative/contrats</option>
+                  <option value="contracts">
+                    Gestion administrative/contrats
+                  </option>
                   <option value="variety">
                     Manque de diversité dans les styles
                   </option>

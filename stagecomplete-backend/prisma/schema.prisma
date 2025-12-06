@@ -382,3 +382,59 @@ enum NotificationType {
   NEW_MESSAGE                // Nouveau message
   BOOKING_REMINDER           // Rappel J-7, J-1
 }
+
+// Validation Leads - Lean Startup market validation
+model ValidationLead {
+  id        String   @id @default(cuid())
+  type      ValidationLeadType // VENUE or ARTIST
+
+  // Contact info
+  email     String
+  phone     String
+  contactName String
+
+  // Venue specific fields
+  venueName                String?
+  venueType                String?
+  currentBookingMethod     String?
+  averageBookingsPerMonth  String?
+  venueMainPainPoint       String?
+  venueMaxBudget           String?
+
+  // Artist specific fields
+  artistName               String?
+  artistType               String?
+  discipline               String?
+  experience               String?
+  currentPromotion         String?
+  monthlyGigs              String?
+  desiredPrice             String?
+  artistMainGoal           String?
+
+  // Metadata
+  source    String?  @default("landing_page") // landing_page, referral, etc
+  status    ValidationLeadStatus @default(NEW)
+  score     Int?     // Score from interview (0-18)
+  notes     String?  // Internal notes
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("validation_leads")
+  @@index([type, status])
+  @@index([createdAt])
+}
+
+enum ValidationLeadType {
+  VENUE
+  ARTIST
+}
+
+enum ValidationLeadStatus {
+  NEW           // Vient d'arriver
+  CONTACTED     // Premier contact fait
+  INTERVIEWED   // Interview complété
+  BETA_INVITED  // Invité en beta
+  CONVERTED     // Devenu client payant
+  REJECTED      // Pas qualifié ou pas intéressé
+}

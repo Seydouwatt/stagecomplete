@@ -61,4 +61,12 @@ export const API_ENDPOINTS = {
     MARK_ALL_READ: "/notifications/read-all",
     DELETE: (id: string) => `/notifications/${id}`,
   },
+  VALIDATION_LEADS: {
+    CREATE: "/validation-leads",
+    LIST: "/validation-leads",
+    STATS: "/validation-leads/stats",
+    GET_ONE: (id: string) => `/validation-leads/${id}`,
+    UPDATE_STATUS: (id: string) => `/validation-leads/${id}/status`,
+    UPDATE_SCORE: (id: string) => `/validation-leads/${id}/score`,
+  },
 } as const;
