@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Calendar,
   Users,
@@ -22,6 +23,7 @@ import { LineChart, BarChart, DonutChart } from "../../components/charts";
 
 export const VenueDashboard: React.FC = () => {
   const { user } = useAuthStore();
+  const navigate = useNavigate();
 
   // Données mockées pour les charts
   const occupancyData = [
@@ -66,7 +68,7 @@ export const VenueDashboard: React.FC = () => {
       description: "Explorer de nouveaux talents",
       icon: Search,
       color: "bg-secondary",
-      onClick: () => console.log("Trouver artistes"),
+      onClick: () => navigate("/browse"),
     },
     {
       id: "analytics",
