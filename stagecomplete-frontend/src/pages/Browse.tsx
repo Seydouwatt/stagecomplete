@@ -29,22 +29,26 @@ export const Browse: React.FC = () => {
 
   // Type de contenu basé sur le rôle utilisateur
   const browseType = user?.role === "ARTIST" ? "venue" : "artist";
+  console.log({ browseType });
 
   // Filtres - initialiser depuis les paramètres URL
   const [filters, setFilters] = useState<AdvancedSearchQuery>(() => {
     const params: AdvancedSearchQuery = {
-      sortBy: (searchParams.get('sortBy') as any) || "relevance",
+      sortBy: (searchParams.get("sortBy") as any) || "relevance",
       limit: 20,
     };
 
     // Lire tous les filtres depuis l'URL
-    const location = searchParams.get('location');
-    const genres = searchParams.get('genres')?.split(',').filter(Boolean);
-    const instruments = searchParams.get('instruments')?.split(',').filter(Boolean);
-    const experience = searchParams.get('experience') as any;
-    const minPrice = searchParams.get('minPrice');
-    const maxPrice = searchParams.get('maxPrice');
-    const availableOnly = searchParams.get('availableOnly');
+    const location = searchParams.get("location");
+    const genres = searchParams.get("genres")?.split(",").filter(Boolean);
+    const instruments = searchParams
+      .get("instruments")
+      ?.split(",")
+      .filter(Boolean);
+    const experience = searchParams.get("experience") as any;
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
+    const availableOnly = searchParams.get("availableOnly");
 
     if (location) params.location = location;
     if (genres?.length) params.genres = genres;
@@ -52,7 +56,7 @@ export const Browse: React.FC = () => {
     if (experience) params.experience = experience;
     if (minPrice) params.minPrice = parseInt(minPrice);
     if (maxPrice) params.maxPrice = parseInt(maxPrice);
-    if (availableOnly === 'true') params.availableOnly = true;
+    if (availableOnly === "true") params.availableOnly = true;
 
     return params;
   });
@@ -67,10 +71,7 @@ export const Browse: React.FC = () => {
   );
 
   // Hook de recherche avec l'API réelle
-  const {
-    results,
-    isLoading,
-  } = useAdvancedSearch(apiQuery);
+  const { results, isLoading } = useAdvancedSearch(apiQuery);
 
   // Hook pour les suggestions
   const { suggestions: apiSuggestions, isLoading: suggestionsLoading } =
@@ -95,9 +96,9 @@ export const Browse: React.FC = () => {
       const timer = setTimeout(() => {
         const newSearchParams = new URLSearchParams(searchParams);
         if (searchQuery) {
-          newSearchParams.set('q', searchQuery);
+          newSearchParams.set("q", searchQuery);
         } else {
-          newSearchParams.delete('q');
+          newSearchParams.delete("q");
         }
         setSearchParams(newSearchParams, { replace: true });
       }, 1000); // Wait 1s after last keystroke
@@ -158,9 +159,9 @@ export const Browse: React.FC = () => {
     // Préserver les filtres existants lors d'une nouvelle recherche
     const newSearchParams = new URLSearchParams(searchParams);
     if (query) {
-      newSearchParams.set('q', query);
+      newSearchParams.set("q", query);
     } else {
-      newSearchParams.delete('q');
+      newSearchParams.delete("q");
     }
     // Utiliser replace pour ne pas ajouter dans l'historique
     setSearchParams(newSearchParams, { replace: true });
@@ -168,23 +169,30 @@ export const Browse: React.FC = () => {
 
   const handleFiltersChange = (newFilters: AdvancedSearchQuery) => {
     setFilters(newFilters);
-    
+
     // Synchroniser avec les paramètres URL pour maintenir l'état de navigation
     const newSearchParams = new URLSearchParams();
-    
+
     // Conserver la recherche actuelle
-    if (searchQuery) newSearchParams.set('q', searchQuery);
-    
+    if (searchQuery) newSearchParams.set("q", searchQuery);
+
     // Ajouter tous les autres filtres
-    if (newFilters.location) newSearchParams.set('location', newFilters.location);
-    if (newFilters.genres?.length) newSearchParams.set('genres', newFilters.genres.join(','));
-    if (newFilters.instruments?.length) newSearchParams.set('instruments', newFilters.instruments.join(','));
-    if (newFilters.experience) newSearchParams.set('experience', newFilters.experience);
-    if (newFilters.minPrice) newSearchParams.set('minPrice', newFilters.minPrice.toString());
-    if (newFilters.maxPrice) newSearchParams.set('maxPrice', newFilters.maxPrice.toString());
-    if (newFilters.availableOnly) newSearchParams.set('availableOnly', 'true');
-    if (newFilters.sortBy && newFilters.sortBy !== 'relevance') newSearchParams.set('sortBy', newFilters.sortBy);
-    
+    if (newFilters.location)
+      newSearchParams.set("location", newFilters.location);
+    if (newFilters.genres?.length)
+      newSearchParams.set("genres", newFilters.genres.join(","));
+    if (newFilters.instruments?.length)
+      newSearchParams.set("instruments", newFilters.instruments.join(","));
+    if (newFilters.experience)
+      newSearchParams.set("experience", newFilters.experience);
+    if (newFilters.minPrice)
+      newSearchParams.set("minPrice", newFilters.minPrice.toString());
+    if (newFilters.maxPrice)
+      newSearchParams.set("maxPrice", newFilters.maxPrice.toString());
+    if (newFilters.availableOnly) newSearchParams.set("availableOnly", "true");
+    if (newFilters.sortBy && newFilters.sortBy !== "relevance")
+      newSearchParams.set("sortBy", newFilters.sortBy);
+
     setSearchParams(newSearchParams);
   };
 
@@ -224,15 +232,15 @@ export const Browse: React.FC = () => {
             </h1>
             <p className="text-xl opacity-90 mb-8">
               {browseType === "artist"
-                ? "Trouvez les venues parfaites pour vos performances"
-                : "Réservez des artistes talentueux pour vos événements"}
+                ? "Réservez des artistes talentueux pour vos événements"
+                : "Trouvez les venues parfaites pour vos performances"}
             </p>
 
             {/* Search bar */}
             <div className="max-w-2xl mx-auto">
               <SearchBar
                 placeholder={`Rechercher ${
-                  browseType === "artist" ? "des venues" : "des artistes"
+                  browseType === "artist" ? "des artistes" : "des venues"
                 }...`}
                 value={searchQuery}
                 onChange={handleSearchChange}
