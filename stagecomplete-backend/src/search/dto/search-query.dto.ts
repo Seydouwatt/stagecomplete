@@ -25,8 +25,14 @@ export class AdvancedSearchQueryDto {
     example: 'Jazz,Blues,Rock',
   })
   @IsOptional()
-  @IsString()
-  @Transform(({ value }) => value?.split(',').map((g: string) => g.trim()))
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',').map((g: string) => g.trim());
+    }
+    return Array.isArray(value) ? value : [];
+  })
+  @IsArray()
+  @IsString({ each: true })
   genres?: string[];
 
   @ApiPropertyOptional({
@@ -34,8 +40,14 @@ export class AdvancedSearchQueryDto {
     example: 'Guitare,Piano,Batterie',
   })
   @IsOptional()
-  @IsString()
-  @Transform(({ value }) => value?.split(',').map((i: string) => i.trim()))
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',').map((i: string) => i.trim());
+    }
+    return Array.isArray(value) ? value : [];
+  })
+  @IsArray()
+  @IsString({ each: true })
   instruments?: string[];
 
   @ApiPropertyOptional({

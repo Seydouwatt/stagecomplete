@@ -4,7 +4,6 @@ import {
   Query,
   HttpCode,
   HttpStatus,
-  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -56,8 +55,7 @@ export class SearchController {
   @ApiQuery({ name: 'availableOnly', required: false, type: Boolean, description: 'Artistes disponibles uniquement' })
   @ApiQuery({ name: 'radius', required: false, type: Number, description: 'Rayon de recherche en km' })
   async searchArtists(
-    @Query(new ValidationPipe({ transform: true, whitelist: true }))
-    query: AdvancedSearchQueryDto,
+    @Query() query: AdvancedSearchQueryDto,
   ): Promise<AdvancedSearchResponseDto> {
     return this.searchService.searchArtists(query);
   }
@@ -76,8 +74,7 @@ export class SearchController {
   @ApiQuery({ name: 'q', required: true, description: 'Requête de recherche (min 2 caractères)' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Nombre de suggestions (défaut: 8, max: 20)' })
   async getSuggestions(
-    @Query(new ValidationPipe({ transform: true }))
-    dto: SearchSuggestionsDto,
+    @Query() dto: SearchSuggestionsDto,
   ): Promise<SearchSuggestionsResponseDto> {
     return this.searchService.getSuggestions(dto);
   }
