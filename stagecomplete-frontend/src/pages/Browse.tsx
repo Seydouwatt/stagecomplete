@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SearchBar } from "../components/search/SearchBar";
 import { FilterPanel } from "../components/search/FilterPanel";
@@ -7,7 +7,7 @@ import { BookingRequestModal } from "../components/booking-requests/BookingReque
 import { useAuthStore } from "../stores/authStore";
 import { motion } from "framer-motion";
 import {
-  useAdvancedSearch,
+  useInfiniteAdvancedSearch,
   useSearchSuggestions,
 } from "../hooks/useAdvancedSearch";
 import type { AdvancedSearchQuery } from "../types";
@@ -70,8 +70,17 @@ export const Browse: React.FC = () => {
     [searchQuery, filters]
   );
 
-  // Hook de recherche avec l'API réelle
-  const { results, isLoading } = useAdvancedSearch(apiQuery);
+  // Hook de recherche avec infinite scroll
+  const {
+    results,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage
+  } = useInfiniteAdvancedSearch(apiQuery);
+
+  // Ref pour l'intersection observer (infinite scroll)
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // Hook pour les suggestions
   const { suggestions: apiSuggestions, isLoading: suggestionsLoading } =
@@ -108,6 +117,30 @@ export const Browse: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
+  // Intersection Observer pour infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const firstEntry = entries[0];
+        if (firstEntry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   // Mapper les suggestions API au format du composant SearchBar
   const searchSuggestions = useMemo(() => {
     return apiSuggestions.map((suggestion) => ({
@@ -142,6 +175,7 @@ export const Browse: React.FC = () => {
         | "PROFESSIONAL",
       availability: true, // TODO: Gérer la disponibilité
       portfolioImages: artist.portfolioPreview || [],
+      publicSlug: artist.publicSlug,
       socialLinks: {}, // TODO: Ajouter socialLinks dans l'API si nécessaire
     }));
   }, [results, browseType]);
@@ -271,6 +305,23 @@ export const Browse: React.FC = () => {
             viewMode={viewMode}
             onViewModeChange={setViewMode}
           />
+
+          {/* Infinite scroll trigger */}
+          <div ref={loadMoreRef} className="py-8 flex justify-center">
+            {isFetchingNextPage && (
+              <div className="flex items-center gap-2">
+                <span className="loading loading-spinner loading-md"></span>
+                <span className="text-base-content/70">
+                  Chargement de plus d'artistes...
+                </span>
+              </div>
+            )}
+            {!hasNextPage && results.length > 0 && !isLoading && (
+              <p className="text-base-content/50 text-sm">
+                Vous avez vu tous les résultats
+              </p>
+            )}
+          </div>
         </motion.div>
       </div>
 

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useState, useCallback, useEffect } from "react";
 import {
   searchArtists,
@@ -177,5 +177,96 @@ export const useQuickFilters = () => {
     filters: data,
     isLoading,
     error,
+  };
+};
+
+/**
+ * Hook pour la recherche avancée avec infinite scroll
+ */
+export const useInfiniteAdvancedSearch = (
+  initialQuery: AdvancedSearchQuery = {}
+) => {
+  const [query, setQuery] = useState<AdvancedSearchQuery>(initialQuery);
+  const [debouncedQuery, setDebouncedQuery] =
+    useState<AdvancedSearchQuery>(initialQuery);
+
+  // Sync initialQuery changes to internal query state
+  useEffect(() => {
+    setQuery(initialQuery);
+  }, [JSON.stringify(initialQuery)]);
+
+  // Debouncing de la recherche textuelle (300ms)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  // Query avec infinite scroll
+  const {
+    data,
+    isLoading,
+    isFetching,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useInfiniteQuery<AdvancedSearchResponse>({
+    queryKey: ["search", "artists", "infinite", debouncedQuery],
+    queryFn: ({ pageParam = 0 }) =>
+      searchArtists({
+        ...debouncedQuery,
+        offset: pageParam as number,
+      }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
+      if (lastPage.metadata.hasMore) {
+        return (lastPage.metadata.offset || 0) + (lastPage.metadata.limit || 20);
+      }
+      return undefined;
+    },
+    // Garder les anciennes données pendant le rechargement
+    placeholderData: (previousData) => previousData,
+    // Cache pendant 5 minutes
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Helper pour mettre à jour la query
+  const updateQuery = useCallback((updates: Partial<AdvancedSearchQuery>) => {
+    setQuery((prev) => ({ ...prev, ...updates }));
+  }, []);
+
+  // Helper pour réinitialiser la query
+  const resetQuery = useCallback(() => {
+    setQuery({});
+  }, []);
+
+  // Flatten les résultats de toutes les pages
+  const allResults = data?.pages.flatMap((page) => page.results) || [];
+  const metadata = data?.pages[data.pages.length - 1]?.metadata;
+
+  return {
+    // Données
+    results: allResults,
+    metadata,
+
+    // États
+    isLoading: isLoading,
+    isFetching,
+    isFetchingNextPage,
+    error,
+    hasNextPage,
+
+    // Query actuelle
+    query,
+
+    // Actions
+    updateQuery,
+    resetQuery,
+    refetch,
+    fetchNextPage,
   };
 };

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   MapPin,
   Star,
@@ -24,6 +25,7 @@ interface Artist {
   experience: "BEGINNER" | "INTERMEDIATE" | "PROFESSIONAL";
   availability: boolean;
   portfolioImages: string[];
+  publicSlug?: string;
   socialLinks?: {
     spotify?: string;
     youtube?: string;
@@ -46,8 +48,15 @@ export const ArtistCard: React.FC<ArtistCardProps> = ({
   isFavorited = false,
   showActions = true,
 }) => {
+  const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const handleViewProfile = () => {
+    if (artist.publicSlug) {
+      navigate(`/artist/${artist.publicSlug}`);
+    }
+  };
 
   const getExperienceColor = (exp: Artist["experience"]) => {
     switch (exp) {
@@ -150,7 +159,11 @@ export const ArtistCard: React.FC<ArtistCardProps> = ({
           animate={{ opacity: isHovered ? 1 : 0 }}
           className="absolute inset-0 bg-black/20 flex items-center justify-center"
         >
-          <button className="btn btn-circle btn-lg bg-white/90 border-none text-primary">
+          <button
+            onClick={handleViewProfile}
+            className="btn btn-circle btn-lg bg-white/90 border-none text-primary hover:bg-white hover:scale-110 transition-transform"
+            title="Voir le profil"
+          >
             <Play className="w-6 h-6" />
           </button>
         </motion.div>

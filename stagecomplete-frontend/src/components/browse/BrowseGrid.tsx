@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Grid, List, ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useRef, useEffect } from "react";
+import { Grid, List } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArtistCard } from "../cards/ArtistCard";
 import { VenueCard } from "../cards/VenueCard";
@@ -29,32 +29,16 @@ export function BrowseGrid<T extends { id: string }>({
   viewMode = "grid",
   onViewModeChange,
 }: BrowseGridProps<T>) {
-  const [page, setPage] = useState(1);
-  const itemsPerPage = 12;
-
-  // Pagination locale
-  const startIndex = (page - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedItems = items.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(items.length / itemsPerPage);
-
-  // Infinite scroll
-  const handleScroll = useCallback(() => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop >=
-        document.documentElement.offsetHeight - 1000 &&
-      hasMore &&
-      !isLoading &&
-      onLoadMore
-    ) {
-      onLoadMore();
-    }
-  }, [hasMore, isLoading, onLoadMore]);
+  // Track previous items length to animate only new items
+  const prevItemsLengthRef = useRef(0);
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
+    // Update previous length after animation
+    const timer = setTimeout(() => {
+      prevItemsLengthRef.current = items.length;
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [items.length]);
 
   const renderItem = (item: T, index: number) => {
     const baseProps = {
@@ -64,11 +48,16 @@ export function BrowseGrid<T extends { id: string }>({
       isFavorited: favoritedItems.includes(item.id),
     };
 
+    // Only animate newly loaded items, not all items
+    const isNewItem = index >= prevItemsLengthRef.current;
+    const localIndex = isNewItem ? index - prevItemsLengthRef.current : 0;
+    const animationDelay = isNewItem ? Math.min(localIndex * 0.05, 0.3) : 0;
+
     return (
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={isNewItem ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.1 }}
+        transition={{ delay: animationDelay, duration: 0.3 }}
       >
         {itemType === "artist" ? (
           <ArtistCard artist={item as any} {...baseProps} />
@@ -128,7 +117,7 @@ export function BrowseGrid<T extends { id: string }>({
           className={gridClass}
           data-cy="browse-grid"
         >
-          {paginatedItems.map((item, index) => renderItem(item, index))}
+          {items.map((item, index) => renderItem(item, index))}
         </motion.div>
       </AnimatePresence>
 
@@ -136,63 +125,6 @@ export function BrowseGrid<T extends { id: string }>({
       {isLoading && (
         <div className="flex justify-center py-8" data-cy="loading-indicator">
           <div className="loading loading-spinner loading-lg"></div>
-        </div>
-      )}
-
-      {/* Pagination */}
-      {totalPages > 1 && !onLoadMore && (
-        <div className="flex justify-center mt-8">
-          <div className="join">
-            <button
-              onClick={() => setPage(page - 1)}
-              disabled={page === 1}
-              className="join-item btn btn-sm"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter(
-                (pageNum) =>
-                  pageNum === 1 ||
-                  pageNum === totalPages ||
-                  Math.abs(pageNum - page) <= 1
-              )
-              .map((pageNum, index, array) => (
-                <React.Fragment key={pageNum}>
-                  {index > 0 && array[index - 1] !== pageNum - 1 && (
-                    <span className="join-item btn btn-sm btn-disabled">
-                      ...
-                    </span>
-                  )}
-                  <button
-                    onClick={() => setPage(pageNum)}
-                    className={`join-item btn btn-sm ${
-                      page === pageNum ? "btn-active" : ""
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                </React.Fragment>
-              ))}
-
-            <button
-              onClick={() => setPage(page + 1)}
-              disabled={page === totalPages}
-              className="join-item btn btn-sm"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Load more button */}
-      {hasMore && onLoadMore && !isLoading && (
-        <div className="flex justify-center mt-8">
-          <button onClick={onLoadMore} className="btn btn-outline">
-            Charger plus
-          </button>
         </div>
       )}
 
