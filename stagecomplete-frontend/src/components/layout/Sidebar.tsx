@@ -21,6 +21,7 @@ import { useAuthStore } from "../../stores/authStore";
 import { ROUTES } from "../../constants";
 import UpgradePrompt from "../premium/UpgradePrompt";
 import { useUnreadMessagesCount } from "../../hooks/useMessages";
+import { useBookingRequestStats } from "../../hooks/useBookingRequests";
 
 interface NavigationItem {
   id: string;
@@ -44,6 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 
   // Récupérer le nombre de messages non lus
   const { count: unreadMessagesCount } = useUnreadMessagesCount();
+  const { stats: bookingStats } = useBookingRequestStats();
 
   const isFreeArtist =
     user?.role === "ARTIST" && (!user?.plan || user.plan === "FREE");
@@ -120,6 +122,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
           label: "Dashboard",
           icon: Home,
           href: "/venue/dashboard",
+        },
+        {
+          id: "booking-requests",
+          label: "Demandes",
+          icon: CalendarCheck,
+          href: "/venue/booking-requests",
+          badge: bookingStats.pending,
         },
         {
           id: "messages",

@@ -13,8 +13,11 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  Clock
+  Clock,
+  Euro,
+  ExternalLink,
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import type { Conversation } from '../types/message';
 
 export const MessagesPage: React.FC = () => {
@@ -110,6 +113,54 @@ export const MessagesPage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Encart booking request */}
+        {selectedConversation.bookingRequest && (
+          <div className="card bg-base-100 border border-base-300">
+            <div className="card-body p-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-sm">Demande de booking</h3>
+                <span className={`badge badge-sm ${
+                  selectedConversation.bookingRequest.status === 'PENDING' || selectedConversation.bookingRequest.status === 'VIEWED'
+                    ? 'badge-warning'
+                    : selectedConversation.bookingRequest.status === 'ACCEPTED'
+                    ? 'badge-success'
+                    : selectedConversation.bookingRequest.status === 'DECLINED'
+                    ? 'badge-error'
+                    : 'badge-ghost'
+                }`}>
+                  {selectedConversation.bookingRequest.status === 'PENDING' ? 'En attente' :
+                   selectedConversation.bookingRequest.status === 'VIEWED' ? 'Vue' :
+                   selectedConversation.bookingRequest.status === 'ACCEPTED' ? 'Acceptee' :
+                   selectedConversation.bookingRequest.status === 'DECLINED' ? 'Declinee' :
+                   selectedConversation.bookingRequest.status === 'CANCELLED' ? 'Annulee' :
+                   selectedConversation.bookingRequest.status}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-4 text-sm text-base-content/70 mt-2">
+                {selectedConversation.bookingRequest.duration && (
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3 h-3" /> {selectedConversation.bookingRequest.duration} min
+                  </span>
+                )}
+                {selectedConversation.bookingRequest.budget && (
+                  <span className="flex items-center gap-1">
+                    <Euro className="w-3 h-3" /> {selectedConversation.bookingRequest.budget}€
+                  </span>
+                )}
+              </div>
+              {!isArtist && ['PENDING', 'VIEWED', 'DECLINED'].includes(selectedConversation.bookingRequest.status) && (
+                <Link
+                  to={`/venue/booking-requests/${selectedConversation.bookingRequest.id}/edit`}
+                  className="btn btn-sm btn-outline btn-primary mt-2"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  Modifier la demande
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Thread de messages */}
         <div className="card bg-base-100 border border-base-300">
