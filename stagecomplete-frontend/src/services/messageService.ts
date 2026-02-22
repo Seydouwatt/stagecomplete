@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { API_URL, API_ENDPOINTS } from '../constants';
-import type { Message, CreateMessageDto, MessageUnreadCount } from '../types/message';
+import type { Message, CreateMessageDto, MessageUnreadCount, Conversation } from '../types/message';
 
 // Configuration axios (réutilise la config de authService)
 const api = axios.create({
@@ -50,6 +50,12 @@ export const messageService = {
   // Obtenir le nombre de messages non lus
   async getUnreadCount(): Promise<MessageUnreadCount> {
     const response = await api.get(API_ENDPOINTS.MESSAGES.UNREAD_COUNT);
+    return response.data;
+  },
+
+  // Obtenir toutes les conversations (events avec messages)
+  async getConversations(): Promise<Conversation[]> {
+    const response = await api.get(API_ENDPOINTS.MESSAGES.CONVERSATIONS);
     return response.data;
   },
 };

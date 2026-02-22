@@ -46,6 +46,7 @@ export const API_ENDPOINTS = {
     CREATE: "/messages",
     MARK_READ: (id: string) => `/messages/${id}/read`,
     UNREAD_COUNT: "/messages/unread-count",
+    CONVERSATIONS: "/messages/conversations",
   },
   BOOKING_REQUESTS: {
     LIST: "/booking-requests",

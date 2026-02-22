@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { messageService } from '../services/messageService';
-import type { Message, CreateMessageDto } from '../types/message';
+import type { Message, CreateMessageDto, Conversation } from '../types/message';
 import { toast } from '../stores/useToastStore';
 
 /**
@@ -79,5 +79,24 @@ export const useUnreadMessagesCount = () => {
     count: data?.count || 0,
     byEvent: data?.byEvent || {},
     isLoading,
+  };
+};
+
+/**
+ * Hook pour récupérer toutes les conversations (events avec messages)
+ */
+export const useConversations = () => {
+  const { data, isLoading, error, refetch } = useQuery<Conversation[]>({
+    queryKey: ['messages', 'conversations'],
+    queryFn: () => messageService.getConversations(),
+    refetchInterval: 5000, // Poll toutes les 5 secondes pour nouvelles conversations
+    staleTime: 0,
+  });
+
+  return {
+    conversations: data || [],
+    isLoading,
+    error,
+    refetch,
   };
 };

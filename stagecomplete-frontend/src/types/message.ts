@@ -26,3 +26,34 @@ export interface MessageUnreadCount {
   count: number;
   byEvent: Record<string, number>;
 }
+
+export interface Conversation {
+  eventId: string;
+  title: string;
+  status: string;
+  date: string;
+  eventType: string;
+  participant: {
+    id: string;
+    name: string;
+    avatar?: string;
+    type: 'artist' | 'venue';
+  };
+  lastMessage: {
+    id: string;
+    content: string;
+    senderId: string;
+    senderName: string;
+    createdAt: string;
+  } | null;
+  bookingRequest: {
+    id: string;
+    status: string;
+    message: string;
+    budget?: number;
+    duration?: number;
+  } | null;
+  unreadCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
