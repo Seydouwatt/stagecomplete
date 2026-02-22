@@ -3,6 +3,7 @@ import { bookingRequestService } from '../services/bookingRequestService';
 import type {
   BookingRequest,
   CreateBookingRequestDto,
+  UpdateBookingRequestDto,
   RespondBookingRequestDto,
 } from '../types/booking-request';
 import { toast } from '../stores/useToastStore';
@@ -57,6 +58,28 @@ export const useCreateBookingRequest = () => {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Erreur lors de la création de la demande');
+    },
+  });
+};
+
+/**
+ * Hook pour modifier une booking request (venue)
+ */
+export const useUpdateBookingRequest = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateBookingRequestDto }) =>
+      bookingRequestService.update(id, data),
+    onSuccess: (_updatedRequest, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['booking-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['booking-request', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['booking-requests', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['messages/conversations'] });
+      toast.success('Demande modifiée et renvoyée');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Erreur lors de la modification');
     },
   });
 };

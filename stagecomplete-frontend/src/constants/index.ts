@@ -45,6 +45,7 @@ export const API_ENDPOINTS = {
     LIST: "/messages",
     CREATE: "/messages",
     MARK_READ: (id: string) => `/messages/${id}/read`,
+    MARK_ALL_READ: "/messages/read-all",
     UNREAD_COUNT: "/messages/unread-count",
     CONVERSATIONS: "/messages/conversations",
   },
@@ -53,6 +54,7 @@ export const API_ENDPOINTS = {
     CREATE: "/booking-requests",
     STATS: "/booking-requests/stats",
     GET_ONE: (id: string) => `/booking-requests/${id}`,
+    UPDATE: (id: string) => `/booking-requests/${id}`,
     RESPOND: (id: string) => `/booking-requests/${id}/respond`,
   },
   NOTIFICATIONS: {

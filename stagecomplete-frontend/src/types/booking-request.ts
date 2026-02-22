@@ -53,6 +53,14 @@ export interface CreateBookingRequestDto {
   message?: string;
 }
 
+export interface UpdateBookingRequestDto {
+  eventDate?: string;
+  eventType?: string;
+  budget?: number;
+  duration?: number;
+  message?: string;
+}
+
 export interface RespondBookingRequestDto {
   action: 'accept' | 'decline' | 'cancel';
   reason?: string;

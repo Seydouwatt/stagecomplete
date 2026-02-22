@@ -3,6 +3,7 @@ import { API_URL, API_ENDPOINTS } from '../constants';
 import type {
   BookingRequest,
   CreateBookingRequestDto,
+  UpdateBookingRequestDto,
   RespondBookingRequestDto,
   BookingRequestStats,
 } from '../types/booking-request';
@@ -49,6 +50,12 @@ export const bookingRequestService = {
   // Obtenir une booking request
   async getOne(id: string): Promise<BookingRequest> {
     const response = await api.get(API_ENDPOINTS.BOOKING_REQUESTS.GET_ONE(id));
+    return response.data;
+  },
+
+  // Modifier une booking request (venue only)
+  async update(id: string, data: UpdateBookingRequestDto): Promise<BookingRequest> {
+    const response = await api.put(API_ENDPOINTS.BOOKING_REQUESTS.UPDATE(id), data);
     return response.data;
   },
 
