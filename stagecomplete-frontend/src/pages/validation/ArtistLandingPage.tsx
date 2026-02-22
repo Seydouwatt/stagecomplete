@@ -10,7 +10,10 @@ import {
 } from "@heroicons/react/24/outline";
 import { SEOHead } from "../../components/seo/SEOHead";
 import { API_URL, API_ENDPOINTS } from "../../constants";
-import { FacebookPixel, trackFacebookEvent } from "../../components/tracking/FacebookPixel";
+import {
+  FacebookPixel,
+  trackFacebookEvent,
+} from "../../components/tracking/FacebookPixel";
 
 interface FormData {
   artistName: string;
@@ -50,39 +53,42 @@ export const ArtistLandingPage: React.FC = () => {
 
     try {
       // Envoyer au backend
-      const response = await fetch(`${API_URL}${API_ENDPOINTS.VALIDATION_LEADS.CREATE}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          type: 'ARTIST',
-          email: formData.email,
-          phone: formData.phone,
-          contactName: formData.contactName,
-          artistName: formData.artistName,
-          artistType: formData.artistType,
-          discipline: formData.discipline,
-          experience: formData.experience,
-          currentPromotion: formData.currentPromotion,
-          monthlyGigs: formData.monthlyGigs,
-          desiredPrice: formData.desiredPrice,
-          artistMainGoal: formData.mainGoal,
-          source: 'landing_page',
-        }),
-      });
+      const response = await fetch(
+        `${API_URL}${API_ENDPOINTS.VALIDATION_LEADS.CREATE}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            type: "ARTIST",
+            email: formData.email,
+            phone: formData.phone,
+            contactName: formData.contactName,
+            artistName: formData.artistName,
+            artistType: formData.artistType,
+            discipline: formData.discipline,
+            experience: formData.experience,
+            currentPromotion: formData.currentPromotion,
+            monthlyGigs: formData.monthlyGigs,
+            desiredPrice: formData.desiredPrice,
+            artistMainGoal: formData.mainGoal,
+            source: "landing_page",
+          }),
+        }
+      );
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Erreur lors de l\'envoi');
+        throw new Error(error.message || "Erreur lors de l'envoi");
       }
 
       console.log("✅ [ARTIST VALIDATION] Form submitted successfully");
 
       // Track avec Facebook Pixel
-      trackFacebookEvent('Lead', {
-        content_name: 'Artist Validation',
-        content_category: 'Artist',
+      trackFacebookEvent("Lead", {
+        content_name: "Artist Validation",
+        content_category: "Artist",
         artist_type: formData.artistType,
         discipline: formData.discipline,
       });
@@ -316,7 +322,7 @@ export const ArtistLandingPage: React.FC = () => {
                   required
                   value={formData.artistName}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border text-gray-700 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="Ex: Jazz Quartet Paris"
                 />
               </div>
@@ -332,7 +338,7 @@ export const ArtistLandingPage: React.FC = () => {
                   required
                   value={formData.contactName}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border  text-gray-700 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="Ex: Sophie Martin"
                 />
               </div>
@@ -348,7 +354,7 @@ export const ArtistLandingPage: React.FC = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border text-gray-700 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="contact@example.com"
                 />
               </div>
@@ -364,7 +370,7 @@ export const ArtistLandingPage: React.FC = () => {
                   required
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border text-gray-700 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="06 12 34 56 78"
                 />
               </div>
@@ -379,7 +385,7 @@ export const ArtistLandingPage: React.FC = () => {
                   required
                   value={formData.artistType}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border text-gray-700 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="">Sélectionnez...</option>
                   <option value="solo">Solo / Artiste individuel</option>
@@ -399,7 +405,7 @@ export const ArtistLandingPage: React.FC = () => {
                   required
                   value={formData.discipline}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border text-gray-700 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="">Sélectionnez...</option>
                   <option value="musique">Musique (tous styles)</option>
@@ -422,7 +428,7 @@ export const ArtistLandingPage: React.FC = () => {
                   required
                   value={formData.experience}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border text-gray-700 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="">Sélectionnez...</option>
                   <option value="debutant">Débutant (moins d'1 an)</option>
@@ -442,7 +448,7 @@ export const ArtistLandingPage: React.FC = () => {
                   required
                   value={formData.currentPromotion}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border text-gray-700 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="">Sélectionnez...</option>
                   <option value="social">Réseaux sociaux uniquement</option>
@@ -464,7 +470,7 @@ export const ArtistLandingPage: React.FC = () => {
                   required
                   value={formData.monthlyGigs}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border  text-gray-700 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="">Sélectionnez...</option>
                   <option value="0">
@@ -487,7 +493,7 @@ export const ArtistLandingPage: React.FC = () => {
                   required
                   value={formData.desiredPrice}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border  text-gray-700 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="">Sélectionnez...</option>
                   <option value="0-200">0-200€</option>
@@ -509,7 +515,7 @@ export const ArtistLandingPage: React.FC = () => {
                   required
                   value={formData.mainGoal}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border  text-gray-700 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 >
                   <option value="">Sélectionnez...</option>
                   <option value="visibility">
@@ -534,7 +540,7 @@ export const ArtistLandingPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-lg font-semibold text-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-gradient-to-r  from-purple-600 to-pink-600 text-white py-4 rounded-lg font-semibold text-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
                   <>
