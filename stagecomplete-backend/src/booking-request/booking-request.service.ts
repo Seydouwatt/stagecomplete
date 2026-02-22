@@ -42,7 +42,21 @@ export class BookingRequestService {
       throw new BadRequestException('Cannot send booking request to private artist profile');
     }
 
-    // Créer la booking request
+    // Créer l'Event (avec status PENDING) pour la conversation
+    const event = await this.prisma.event.create({
+      data: {
+        artistId: dto.artistId,
+        venueId: userProfile.venue.id,
+        title: `${dto.eventType} - Demande de booking`,
+        date: new Date(dto.eventDate),
+        status: 'PENDING',
+        eventType: dto.eventType,
+        budget: dto.budget,
+        duration: dto.duration,
+      },
+    });
+
+    // Créer la booking request liée à l'Event
     const bookingRequest = await this.prisma.bookingRequest.create({
       data: {
         venueId: userProfile.venue.id,
@@ -53,6 +67,7 @@ export class BookingRequestService {
         duration: dto.duration,
         message: dto.message,
         status: 'PENDING',
+        eventId: event.id,
       },
       include: {
         venue: {
@@ -61,8 +76,20 @@ export class BookingRequestService {
         artist: {
           include: { profile: true },
         },
+        event: true,
       },
     });
+
+    // Créer le message initial si fourni
+    if (dto.message) {
+      await this.prisma.message.create({
+        data: {
+          content: dto.message,
+          senderId: userId,
+          eventId: event.id,
+        },
+      });
+    }
 
     // Émettre l'événement de notification à l'artiste
     this.eventEmitter.emit(
@@ -227,17 +254,26 @@ export class BookingRequestService {
     let updatedRequest;
 
     if (dto.action === 'accept') {
-      // Créer l'event
-      const event = await this.prisma.event.create({
+      // Récupérer l'event existant (créé lors de la booking request)
+      if (!bookingRequest.eventId) {
+        throw new BadRequestException('No event associated with this booking request');
+      }
+
+      // Mettre à jour l'event existant: PENDING → CONFIRMED
+      const event = await this.prisma.event.update({
+        where: { id: bookingRequest.eventId },
         data: {
-          artistId: bookingRequest.artistId,
-          venueId: bookingRequest.venueId,
-          title: `${bookingRequest.eventType} - Confirmed Booking`,
-          date: bookingRequest.eventDate,
           status: 'CONFIRMED',
-          eventType: bookingRequest.eventType,
-          budget: bookingRequest.budget,
-          duration: bookingRequest.duration,
+          title: `${bookingRequest.eventType} - Booking confirmé`,
+        },
+      });
+
+      // Créer un message système pour notifier l'acceptation
+      await this.prisma.message.create({
+        data: {
+          content: `✅ Demande de booking acceptée par ${bookingRequest.artist.profile.name}`,
+          senderId: userId,
+          eventId: event.id,
         },
       });
 
@@ -247,7 +283,6 @@ export class BookingRequestService {
         data: {
           status: 'ACCEPTED',
           respondedAt: new Date(),
-          eventId: event.id,
         },
         include: {
           venue: {
@@ -273,6 +308,23 @@ export class BookingRequestService {
         ),
       );
     } else if (dto.action === 'decline') {
+      // Ajouter un message système pour notifier le refus
+      if (bookingRequest.eventId) {
+        await this.prisma.message.create({
+          data: {
+            content: `❌ Demande de booking déclinée par ${bookingRequest.artist.profile.name}`,
+            senderId: userId,
+            eventId: bookingRequest.eventId,
+          },
+        });
+
+        // Mettre à jour le status de l'Event à CANCELLED
+        await this.prisma.event.update({
+          where: { id: bookingRequest.eventId },
+          data: { status: 'CANCELLED' },
+        });
+      }
+
       updatedRequest = await this.prisma.bookingRequest.update({
         where: { id: requestId },
         data: {
@@ -300,6 +352,23 @@ export class BookingRequestService {
         ),
       );
     } else if (dto.action === 'cancel') {
+      // Ajouter un message système pour notifier l'annulation
+      if (bookingRequest.eventId) {
+        await this.prisma.message.create({
+          data: {
+            content: `🚫 Demande de booking annulée par ${bookingRequest.venue.profile.name}`,
+            senderId: userId,
+            eventId: bookingRequest.eventId,
+          },
+        });
+
+        // Mettre à jour le status de l'Event à CANCELLED
+        await this.prisma.event.update({
+          where: { id: bookingRequest.eventId },
+          data: { status: 'CANCELLED' },
+        });
+      }
+
       updatedRequest = await this.prisma.bookingRequest.update({
         where: { id: requestId },
         data: {

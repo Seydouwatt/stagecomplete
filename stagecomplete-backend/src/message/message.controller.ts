@@ -13,6 +13,16 @@ export class MessageController {
     return this.messageService.create(req.user.userId, dto);
   }
 
+  @Get('conversations')
+  async getConversations(@Request() req) {
+    return this.messageService.getConversations(req.user.userId);
+  }
+
+  @Get('unread-count')
+  async getUnreadCount(@Request() req) {
+    return this.messageService.getUnreadCount(req.user.userId);
+  }
+
   @Get()
   async findByEvent(@Request() req, @Query('eventId') eventId: string) {
     return this.messageService.findByEvent(req.user.userId, eventId);
@@ -21,10 +31,5 @@ export class MessageController {
   @Put(':id/read')
   async markAsRead(@Request() req, @Param('id') id: string) {
     return this.messageService.markAsRead(req.user.userId, id);
-  }
-
-  @Get('unread-count')
-  async getUnreadCount(@Request() req) {
-    return this.messageService.getUnreadCount(req.user.userId);
   }
 }

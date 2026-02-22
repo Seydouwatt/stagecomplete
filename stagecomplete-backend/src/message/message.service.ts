@@ -172,4 +172,100 @@ export class MessageService {
 
     return { count: totalCount, byEvent };
   }
+
+  async getConversations(userId: string) {
+    // Trouver le profil de l'utilisateur
+    const userProfile = await this.prisma.profile.findUnique({
+      where: { userId },
+      include: { artist: true, venue: true },
+    });
+
+    if (!userProfile) {
+      throw new NotFoundException('Profile not found');
+    }
+
+    // Récupérer tous les events où l'user est impliqué (incluant PENDING pour les booking requests)
+    const events = await this.prisma.event.findMany({
+      where: {
+        OR: [
+          { artistId: userProfile.artist?.id },
+          { venueId: userProfile.venue?.id },
+        ],
+      },
+      include: {
+        artist: {
+          include: { profile: true },
+        },
+        venue: {
+          include: { profile: true },
+        },
+        bookingRequest: true,
+        messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 1, // Dernier message seulement pour le preview
+          include: {
+            sender: {
+              include: { profile: true },
+            },
+          },
+        },
+        _count: {
+          select: {
+            messages: {
+              where: {
+                isRead: false,
+                senderId: { not: userId },
+              },
+            },
+          },
+        },
+      },
+      orderBy: [
+        // Trier par dernière activité (dernier message ou date de création)
+        { updatedAt: 'desc' },
+      ],
+    });
+
+    // Formater les conversations
+    return events.map((event) => ({
+      eventId: event.id,
+      title: event.title,
+      status: event.status,
+      date: event.date,
+      eventType: event.eventType,
+
+      // Participant info (artiste ou venue selon le rôle de l'user)
+      participant: {
+        id: userProfile.artist ? event.venue?.profile.userId : event.artist.profile.userId,
+        name: userProfile.artist ? event.venue?.profile.name : event.artist.profile.name,
+        avatar: userProfile.artist ? event.venue?.profile.avatar : event.artist.profile.avatar,
+        type: userProfile.artist ? 'venue' : 'artist',
+      },
+
+      // Dernier message
+      lastMessage: event.messages[0] ? {
+        id: event.messages[0].id,
+        content: event.messages[0].content,
+        senderId: event.messages[0].senderId,
+        senderName: event.messages[0].sender.profile?.name,
+        createdAt: event.messages[0].createdAt,
+      } : null,
+
+      // Booking request associée
+      bookingRequest: event.bookingRequest ? {
+        id: event.bookingRequest.id,
+        status: event.bookingRequest.status,
+        message: event.bookingRequest.message,
+        budget: event.bookingRequest.budget,
+        duration: event.bookingRequest.duration,
+      } : null,
+
+      // Compteur de messages non lus
+      unreadCount: event._count.messages,
+
+      // Métadonnées
+      createdAt: event.createdAt,
+      updatedAt: event.updatedAt,
+    }));
+  }
 }
