@@ -1,6 +1,8 @@
 import React from "react";
 import { Route } from "react-router-dom";
 import { VenueDashboard } from "../../pages/dashboard";
+import { VenueBookingRequestsPage } from "../../pages/VenueBookingRequestsPage";
+import { BookingRequestEditPage } from "../../pages/BookingRequestEditPage";
 import { ProtectedRoute } from "../../components";
 
 const ComingSoon: React.FC<{ title: string }> = ({ title }) => (
@@ -17,6 +19,24 @@ export const venueRoutes = [
     element={
       <ProtectedRoute requiredRole="VENUE">
         <VenueDashboard />
+      </ProtectedRoute>
+    }
+  />,
+  <Route
+    key="venue-booking-requests"
+    path="/venue/booking-requests"
+    element={
+      <ProtectedRoute requiredRole="VENUE">
+        <VenueBookingRequestsPage />
+      </ProtectedRoute>
+    }
+  />,
+  <Route
+    key="venue-booking-request-edit"
+    path="/venue/booking-requests/:id/edit"
+    element={
+      <ProtectedRoute requiredRole="VENUE">
+        <BookingRequestEditPage />
       </ProtectedRoute>
     }
   />,
