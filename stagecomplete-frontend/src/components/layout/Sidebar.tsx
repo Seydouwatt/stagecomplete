@@ -20,6 +20,7 @@ import { clsx } from "clsx";
 import { useAuthStore } from "../../stores/authStore";
 import { ROUTES } from "../../constants";
 import UpgradePrompt from "../premium/UpgradePrompt";
+import { useUnreadMessagesCount } from "../../hooks/useMessages";
 
 interface NavigationItem {
   id: string;
@@ -40,6 +41,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+
+  // Récupérer le nombre de messages non lus
+  const { count: unreadMessagesCount } = useUnreadMessagesCount();
 
   const isFreeArtist =
     user?.role === "ARTIST" && (!user?.plan || user.plan === "FREE");
@@ -74,7 +78,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
           label: "Messages",
           icon: MessageSquare,
           href: "/messages",
-          badge: 3,
+          badge: unreadMessagesCount,
         },
       ];
 
@@ -122,7 +126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
           label: "Messages",
           icon: MessageSquare,
           href: "/messages",
-          badge: 3,
+          badge: unreadMessagesCount,
         },
         {
           id: "calendar",
@@ -138,7 +142,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
           id: "browse-artists",
           label: "Trouver des artistes",
           icon: Search,
-          href: "/browse/artists",
+          href: "/browse",
         },
         {
           id: "venue-profile",
@@ -250,7 +254,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                 >
                   <Icon className="w-5 h-5" />
                   <span className="flex-1">{item.label}</span>
-                  {item.badge && (
+                  {item.badge !== undefined && item.badge > 0 && (
                     <span className="badge badge-primary badge-sm">
                       {item.badge}
                     </span>

@@ -9,6 +9,7 @@ import {
   Search,
   BarChart3,
   Clock,
+  MessageSquare,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -20,10 +21,17 @@ import {
   RecentActivity,
 } from "../../components/dashboard";
 import { LineChart, BarChart, DonutChart } from "../../components/charts";
+import { useBookingRequestStats } from "../../hooks/useBookingRequests";
+import { useUnreadMessagesCount, useConversations } from "../../hooks/useMessages";
 
 export const VenueDashboard: React.FC = () => {
   const { user } = useAuthStore();
   const navigate = useNavigate();
+
+  // Récupérer les stats réelles
+  const { stats: bookingStats } = useBookingRequestStats();
+  const { count: unreadMessagesCount } = useUnreadMessagesCount();
+  const { conversations } = useConversations();
 
   // Données mockées pour les charts
   const occupancyData = [
@@ -71,12 +79,12 @@ export const VenueDashboard: React.FC = () => {
       onClick: () => navigate("/browse"),
     },
     {
-      id: "analytics",
-      label: "Analytics",
-      description: "Voir les performances",
-      icon: BarChart3,
+      id: "messages",
+      label: "Messages",
+      description: `${unreadMessagesCount} non lus`,
+      icon: MessageSquare,
       color: "bg-success",
-      onClick: () => console.log("Analytics"),
+      onClick: () => navigate("/messages"),
     },
     {
       id: "schedule",
@@ -88,36 +96,22 @@ export const VenueDashboard: React.FC = () => {
     },
   ];
 
-  const recentActivities = [
-    {
-      id: "1",
-      type: "booking" as const,
-      title: "Nouvelle demande de booking",
-      description: "Jazz Quartet pour le 18 Décembre",
-      timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1h ago
-    },
-    {
-      id: "2",
-      type: "payment" as const,
-      title: "Paiement reçu",
-      description: "€1,250 pour événement du weekend",
-      timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3h ago
-    },
-    {
-      id: "3",
+  // Convertir les conversations récentes en activités
+  const recentActivities = conversations
+    .slice(0, 5) // Prendre les 5 dernières
+    .map((conversation) => ({
+      id: conversation.eventId,
       type: "message" as const,
-      title: "Message de Marie Dubois",
-      description: "Confirmation pour concert acoustique",
-      timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6h ago
-    },
-    {
-      id: "4",
-      type: "review" as const,
-      title: "Nouvelle évaluation",
-      description: "5 étoiles de Thomas Martin",
-      timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12h ago
-    },
-  ];
+      title: conversation.status === 'PENDING'
+        ? `Nouvelle demande de ${conversation.participant.name}`
+        : `Message de ${conversation.participant.name}`,
+      description: conversation.lastMessage?.content
+        ? conversation.lastMessage.content.slice(0, 60) + (conversation.lastMessage.content.length > 60 ? '...' : '')
+        : conversation.title,
+      timestamp: conversation.lastMessage
+        ? new Date(conversation.lastMessage.createdAt)
+        : new Date(conversation.createdAt),
+    }));
 
   return (
     <motion.div
@@ -160,36 +154,27 @@ export const VenueDashboard: React.FC = () => {
       {/* Stats cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          title="Événements ce mois"
-          value="24"
-          change={{ value: 15, type: "increase" }}
+          title="Demandes en attente"
+          value={String(bookingStats.pending)}
           icon={Calendar}
-          color="primary"
-          trend={[
-            { name: "S1", value: 18 },
-            { name: "S2", value: 22 },
-            { name: "S3", value: 20 },
-            { name: "S4", value: 28 },
-          ]}
+          color="warning"
         />
         <StatCard
-          title="Artistes bookés"
-          value="16"
-          change={{ value: 20, type: "increase" }}
+          title="Bookings acceptés"
+          value={String(bookingStats.accepted)}
           icon={Users}
-          color="secondary"
-        />
-        <StatCard
-          title="Taux d'occupation"
-          value="87%"
-          change={{ value: 5, type: "increase" }}
-          icon={TrendingUp}
           color="success"
         />
         <StatCard
-          title="Capacité venue"
-          value="300"
-          icon={MapPin}
+          title="Messages non lus"
+          value={String(unreadMessagesCount)}
+          icon={MessageSquare}
+          color="primary"
+        />
+        <StatCard
+          title="Conversations actives"
+          value={String(conversations.length)}
+          icon={TrendingUp}
           color="info"
         />
       </div>

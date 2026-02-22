@@ -1,10 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../stores/authStore';
-import { X, Calendar, Clock, DollarSign, MessageSquare } from 'lucide-react';
+import { toast } from '../../stores/useToastStore';
+import { X, Calendar, Clock, DollarSign, MessageSquare, Send } from 'lucide-react';
 
 const bookingRequestSchema = z.object({
   eventDate: z.string().min(1, 'Date requise'),
@@ -33,6 +35,7 @@ export const BookingRequestModal: React.FC<BookingRequestModalProps> = ({
 }) => {
   const { token } = useAuthStore();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -69,9 +72,21 @@ export const BookingRequestModal: React.FC<BookingRequestModalProps> = ({
       return response.json();
     },
     onSuccess: () => {
+      // Invalider les caches
       queryClient.invalidateQueries({ queryKey: ['booking-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['messages', 'conversations'] });
+
+      // Afficher un message de succès
+      toast.success(`Demande envoyée à ${artistName} ! Vous pouvez maintenant discuter dans la messagerie.`);
+
+      // Réinitialiser le formulaire et fermer
       reset();
       onClose();
+
+      // Naviguer vers la page messages après un court délai
+      setTimeout(() => {
+        navigate('/messages');
+      }, 500);
     },
   });
 
