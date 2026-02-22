@@ -134,6 +134,40 @@ export class MessageService {
     });
   }
 
+  async markAllAsRead(userId: string, eventId: string) {
+    // Vérifier que l'event existe et que l'user y est impliqué
+    const event = await this.prisma.event.findUnique({
+      where: { id: eventId },
+      include: {
+        artist: { include: { profile: true } },
+        venue: { include: { profile: true } },
+      },
+    });
+
+    if (!event) {
+      throw new NotFoundException('Event not found');
+    }
+
+    const isArtist = event.artist.profile.userId === userId;
+    const isVenue = event.venue?.profile.userId === userId;
+
+    if (!isArtist && !isVenue) {
+      throw new ForbiddenException('Not authorized');
+    }
+
+    // Marquer tous les messages non-lus envoyés par l'autre partie
+    const result = await this.prisma.message.updateMany({
+      where: {
+        eventId,
+        isRead: false,
+        senderId: { not: userId },
+      },
+      data: { isRead: true },
+    });
+
+    return { updated: result.count };
+  }
+
   async getUnreadCount(userId: string) {
     // Trouver tous les events où l'user est impliqué
     const userProfile = await this.prisma.profile.findUnique({

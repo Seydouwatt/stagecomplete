@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { MessageSquare } from 'lucide-react';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
-import { useMessages, useSendMessage } from '../../hooks/useMessages';
+import { useMessages, useSendMessage, useMarkAllAsRead } from '../../hooks/useMessages';
 
 interface MessageThreadProps {
   eventId: string;
@@ -15,6 +15,16 @@ export const MessageThread: React.FC<MessageThreadProps> = ({
 }) => {
   const { messages, isLoading } = useMessages(eventId);
   const sendMessage = useSendMessage();
+  const markAllAsRead = useMarkAllAsRead();
+  const prevMessageCount = useRef(0);
+
+  // Marquer les messages comme lus a l'ouverture et quand de nouveaux arrivent
+  useEffect(() => {
+    if (eventId && messages.length > 0 && messages.length !== prevMessageCount.current) {
+      markAllAsRead.mutate(eventId);
+      prevMessageCount.current = messages.length;
+    }
+  }, [eventId, messages.length]);
 
   const handleSendMessage = (content: string) => {
     sendMessage.mutate({

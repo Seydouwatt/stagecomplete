@@ -47,6 +47,12 @@ export const messageService = {
     return response.data;
   },
 
+  // Marquer tous les messages d'un event comme lus
+  async markAllAsRead(eventId: string): Promise<{ updated: number }> {
+    const response = await api.put(`${API_ENDPOINTS.MESSAGES.MARK_ALL_READ}?eventId=${eventId}`);
+    return response.data;
+  },
+
   // Obtenir le nombre de messages non lus
   async getUnreadCount(): Promise<MessageUnreadCount> {
     const response = await api.get(API_ENDPOINTS.MESSAGES.UNREAD_COUNT);

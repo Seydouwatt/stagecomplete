@@ -28,6 +28,11 @@ export class MessageController {
     return this.messageService.findByEvent(req.user.userId, eventId);
   }
 
+  @Put('read-all')
+  async markAllAsRead(@Request() req, @Query('eventId') eventId: string) {
+    return this.messageService.markAllAsRead(req.user.userId, eventId);
+  }
+
   @Put(':id/read')
   async markAsRead(@Request() req, @Param('id') id: string) {
     return this.messageService.markAsRead(req.user.userId, id);

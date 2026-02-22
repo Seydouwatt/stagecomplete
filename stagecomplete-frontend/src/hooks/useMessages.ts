@@ -65,6 +65,22 @@ export const useMarkMessageAsRead = () => {
 };
 
 /**
+ * Hook pour marquer tous les messages d'un event comme lus
+ */
+export const useMarkAllAsRead = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (eventId: string) => messageService.markAllAsRead(eventId),
+    onSuccess: (_data, eventId) => {
+      queryClient.invalidateQueries({ queryKey: ['messages', eventId] });
+      queryClient.invalidateQueries({ queryKey: ['messages', 'unread-count'] });
+      queryClient.invalidateQueries({ queryKey: ['messages', 'conversations'] });
+    },
+  });
+};
+
+/**
  * Hook pour le compteur de messages non lus
  */
 export const useUnreadMessagesCount = () => {
