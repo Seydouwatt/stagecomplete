@@ -2,6 +2,7 @@ import { Controller, Get, Post, Put, Body, Param, Query, UseGuards, Request } fr
 import { AuthGuard } from '@nestjs/passport';
 import { BookingRequestService } from './booking-request.service';
 import { CreateBookingRequestDto } from './dto/create-booking-request.dto';
+import { UpdateBookingRequestDto } from './dto/update-booking-request.dto';
 import { RespondBookingRequestDto } from './dto/respond-booking-request.dto';
 
 @Controller('booking-requests')
@@ -27,6 +28,11 @@ export class BookingRequestController {
   @Get(':id')
   async findOne(@Request() req, @Param('id') id: string) {
     return this.bookingRequestService.findOne(req.user.userId, id);
+  }
+
+  @Put(':id')
+  async update(@Request() req, @Param('id') id: string, @Body() dto: UpdateBookingRequestDto) {
+    return this.bookingRequestService.update(req.user.userId, id, dto);
   }
 
   @Put(':id/respond')

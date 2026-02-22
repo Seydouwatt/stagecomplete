@@ -3,6 +3,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateBookingRequestDto } from './dto/create-booking-request.dto';
 import { RespondBookingRequestDto } from './dto/respond-booking-request.dto';
+import { UpdateBookingRequestDto } from './dto/update-booking-request.dto';
 import {
   BookingRequestReceivedEvent,
   BookingRequestAcceptedEvent,
@@ -202,6 +203,103 @@ export class BookingRequestService {
     }
 
     return bookingRequest;
+  }
+
+  async update(userId: string, requestId: string, dto: UpdateBookingRequestDto) {
+    const bookingRequest = await this.prisma.bookingRequest.findUnique({
+      where: { id: requestId },
+      include: {
+        venue: { include: { profile: true } },
+        artist: { include: { profile: true } },
+      },
+    });
+
+    if (!bookingRequest) {
+      throw new NotFoundException('Booking request not found');
+    }
+
+    // Vérifier que l'utilisateur est la venue propriétaire
+    const userProfile = await this.prisma.profile.findUnique({
+      where: { userId },
+      include: { venue: true },
+    });
+
+    if (!userProfile?.venue || userProfile.venue.id !== bookingRequest.venueId) {
+      throw new ForbiddenException('Only the venue owner can update this booking request');
+    }
+
+    // Vérifier que le statut permet la modification
+    if (!['PENDING', 'VIEWED', 'DECLINED'].includes(bookingRequest.status)) {
+      throw new BadRequestException(`Cannot update a booking request with status ${bookingRequest.status}`);
+    }
+
+    // Préparer les données de mise à jour
+    const updateData: any = {};
+    const eventUpdateData: any = {};
+
+    if (dto.eventDate) {
+      updateData.eventDate = new Date(dto.eventDate);
+      eventUpdateData.date = new Date(dto.eventDate);
+    }
+    if (dto.eventType) {
+      updateData.eventType = dto.eventType;
+      eventUpdateData.eventType = dto.eventType;
+      eventUpdateData.title = `${dto.eventType} - Demande de booking`;
+    }
+    if (dto.budget !== undefined) {
+      updateData.budget = dto.budget;
+      eventUpdateData.budget = dto.budget;
+    }
+    if (dto.duration !== undefined) {
+      updateData.duration = dto.duration;
+      eventUpdateData.duration = dto.duration;
+    }
+    if (dto.message !== undefined) {
+      updateData.message = dto.message;
+    }
+
+    // Si le statut était DECLINED, repasser en PENDING
+    if (bookingRequest.status === 'DECLINED') {
+      updateData.status = 'PENDING';
+      updateData.respondedAt = null;
+      updateData.viewedByArtist = false;
+    }
+
+    // Mettre à jour la booking request
+    const updatedRequest = await this.prisma.bookingRequest.update({
+      where: { id: requestId },
+      data: updateData,
+      include: {
+        venue: { include: { profile: true } },
+        artist: { include: { profile: true } },
+        event: true,
+      },
+    });
+
+    // Mettre à jour l'Event associé
+    if (bookingRequest.eventId && Object.keys(eventUpdateData).length > 0) {
+      // Si DECLINED → PENDING, remettre l'event en PENDING aussi
+      if (bookingRequest.status === 'DECLINED') {
+        eventUpdateData.status = 'PENDING';
+      }
+      await this.prisma.event.update({
+        where: { id: bookingRequest.eventId },
+        data: eventUpdateData,
+      });
+    }
+
+    // Créer un message système dans la conversation
+    if (bookingRequest.eventId) {
+      await this.prisma.message.create({
+        data: {
+          content: `📝 Demande de booking modifiée par ${bookingRequest.venue.profile.name}`,
+          senderId: userId,
+          eventId: bookingRequest.eventId,
+        },
+      });
+    }
+
+    return updatedRequest;
   }
 
   async respond(userId: string, requestId: string, dto: RespondBookingRequestDto) {
