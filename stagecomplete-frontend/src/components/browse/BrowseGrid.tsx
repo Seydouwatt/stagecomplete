@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { Grid, List } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArtistCard } from "../cards/ArtistCard";
@@ -21,8 +21,7 @@ export function BrowseGrid<T extends { id: string }>({
   items,
   itemType,
   isLoading = false,
-  hasMore = false,
-  onLoadMore,
+
   onItemContact,
   onItemFavorite,
   favoritedItems,

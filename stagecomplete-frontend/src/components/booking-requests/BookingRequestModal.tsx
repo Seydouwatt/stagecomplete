@@ -1,18 +1,18 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuthStore } from '../../stores/authStore';
-import { toast } from '../../stores/useToastStore';
-import { X, Calendar, Clock, DollarSign, MessageSquare, Send } from 'lucide-react';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "../../stores/authStore";
+import { toast } from "../../stores/useToastStore";
+import { X, Calendar, Clock, DollarSign, MessageSquare } from "lucide-react";
 
 const bookingRequestSchema = z.object({
-  eventDate: z.string().min(1, 'Date requise'),
-  eventType: z.string().min(1, 'Type d\'événement requis'),
-  duration: z.coerce.number().min(30, 'Durée minimale: 30 minutes').optional(),
-  budget: z.coerce.number().min(0, 'Budget doit être positif').optional(),
+  eventDate: z.string().min(1, "Date requise"),
+  eventType: z.string().min(1, "Type d'événement requis"),
+  duration: z.coerce.number().min(30, "Durée minimale: 30 minutes").optional(),
+  budget: z.coerce.number().min(0, "Budget doit être positif").optional(),
   message: z.string().optional(),
 });
 
@@ -48,36 +48,45 @@ export const BookingRequestModal: React.FC<BookingRequestModalProps> = ({
 
   const createRequestMutation = useMutation({
     mutationFn: async (data: BookingRequestFormData) => {
-      const response = await fetch('http://localhost:3000/api/booking-requests', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        "http://localhost:3000/api/booking-requests",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            artistId,
+            eventDate: new Date(data.eventDate).toISOString(),
+            eventType: data.eventType,
+            duration: data.duration,
+            budget: data.budget,
+            message: data.message,
+          }),
         },
-        body: JSON.stringify({
-          artistId,
-          eventDate: new Date(data.eventDate).toISOString(),
-          eventType: data.eventType,
-          duration: data.duration,
-          budget: data.budget,
-          message: data.message,
-        }),
-      });
+      );
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Erreur lors de la création de la demande');
+        throw new Error(
+          error.message || "Erreur lors de la création de la demande",
+        );
       }
 
       return response.json();
     },
     onSuccess: () => {
       // Invalider les caches
-      queryClient.invalidateQueries({ queryKey: ['booking-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['messages', 'conversations'] });
+      queryClient.invalidateQueries({ queryKey: ["booking-requests"] });
+      queryClient.invalidateQueries({
+        queryKey: ["messages", "conversations"],
+      });
 
       // Afficher un message de succès
-      toast.success(`Demande envoyée à ${artistName} ! Vous pouvez maintenant discuter dans la messagerie.`);
+      toast.success(
+        `Demande envoyée à ${artistName} ! Vous pouvez maintenant discuter dans la messagerie.`,
+      );
 
       // Réinitialiser le formulaire et fermer
       reset();
@@ -85,7 +94,7 @@ export const BookingRequestModal: React.FC<BookingRequestModalProps> = ({
 
       // Naviguer vers la page messages après un court délai
       setTimeout(() => {
-        navigate('/messages');
+        navigate("/messages");
       }, 500);
     },
   });
@@ -134,13 +143,15 @@ export const BookingRequestModal: React.FC<BookingRequestModalProps> = ({
               </span>
             </label>
             <input
-              {...register('eventDate')}
+              {...register("eventDate")}
               type="datetime-local"
-              className={`input input-bordered ${errors.eventDate ? 'input-error' : ''}`}
+              className={`input input-bordered ${errors.eventDate ? "input-error" : ""}`}
             />
             {errors.eventDate && (
               <label className="label">
-                <span className="label-text-alt text-error">{String(errors.eventDate.message)}</span>
+                <span className="label-text-alt text-error">
+                  {String(errors.eventDate.message)}
+                </span>
               </label>
             )}
           </div>
@@ -148,11 +159,13 @@ export const BookingRequestModal: React.FC<BookingRequestModalProps> = ({
           {/* Event Type */}
           <div className="form-control">
             <label className="label">
-              <span className="label-text font-semibold">Type d'événement *</span>
+              <span className="label-text font-semibold">
+                Type d'événement *
+              </span>
             </label>
             <select
-              {...register('eventType')}
-              className={`select select-bordered ${errors.eventType ? 'select-error' : ''}`}
+              {...register("eventType")}
+              className={`select select-bordered ${errors.eventType ? "select-error" : ""}`}
             >
               <option value="">Sélectionner...</option>
               <option value="CONCERT">Concert</option>
@@ -166,7 +179,9 @@ export const BookingRequestModal: React.FC<BookingRequestModalProps> = ({
             </select>
             {errors.eventType && (
               <label className="label">
-                <span className="label-text-alt text-error">{String(errors.eventType.message)}</span>
+                <span className="label-text-alt text-error">
+                  {String(errors.eventType.message)}
+                </span>
               </label>
             )}
           </div>
@@ -181,7 +196,7 @@ export const BookingRequestModal: React.FC<BookingRequestModalProps> = ({
                 </span>
               </label>
               <input
-                {...register('duration')}
+                {...register("duration")}
                 type="number"
                 min="30"
                 step="15"
@@ -190,7 +205,9 @@ export const BookingRequestModal: React.FC<BookingRequestModalProps> = ({
               />
               {errors.duration && (
                 <label className="label">
-                  <span className="label-text-alt text-error">{String(errors.duration.message)}</span>
+                  <span className="label-text-alt text-error">
+                    {String(errors.duration.message)}
+                  </span>
                 </label>
               )}
             </div>
@@ -203,7 +220,7 @@ export const BookingRequestModal: React.FC<BookingRequestModalProps> = ({
                 </span>
               </label>
               <input
-                {...register('budget')}
+                {...register("budget")}
                 type="number"
                 min="0"
                 step="50"
@@ -212,7 +229,9 @@ export const BookingRequestModal: React.FC<BookingRequestModalProps> = ({
               />
               {errors.budget && (
                 <label className="label">
-                  <span className="label-text-alt text-error">{String(errors.budget.message)}</span>
+                  <span className="label-text-alt text-error">
+                    {String(errors.budget.message)}
+                  </span>
                 </label>
               )}
             </div>
@@ -227,7 +246,7 @@ export const BookingRequestModal: React.FC<BookingRequestModalProps> = ({
               </span>
             </label>
             <textarea
-              {...register('message')}
+              {...register("message")}
               className="textarea textarea-bordered h-24"
               placeholder="Décrivez votre événement, vos attentes..."
             />
@@ -261,7 +280,7 @@ export const BookingRequestModal: React.FC<BookingRequestModalProps> = ({
                   Envoi...
                 </>
               ) : (
-                'Envoyer la demande'
+                "Envoyer la demande"
               )}
             </button>
           </div>

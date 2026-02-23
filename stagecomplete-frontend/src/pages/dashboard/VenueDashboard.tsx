@@ -4,10 +4,8 @@ import {
   Calendar,
   Users,
   TrendingUp,
-  MapPin,
   Plus,
   Search,
-  BarChart3,
   Clock,
   MessageSquare,
 } from "lucide-react";
@@ -22,7 +20,10 @@ import {
 } from "../../components/dashboard";
 import { LineChart, BarChart, DonutChart } from "../../components/charts";
 import { useBookingRequestStats } from "../../hooks/useBookingRequests";
-import { useUnreadMessagesCount, useConversations } from "../../hooks/useMessages";
+import {
+  useUnreadMessagesCount,
+  useConversations,
+} from "../../hooks/useMessages";
 
 export const VenueDashboard: React.FC = () => {
   const { user } = useAuthStore();
@@ -102,11 +103,13 @@ export const VenueDashboard: React.FC = () => {
     .map((conversation) => ({
       id: conversation.eventId,
       type: "message" as const,
-      title: conversation.status === 'PENDING'
-        ? `Nouvelle demande de ${conversation.participant.name}`
-        : `Message de ${conversation.participant.name}`,
+      title:
+        conversation.status === "PENDING"
+          ? `Nouvelle demande de ${conversation.participant.name}`
+          : `Message de ${conversation.participant.name}`,
       description: conversation.lastMessage?.content
-        ? conversation.lastMessage.content.slice(0, 60) + (conversation.lastMessage.content.length > 60 ? '...' : '')
+        ? conversation.lastMessage.content.slice(0, 60) +
+          (conversation.lastMessage.content.length > 60 ? "..." : "")
         : conversation.title,
       timestamp: conversation.lastMessage
         ? new Date(conversation.lastMessage.createdAt)
