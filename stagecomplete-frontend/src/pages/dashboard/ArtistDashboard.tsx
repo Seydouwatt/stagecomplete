@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 import { useAuthStore } from "../../stores/authStore";
 import {
@@ -24,9 +25,12 @@ import MobileStatsCarousel from "./MobileStatsCarousel";
 import ProfileCompletionPrompt from "../../components/dashboard/ProfileCompletionPrompt";
 import { useProfileCompletion } from "../../hooks/useProfileCompletion";
 import { getArtistMetrics } from "../../services/metricsService";
+import { useUnreadMessagesCount, useConversations } from "../../hooks/useMessages";
+import { artistService } from "../../services/artistService";
 
 export const ArtistDashboard: React.FC = () => {
   const { user, token } = useAuthStore();
+  const navigate = useNavigate();
   const { shouldShowAssistantPrompt, completionPercentage } =
     useProfileCompletion();
 
@@ -36,6 +40,16 @@ export const ArtistDashboard: React.FC = () => {
     queryFn: () => getArtistMetrics(token!),
     enabled: !!token && user?.role === "ARTIST",
   });
+
+  // Fetch artist profile pour le publicSlug
+  const { data: artistProfile } = useQuery({
+    queryKey: ["my-artist-profile"],
+    queryFn: () => artistService.getMyArtistProfile(),
+    enabled: !!token && user?.role === "ARTIST",
+  });
+
+  const { count: unreadMessagesCount } = useUnreadMessagesCount();
+  const { conversations } = useConversations();
 
   const metrics = metricsData?.metrics;
 
@@ -78,7 +92,7 @@ export const ArtistDashboard: React.FC = () => {
           description: "Utiliser l'assistant guidé",
           icon: Upload,
           color: "bg-purple-500",
-          onClick: () => (window.location.href = "/artist/portfolio"),
+          onClick: () => navigate("/artist/portfolio"),
         },
         {
           id: "add-photos",
@@ -86,7 +100,7 @@ export const ArtistDashboard: React.FC = () => {
           description: "Portfolio et galerie",
           icon: Upload,
           color: "bg-success",
-          onClick: () => (window.location.href = "/artist/portfolio"),
+          onClick: () => navigate("/artist/portfolio"),
         },
         {
           id: "edit-profile",
@@ -94,7 +108,7 @@ export const ArtistDashboard: React.FC = () => {
           description: "Informations de base",
           icon: Settings,
           color: "bg-info",
-          onClick: () => (window.location.href = "/artist/portfolio"),
+          onClick: () => navigate("/artist/portfolio"),
         },
         {
           id: "view-profile",
@@ -102,7 +116,13 @@ export const ArtistDashboard: React.FC = () => {
           description: "Comment les venues me voient",
           icon: Search,
           color: "bg-secondary",
-          onClick: () => console.log("Voir profil public"),
+          onClick: () => {
+            if (artistProfile?.publicSlug) {
+              window.open(`/artist/${artistProfile.publicSlug}`, "_blank");
+            } else {
+              navigate("/artist/portfolio");
+            }
+          },
         },
       ];
     } else {
@@ -114,7 +134,7 @@ export const ArtistDashboard: React.FC = () => {
           description: "Créer une nouvelle performance",
           icon: Plus,
           color: "bg-primary",
-          onClick: () => console.log("Nouvel événement"),
+          onClick: () => navigate("/artist/bookings/new"),
         },
         {
           id: "find-venues",
@@ -122,7 +142,7 @@ export const ArtistDashboard: React.FC = () => {
           description: "Explorer de nouveaux lieux",
           icon: Search,
           color: "bg-secondary",
-          onClick: () => console.log("Trouver venues"),
+          onClick: () => navigate("/browse"),
         },
         {
           id: "upload-content",
@@ -130,7 +150,7 @@ export const ArtistDashboard: React.FC = () => {
           description: "Ajouter photos/vidéos",
           icon: Upload,
           color: "bg-success",
-          onClick: () => console.log("Upload contenu"),
+          onClick: () => navigate("/artist/portfolio"),
         },
         {
           id: "settings",
@@ -138,7 +158,7 @@ export const ArtistDashboard: React.FC = () => {
           description: "Gérer votre profil",
           icon: Settings,
           color: "bg-info",
-          onClick: () => console.log("Paramètres"),
+          onClick: () => navigate("/settings"),
         },
       ];
     }
@@ -146,36 +166,21 @@ export const ArtistDashboard: React.FC = () => {
 
   const quickActions = getQuickActions();
 
-  const recentActivities = [
-    {
-      id: "1",
-      type: "booking" as const,
-      title: "Nouveau booking confirmé",
-      description: "Concert au Jazz Club - 15 Décembre",
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2h ago
-    },
-    {
-      id: "2",
-      type: "message" as const,
-      title: "Message de Le Supersonic",
-      description: "Proposition pour soirée du 20 Décembre",
-      timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5h ago
-    },
-    {
-      id: "3",
-      type: "payment" as const,
-      title: "Paiement reçu",
-      description: "€450 pour concert du 10 Novembre",
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-    },
-    {
-      id: "4",
-      type: "review" as const,
-      title: "Nouvelle évaluation",
-      description: "5 étoiles de La Maroquinerie",
-      timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-    },
-  ];
+  const recentActivities = conversations.slice(0, 5).map((conversation) => ({
+    id: conversation.eventId,
+    type: "message" as const,
+    title:
+      conversation.status === "PENDING"
+        ? `Demande de ${conversation.participant.name}`
+        : `Message de ${conversation.participant.name}`,
+    description: conversation.lastMessage?.content
+      ? conversation.lastMessage.content.slice(0, 60) +
+        (conversation.lastMessage.content.length > 60 ? "..." : "")
+      : conversation.title,
+    timestamp: conversation.lastMessage
+      ? new Date(conversation.lastMessage.createdAt)
+      : new Date(conversation.createdAt),
+  }));
 
   return (
     <motion.div
@@ -261,7 +266,7 @@ export const ArtistDashboard: React.FC = () => {
         />
         <StatCard
           title="Messages non lus"
-          value="0"
+          value={String(unreadMessagesCount)}
           icon={MessageSquare}
           color="warning"
         />
@@ -292,7 +297,7 @@ export const ArtistDashboard: React.FC = () => {
         />
         <StatCard
           title="Messages non lus"
-          value="0"
+          value={String(unreadMessagesCount)}
           icon={MessageSquare}
           color="warning"
         />
