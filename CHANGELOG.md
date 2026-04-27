@@ -7,6 +7,41 @@ et ce projet adhère à [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.6.0] - 2026-02-19
+
+### 🚀 Ajouté
+
+#### Gestion des Demandes de Booking (Venue)
+- **Section "Demandes" dans la sidebar venue** : Nouveau lien dans la navigation avec badge indiquant le nombre de demandes en attente
+- **Page VenueBookingRequestsPage** : Liste des demandes envoyees avec filtres par statut (Toutes, En attente, Acceptees, Declinees, Annulees)
+- **Page BookingRequestEditPage** : Formulaire d'edition des demandes (date, type, duree, budget, message) avec renvoi automatique
+- **Endpoint PUT /booking-requests/:id** : Mise a jour d'une booking request par la venue proprietaire
+- **Modification et renvoi** : Si une demande etait declinee, la modification la repasse automatiquement en PENDING
+- **Message systeme** : Un message "Demande de booking modifiee par [Venue]" est cree dans la conversation existante
+- **Encart booking dans conversation** : Affichage du statut, duree et budget de la demande directement dans la page Messages avec lien vers l'edition
+
+#### Systeme de Messages Non-Lus
+- **Endpoint batch PUT /messages/read-all** : Marque tous les messages non-lus d'une conversation en une seule requete
+- **Marquage automatique** : Les messages sont automatiquement marques comme lus quand l'utilisateur ouvre une conversation
+- **Badge messages non-lus** : Le compteur dans la sidebar se met a jour en temps reel (polling 10s)
+- **Hook useMarkAllAsRead** : Appele dans MessageThread au mount et quand de nouveaux messages arrivent
+
+#### Landing Page
+- **Navbar sticky** : Barre de navigation fixe en haut de la landing page avec fond transparent + backdrop-blur
+- **CTAs Connexion/Inscription** : Boutons menant vers /login et /register
+
+### 🔧 Ameliore
+
+#### Backend
+- **UpdateBookingRequestDto** : Nouveau DTO avec validation class-validator pour la mise a jour des demandes
+- **Route ordering** : Endpoints correctement ordonnes dans les controllers NestJS pour eviter les conflits
+
+#### Frontend
+- **useBookingRequestStats** : Integre dans la sidebar venue pour afficher le badge de demandes en attente
+- **Cache invalidation** : Invalidation complete des caches TanStack Query apres modifications (messages, conversations, booking requests)
+
+---
+
 ## [0.5.0] - 2025-10-11
 
 ### 🚀 Ajouté
@@ -199,16 +234,33 @@ et ce projet adhère à [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## Prochaines Étapes (Roadmap)
 
-### Phase 5: Premium Features (En Planning)
-- [ ] Système de comptes premium/gratuit
-- [ ] Messagerie directe premium
-- [ ] Analytics avancées venues
-- [ ] Intégration paiements (Stripe)
-- [ ] Dashboard analytics artistes
+### Phase actuelle : Corrections critiques + Stripe (priorité absolue)
 
-### Features Futures
+#### 🔴 Bugs critiques à corriger
+- [ ] **DashboardRedirect** : Route `/` redirige toujours vers artiste peu importe le rôle
+- [ ] **ArtistDashboard** : "Messages non lus" hardcodé à 0, quick actions = console.log(), activités mockées, charts mockés
+- [ ] **Route /calendar** : ComingSoon — composants CalendarView existent mais pas branchés
+- [ ] **UpgradePrompt** : Bouton CTA Premium sans handler Stripe
+
+#### 🟡 À finir avant beta
+- [ ] Câbler iCal export dans l'UI (backend OK, pas de bouton)
+- [ ] Sécuriser endpoints admin validation-lead (TODO: ADMIN guard)
+- [ ] Formulaire profil venue (modèle DB existant, pas de form)
+- [ ] Brancher vraies données dans dashboard artiste
+
+#### Phase 5: Stripe + Premium (2 semaines)
+- [ ] Intégration paiements Stripe (webhook, subscription, mise à jour user.plan)
+- [ ] Système de comptes premium/gratuit (UI prête, paiement manquant)
+- [ ] Analytics artistes (route ComingSoon)
+- [ ] Dashboard analytics venues
+
+#### Features Futures (Phase 6+)
+- [ ] Admin panel (rôle ADMIN en DB sans UI)
+- [ ] Password change (Settings = suppression compte uniquement)
+- [ ] Browse Artists/Venues (routes ComingSoon)
+- [ ] Venue Events/Team (routes ComingSoon)
+- [ ] Drag & drop calendrier
 - [ ] Système de favoris
-- [ ] Comparaison d'artistes
 - [ ] Recommandations intelligentes
 - [ ] Système de vérification artistes
 - [ ] Feedback et ratings communautaires

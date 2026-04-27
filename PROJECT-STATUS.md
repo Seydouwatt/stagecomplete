@@ -10,25 +10,62 @@
 
 ### **MVP Artist Ecosystem : ✅ FONCTIONNEL (v1.0.0)**
 
-| Module                 | Status     | Progression | Tests    | Notes                                    |
-| ---------------------- | ---------- | ----------- | -------- | ---------------------------------------- |
-| 🔐 **Authentication**  | ✅ Complet | 100%        | ✅       | JWT + rôles (ARTIST/VENUE/MEMBER/ADMIN)  |
-| 👤 **Profiles System** | ✅ Complet | 100%        | ✅       | Universal + Artist profiles complets     |
-| 📅 **Calendar & Bookings** | ✅ Complet | 100%    | ✅       | Gestion calendrier artiste self-service  |
-| 🔍 **Search Engine**   | ✅ Complet | 95%         | 14/16 ✅ | Discovery artistes (feature secondaire)  |
-| 🎨 **Public Pages**    | ✅ Complet | 100%        | ✅       | SEO-optimized artist profiles            |
-| 📱 **Frontend UI**     | ✅ Complet | 100%        | ✅       | 120+ fichiers TS, responsive design      |
-| 🏗️ **Backend API**     | ✅ Complet | 100%        | ✅       | NestJS + Prisma + PostgreSQL             |
+| Module                      | Status      | Progression | Tests    | Notes                                                   |
+| --------------------------- | ----------- | ----------- | -------- | ------------------------------------------------------- |
+| 🔐 **Authentication**       | ✅ Complet  | 100%        | ✅       | JWT + rôles (ARTIST/VENUE/MEMBER/ADMIN)                 |
+| 👤 **Profiles System**      | ✅ Complet  | 100%        | ✅       | Universal + Artist profiles complets                    |
+| 📅 **Booking Self-Service** | ✅ Complet  | 100%        | ✅       | CRUD bookings + stats + iCal backend (export non câblé en UI) |
+| 🔍 **Search Engine**        | ✅ Complet  | 95%         | 14/16 ✅ | Discovery artistes (feature secondaire)                 |
+| 🎨 **Public Pages**         | ✅ Complet  | 100%        | ✅       | SEO-optimized artist profiles                           |
+| 📱 **Frontend UI**          | ✅ Complet  | 90%         | ✅       | 130+ fichiers TS — plusieurs routes ComingSoon          |
+| 🏗️ **Backend API**          | ✅ Complet  | 100%        | ✅       | NestJS + Prisma + PostgreSQL                            |
+| 📅 **Calendar UI**          | 🔄 Partiel  | 60%         | ⏳       | Composants Day/Week/Month/Year présents, route /calendar = ComingSoon + PremiumRoute |
 
-### **Premium Features : 🔄 EN DÉVELOPPEMENT (v1.1.0)**
+### **Venue Booking Management : ✅ COMPLET (v0.6.0)**
 
-| Module                     | Status      | Progression | Priorité  | ETA        |
-| -------------------------- | ----------- | ----------- | --------- | ---------- |
-| 💰 **Premium System**      | 🔄 En cours | 50%         | 🔥 High   | 1 semaine  |
-| 📥 **Calendar Export**     | 🔄 En cours | 80%         | 🔥 High   | 3 jours    |
-| 💬 **Direct Contact**      | 📋 Reporté  | 0%          | 🟡 Medium | Phase 2    |
-| 📊 **Analytics**           | 📋 Reporté  | 0%          | 🟡 Medium | Phase 2    |
-| 💳 **Payment Integration** | 📋 Planifié | 0%          | 🔥 High   | 2 semaines |
+| Module                           | Status     | Progression | Notes                                              |
+| -------------------------------- | ---------- | ----------- | -------------------------------------------------- |
+| 📋 **Gestion demandes venue**    | ✅ Complet | 100%        | Liste, edition, renvoi des demandes                |
+| 💬 **Messages non-lus**          | ✅ Complet | 100%        | Badge sidebar + marquage auto a l'ouverture        |
+| 🔗 **Booking dans conversation** | ✅ Complet | 100%        | Encart avec lien vers edition                      |
+| 🎯 **Landing navbar**            | ✅ Complet | 100%        | Navbar sticky avec CTAs Connexion/Inscription      |
+
+### **Premium Features : 🔄 UI SEULEMENT (v1.1.0 — sans paiement)**
+
+| Module                     | Status       | Progression | Priorité  | ETA        |
+| -------------------------- | ------------ | ----------- | --------- | ---------- |
+| 💰 **Premium UI**          | ✅ UI faite  | 50%         | 🔥 High   | —          |
+| 💳 **Stripe Integration**  | ❌ Non démarré | 0%        | 🔥 High   | 2 semaines |
+| 📅 **Calendar /calendar**  | ❌ ComingSoon | 0%         | 🔥 High   | 1 semaine  |
+| 📥 **iCal Export (UI)**    | ❌ Non câblé | 50%         | 🟡 Medium | 3 jours    |
+| 📊 **Analytics**           | ❌ ComingSoon | 0%         | 🟡 Medium | Phase 2    |
+
+---
+
+## ⚠️ **Bugs & Incohérences détectés (Analyse code — 27/04/2026)**
+
+### **Bugs confirmés dans le code :**
+
+| # | Fichier                       | Description                                                  | Impact   |
+| - | ----------------------------- | ------------------------------------------------------------ | -------- |
+| 1 | `AppRoutes.tsx:13-17`         | `DashboardRedirect` toujours vers `/artist/dashboard` quel que soit le rôle | Venues redirigées vers dashboard artiste |
+| 2 | `ArtistDashboard.tsx:266`     | "Messages non lus" hardcodé à `"0"` — pas branché sur `useUnreadMessagesCount` | Metric fausse |
+| 3 | `sharedRoutes.tsx:54-62`      | Route `/calendar` = `ComingSoon` + derrière `PremiumRoute` — les composants CalendarView existent mais sont inutilisés via cette route | Feature invisible |
+| 4 | `ArtistDashboard.tsx:43-68`   | Charts (revenus, genre, performance) = données mockées, aucune API | Données fausses affichées |
+| 5 | `ArtistDashboard.tsx:149-178` | `recentActivities` = tableau statique, aucun appel API | Activités fausses |
+| 6 | `ArtistDashboard.tsx:111-133` | Quick actions `onClick` = `console.log()` uniquement, pas de navigation | Boutons inactifs |
+| 7 | `UpgradePrompt.tsx:156`       | Bouton "Passer à Premium" sans `onClick` handler — aucune action Stripe | CTA mort |
+| 8 | `validation-lead.controller.ts:31,42` | `// TODO: Add role check for ADMIN` sur endpoints admin | Sécurité manquante |
+
+### **Pages en ComingSoon :**
+
+- `/calendar` — ComingSoon + PremiumRoute (composants CalendarView existent)
+- `/venue/profile` — ComingSoon (modèle Venue en DB, pas de formulaire)
+- `/venue/events` — ComingSoon
+- `/venue/team` — ComingSoon
+- `/browse/artists` — ComingSoon
+- `/browse/venues` — ComingSoon
+- `/artist/analytics` — ComingSoon
 
 ---
 
@@ -39,27 +76,31 @@
 - **109 commits** au total
 - **38 nouvelles fonctionnalités** (✨ feat)
 - **Rythme** : ~3.6 commits/jour
-- **Dernière mise à jour** : Optimisation recherche textuelle
+- **Dernière mise à jour** : 27/04/2026
 
 ### **Architecture Technique**
 
 ```
 Backend (stagecomplete-backend/)
 ├── src/
-│   ├── auth/          ✅ Complet (10 fichiers)
-│   ├── artist/        ✅ Complet (5 fichiers)
-│   ├── profile/       ✅ Complet (5 fichiers)
-│   ├── booking/       ✅ Complet (4 fichiers) [NOUVEAU]
-│   ├── public/        ✅ Complet (5 fichiers)
-│   ├── search/        ✅ Complet (6 fichiers)
-│   └── health/        ✅ Complet (5 fichiers)
+│   ├── auth/             ✅ Complet (15+ fichiers)
+│   ├── artist/           ✅ Complet (3 fichiers)
+│   ├── profile/          ✅ Complet (3 fichiers)
+│   ├── booking/          ✅ Complet (5 fichiers) - CRUD + calendar + stats + iCal export
+│   ├── booking-request/  ✅ Complet (5 fichiers) - CRUD + update + respond
+│   ├── message/          ✅ Complet (5 fichiers) - CRUD + read-all batch + unread count
+│   ├── notification/     ✅ Complet (5 fichiers)
+│   ├── public/           ✅ Complet (3 fichiers)
+│   ├── search/           ✅ Complet (6 fichiers)
+│   ├── validation-lead/  ✅ Complet (4 fichiers) - Lean Startup lead capture
+│   └── health/           ✅ Complet (3 fichiers)
 │
 Frontend (stagecomplete-frontend/)
-├── src/components/    ✅ 15 catégories organisées
-├── src/pages/         ✅ 11 pages principales (+bookings)
-├── src/hooks/         ✅ 8 hooks custom
-├── src/services/      ✅ 11 services API (+bookingService)
-└── src/stores/        ✅ 5 stores Zustand
+├── src/components/    ✅ 20+ categories organisees
+├── src/pages/         ✅ 18 pages + landing pages (plusieurs avec ComingSoon)
+├── src/hooks/         ✅ 9 fichiers hooks (useMarkAllAsRead + useUpdateBookingRequest dans useMessages/useBookingRequests)
+├── src/services/      ✅ 13 services API
+└── src/stores/        ✅ 2 stores Zustand (authStore + useToastStore)
 ```
 
 ### **Couverture Tests**
@@ -72,71 +113,96 @@ Frontend (stagecomplete-frontend/)
 
 ## 🎯 **Fonctionnalités Clés Développées**
 
-### ✅ **SEARCH & DISCOVERY** (Récemment complété)
+### ✅ **SEARCH & DISCOVERY**
 
 - **Recherche intelligente** : Tolérance fautes, normalisation accents
 - **Filtres avancés** : Multi-critères avec persistance URL
 - **Suggestions** : Auto-complétion + recherche floue
 - **Performance** : Debouncing, lazy loading, optimisations SQL
 
-### ✅ **ARTIST EXPERIENCE** (Récemment amélioré)
+### ✅ **ARTIST EXPERIENCE**
 
 - **Copy Bio** : Partage facile du contenu artistique
 - **Download Portfolio** : Téléchargement avec nommage automatique
 - **Public Profiles** : Pages SEO /artist/:slug optimisées
 - **Portfolio Management** : Gestion multi-média avancée (5 photos gratuit, illimité premium)
 
-### ✅ **CALENDAR & BOOKING MANAGEMENT** (Nouveau - En cours)
+### ✅ **BOOKING SELF-SERVICE (Artiste)**
 
-- **Calendar artiste** : Vue mensuelle et liste de tous les bookings
-- **Gestion bookings self-service** : CRUD complet (création, modification, suppression)
-- **Bookings illimités gratuit** : Pas de limite pour artistes free
-- **Export calendrier** : iCal + Google Calendar (feature premium)
+- **Calendar artiste** : Vue mensuelle et liste via BookingsPageUnified (/artist/bookings)
+- **Gestion bookings** : CRUD complet (création, modification, suppression)
+- **iCal export** : Backend `GET /bookings/export/ical` fonctionnel — non câblé en UI
 - **Filtres & stats** : Tri par date, statut, type + statistiques
-- **Notes privées & tags** : Organisation personnalisée des bookings
+- **Notes privées & tags** : Organisation personnalisée
 
-### ✅ **TECHNICAL FOUNDATION** (Mature)
+### ✅ **VENUE BOOKING REQUEST MANAGEMENT (v0.6.0)**
 
-- **Authentication** : JWT sécurisé avec refresh tokens
-- **Database** : Schema Prisma optimisé (20+ modèles)
-- **API** : RESTful + WebSocket temps réel
-- **Frontend** : Architecture React moderne (Zustand + TanStack Query)
+- **Section "Demandes" sidebar** : Badge demandes en attente
+- **Liste des demandes** : Filtres par statut
+- **Edition des demandes** : Modification et renvoi avec message systeme
+- **Encart booking dans conversation** : Statut, duree, budget + lien edition
+- **Messages non-lus** : Badge + marquage auto batch
+
+### ✅ **MESSAGERIE**
+
+- **Conversations** : Liste par event avec polling 5s
+- **MessageThread** : Chat complet avec mark-all-as-read auto au mount
+- **Compteur non-lus** : Polling 10s dans la sidebar
+
+### ✅ **LEAD CAPTURE (Lean Startup)**
+
+- **ValidationLead** : Capture leads artistes + venues depuis landing pages
+- **Backend admin** : CRUD complet avec statuts et scoring (TODO: sécuriser avec rôle ADMIN)
+- **Landing pages** : ArtistLandingPage + VenueLandingPage avec formulaires
 
 ---
 
-## 📋 **Prochaines Étapes (Focus Artist-First)**
+## 📋 **Reste à Faire — Priorités**
 
-### **Phase Actuelle : Artist Calendar & Premium** (2-3 semaines)
+### **🔥 CRITIQUE (blockers)**
 
-#### **🔥 PRIORITÉ IMMÉDIATE (Cette semaine)**
+1. **Stripe Integration** (0%) — Le bouton "Passer à Premium" n'a aucune action
+   - Ajouter webhook Stripe, endpoint `/payments/subscribe`, mise à jour `user.plan`
+   - ~2 semaines
 
-1. **Finaliser Calendar & Bookings** (3-4 jours)
-   - ✅ Backend API bookings complet
-   - ✅ Frontend pages BookingsList + BookingForm
-   - ✅ Export iCal/Google Calendar
-   - ⏳ Vue calendrier mensuelle interactive
-   - ⏳ Intégration dans dashboard artiste
+2. **Fix DashboardRedirect** (bug) — Route `/` redirige toujours vers artiste
+   - Lire le rôle de l'user et rediriger vers `/artist/dashboard` ou `/venue/dashboard`
+   - ~30 minutes
 
-2. **Système Premium Artistes** (2-3 jours)
-   - ✅ Schema User.plan (FREE/PREMIUM)
-   - ✅ Hook usePremiumFeatures (5 photos gratuit)
-   - ⏳ Page tarification (9€/mois premium)
-   - ⏳ Limitations export calendrier (premium only)
+3. **Câbler la route /calendar** — Les composants CalendarView existent mais la route est ComingSoon
+   - Remplacer ComingSoon par CalendarView dans sharedRoutes.tsx
+   - Décider si vraiment premium-only ou accessible à tous
+   - ~1 journée
 
-#### **🟡 PRIORITÉ MOYENNE (Phase 2 - Après MVP)**
+### **🟡 IMPORTANT (avant beta)**
 
-3. **Payment Integration Stripe** (2 sem) - Planifié
-   - Abonnements récurrents 9€/mois artistes
-   - Période d'essai 14 jours
-   - Dashboard admin paiements
+4. **iCal Export UI** — Backend exist, pas de bouton dans BookingsPageUnified
+   - Ajouter bouton "Exporter .ics" dans la page bookings artiste
+   - ~2h
 
-4. **Venues Discovery** (2 sem) - Reporté
-   - Annuaire venues consultation gratuite
-   - Pas de création compte venue pour l'instant
+5. **Artist Dashboard : brancher les vraies données**
+   - Messages non lus : remplacer `"0"` par `useUnreadMessagesCount`
+   - Recent activities : appel API réel (conversations récentes)
+   - Quick actions : navigation réelle
+   - ~1 journée
 
-5. **Contact System** (2 sem) - Reporté
-   - Messagerie venue ↔ artiste (avec venues)
-   - Reporté à Phase 2
+6. **Sécuriser les endpoints admin** (validation-lead)
+   - Ajouter vérification rôle ADMIN dans le contrôleur
+   - ~1h
+
+7. **Venue Profile Form** — Le modèle Venue existe en DB, pas de page pour remplir les infos
+   - Formulaire basique (type venue, capacité, équipement)
+   - ~2 jours
+
+### **🟢 NICE TO HAVE (Phase 2)**
+
+8. **Analytics artiste** — Route ComingSoon, données mocked dans dashboard
+9. **Admin Panel** — Rôle ADMIN existant sans UI
+10. **Password change** — Settings n'a que la suppression de compte
+11. **Browse Artists/Venues** — Routes ComingSoon
+12. **Venue Events/Team** — Routes ComingSoon
+13. **Drag & drop calendrier**
+14. **Charts dashboard avec vraies données API**
 
 ---
 
@@ -144,83 +210,31 @@ Frontend (stagecomplete-frontend/)
 
 ### **Technical Debt**
 
+- 🔴 **Stripe** : Zéro intégration paiement — bloque la monétisation
+- 🟡 **Mock data** : Charts + activités récentes dans ArtistDashboard = données statiques
 - 🟡 **Tests E2E** : 2 tests en échec à corriger
 - 🟡 **File Upload** : Migration base64 → S3/CDN à planifier
-- 🟡 **Performance** : Optimisations DB pour montée en charge
+- 🟡 **Admin security** : Endpoints validation-lead manquent guard ADMIN
 
 ### **Business Model**
 
-Modèle artist-first simplifié :
 - 🟢 **Gratuit Artiste** : Bookings illimités + 5 photos portfolio
-- 🟢 **Premium Artiste 9€/mois** : Portfolio illimité + export calendrier + badge Pro
-- 🟡 **Venues** : Phase 2 (annuaire découverte gratuit pour l'instant)
-- 🟡 **Monetization** : Premium artiste en développement (paiement Stripe à venir)
-
-### **Business Risks**
-
-- 🟡 **Payment Integration** : Stripe pas encore implémenté (2 semaines)
-- 🟡 **User Acquisition** : Focus acquisition artistes d'abord
-- 🟡 **Competition** : Bandsintown, Setlist.fm - besoin USP forte
-
-### **Opportunités**
-
-- 🟢 **MVP rapide** : Calendrier + bookings = valeur immédiate artistes
-- 🟢 **Adoption simple** : Pas de dépendance venues pour lancer
-- 🟢 **Artist-first** : Focus sur expérience artiste parfaite
-- 🟢 **SEO Ready** : Pages publiques optimisées pour découverte
-- 🟢 **Scalability** : Architecture prête pour croissance
-
----
-
-## 🎊 **Succès & Réalisations**
-
-### **🏆 MVP Fonctionnel en 4 sprints**
-
-- ✅ Authentification complète multi-rôles
-- ✅ Écosystème artiste complet et moderne
-- ✅ Recherche avancée avec IA simple (fuzzy matching)
-- ✅ Interface utilisateur professionnelle et responsive
-- ✅ Pages publiques SEO-optimisées
-- ✅ Architecture technique scalable et maintenu
-
-### **📊 Métriques Techniques Excellentes**
-
-- ✅ 87.5% de couverture tests E2E
-- ✅ 109 commits en 1 mois (rythme soutenu)
-- ✅ Architecture modulaire (15+ modules organisés)
-- ✅ Performance optimisée (debouncing, lazy loading)
+- 🟢 **Premium Artiste 9€/mois** : UI prête, MAIS paiement Stripe non implémenté
+- 🟡 **Venues** : Pas de profil venue créable via l'interface
+- 🔴 **Monétisation** : Bloquée par l'absence de Stripe
 
 ---
 
 ## 🗓️ **Timeline vers Production**
 
-```mermaid
-gantt
-    title StageComplete - MVP Artist Calendar
-    dateFormat  YYYY-MM-DD
-    section Completed
-    Foundation & Auth     :done, 2025-09-01, 1w
-    Profiles & Browse     :done, 2025-09-08, 1w
-    Search & Discovery    :done, 2025-09-22, 1w
+### **🎯 Objectif : Beta Launch artistes (dans 2-3 semaines)**
 
-    section Current Sprint
-    Calendar & Bookings   :active, cal, 2025-10-06, 1w
-
-    section Next Steps
-    Premium System        :premium, after cal, 3d
-    Testing & Polish      :test, after premium, 4d
-    Beta Launch          :beta, after test, 1w
-```
-
-### **🎯 Objectif : MVP Artist Calendar d'ici 3 semaines**
-
-- **13 octobre 2025** : Calendar & Bookings fonctionnel
-- **16 octobre 2025** : Premium system implémenté
-- **20 octobre 2025** : Tests & polish
-- **27 octobre 2025** : Beta launch artistes
+- **Semaine 1** : Fix bugs critiques (dashboard redirect, calendar route, iCal UI, dashboard data réelles)
+- **Semaine 2** : Stripe integration + sécurité admin
+- **Semaine 3** : Tests, polish, venue profile basique, beta launch
 
 ---
 
-**Dernière mise à jour :** 6 octobre 2025
-**Statut global :** ✅ MVP Calendar Artist fonctionnel, 🔄 Premium features en cours
-**Confiance production :** 🟢 Élevée (foundation solide + calendar opérationnel)
+**Dernière mise à jour :** 27 avril 2026 (analyse complète du code)
+**Statut global :** ✅ Backend API complet | ✅ Booking management | ⚠️ Bugs UI à corriger | ❌ Paiement non implémenté
+**Confiance production :** 🟡 Moyenne (backend solide, UI avec plusieurs TODOs critiques)

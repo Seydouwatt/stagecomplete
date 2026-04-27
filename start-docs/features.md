@@ -16,22 +16,27 @@
 - 🔴 **Learning continu** : Plus vous l'utilisez, plus c'est précis
 - 🟢 **Filtres avancés** : Date, budget, genre, disponibilité, distance (14/16 tests ✅)
 
-### **📅 Booking Management Avancé** (60% complété)
+### **📅 Booking Management Avancé** (75% complété)
 
 - 🟢 **Calendrier unifié** : Vue ensemble événements (CalendarView ✅)
 - 🟢 **Booking requests** : Demandes de réservation complètes (PENDING → ACCEPTED ✅)
 - 🟢 **Gestion des statuts** : PENDING, VIEWED, ACCEPTED, DECLINED, CANCELLED, EXPIRED
+- 🟢 **Edition demandes venue** : Modification et renvoi avec message systeme (PUT /booking-requests/:id ✅)
+- 🟢 **Section Demandes venue** : Page dediee avec filtres par statut + badge sidebar ✅
+- 🟢 **Encart booking conversation** : Affichage demande dans le thread de messages ✅
 - 🔴 **Gestion multi-scènes** : Plusieurs espaces/scènes dans une même venue
 - 🔴 **Planification long-terme** : Vue 12 mois avec suggestions saisonnières
 - 🔴 **Sync calendriers** : Google, Outlook, Apple Calendar bidirectionnel
 
-### **📞 Contact & Communication** (70% complété)
+### **📞 Contact & Communication** (85% complété)
 
 - 🟢 **Messagerie intégrée** : Chat pour bookings événementiels (Messages module ✅)
-- 🔴 **Templates messages** : Réponses pré-écrites personnalisables ⏸️ Phase 5
+- 🟢 **Messages non-lus** : Badge temps reel dans sidebar + marquage auto a l'ouverture (batch PUT /messages/read-all ✅)
 - 🟢 **Suivi conversations** : Historique complet échanges par événement
+- 🟢 **Messages systeme** : Notifications auto dans conversation lors de modifications booking ✅
 - 🟢 **Notifications push** : Alertes booking requests, réponses (5 types ✅)
 - 🟢 **BookingRequestModal** : Formulaire validation (date, type, durée, budget, message ✅)
+- 🔴 **Templates messages** : Réponses pré-écrites personnalisables ⏸️ Phase 5
 - 🔴 **Multi-contacts** : Gestion artiste + manager + agent simultané ⏸️ Phase 5
 
 ---
@@ -252,6 +257,16 @@
 - 🔴 **White label** personnalisé ⏸️
 - 🔴 **Formation équipe** incluse ⏸️
 
+### **⚠️ État réel du code (Analyse 27/04/2026) :**
+
+- **DashboardRedirect bug** : Route `/` redirige toujours vers artiste même pour les venues
+- **Calendar route** : `/calendar` = ComingSoon + PremiumRoute — les composants CalendarView existent mais ne sont pas branchés dans les routes
+- **iCal export** : Backend OK (`GET /bookings/export/ical`) — pas de bouton UI
+- **UpgradePrompt** : Bouton CTA n'a aucun handler Stripe — mort
+- **ArtistDashboard** : Charts et activités récentes = données statiques, "Messages non lus" hardcodé à 0
+- **Admin security** : Endpoints validation-lead manquent le guard ADMIN (TODO dans le code)
+- **Venue Profile** : Modèle en DB, pas de formulaire de création dans l'UI
+
 ### **✅ MVP Fonctionnel (Déployé 11/10/2025) :**
 
 - **Recherche temps réel** avec debouncing (700ms suggestions, 300ms résultats)
@@ -264,6 +279,13 @@
 - **Calendrier événements** avec vue unifiée
 - **3 migrations Prisma** déployées en production
 - **Architecture modulaire** (NestJS + React + PostgreSQL)
+
+### **✅ Venue Booking Management (v0.6.0 - 19/02/2026) :**
+
+- **Gestion demandes venue** : Liste, edition, renvoi avec message systeme
+- **Messages non-lus** : Badge sidebar + marquage automatique batch
+- **Encart booking dans conversation** : Statut, duree, budget + lien edition
+- **Landing page navbar** : Navigation sticky avec CTAs Connexion/Inscription
 
 ### **VS Concurrence :**
 
