@@ -6,6 +6,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as express from 'express';
 
 async function bootstrap() {
+  console.log('🚀 BOOTSTRAP START');
+
   const app = await NestFactory.create(AppModule, {
     bodyParser: false,
   });
@@ -35,8 +37,13 @@ async function bootstrap() {
         console.log('🚨 [VALIDATION ERROR] Erreurs détectées:');
         errors.forEach((error) => {
           console.log(`  - Champ: "${error.property}"`);
-          console.log(`    Valeur reçue: ${typeof error.value} (length: ${error.value?.length || 'N/A'})`);
-          console.log(`    Contraintes échouées:`, Object.keys(error.constraints || {}));
+          console.log(
+            `    Valeur reçue: ${typeof error.value} (length: ${error.value?.length || 'N/A'})`,
+          );
+          console.log(
+            `    Contraintes échouées:`,
+            Object.keys(error.constraints || {}),
+          );
           Object.entries(error.constraints || {}).forEach(([key, msg]) => {
             console.log(`      • ${key}: ${msg}`);
           });
@@ -105,6 +112,7 @@ async function bootstrap() {
   });
 
   const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  console.log('🔥 BEFORE LISTEN');
   await app.listen(port, '0.0.0.0');
 
   console.log(`🚀 Server running on http://localhost:${port}/api`);
