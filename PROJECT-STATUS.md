@@ -46,16 +46,16 @@
 
 ### **Bugs confirmés dans le code :**
 
-| # | Fichier                       | Description                                                  | Impact   |
-| - | ----------------------------- | ------------------------------------------------------------ | -------- |
-| 1 | `AppRoutes.tsx:13-17`         | `DashboardRedirect` toujours vers `/artist/dashboard` quel que soit le rôle | Venues redirigées vers dashboard artiste |
-| 2 | `ArtistDashboard.tsx:266`     | "Messages non lus" hardcodé à `"0"` — pas branché sur `useUnreadMessagesCount` | Metric fausse |
-| 3 | `sharedRoutes.tsx:54-62`      | Route `/calendar` = `ComingSoon` + derrière `PremiumRoute` — les composants CalendarView existent mais sont inutilisés via cette route | Feature invisible |
-| 4 | `ArtistDashboard.tsx:43-68`   | Charts (revenus, genre, performance) = données mockées, aucune API | Données fausses affichées |
-| 5 | `ArtistDashboard.tsx:149-178` | `recentActivities` = tableau statique, aucun appel API | Activités fausses |
-| 6 | `ArtistDashboard.tsx:111-133` | Quick actions `onClick` = `console.log()` uniquement, pas de navigation | Boutons inactifs |
-| 7 | `UpgradePrompt.tsx:156`       | Bouton "Passer à Premium" sans `onClick` handler — aucune action Stripe | CTA mort |
-| 8 | `validation-lead.controller.ts:31,42` | `// TODO: Add role check for ADMIN` sur endpoints admin | Sécurité manquante |
+| # | Fichier                       | Description                                                  | Impact   | Statut |
+| - | ----------------------------- | ------------------------------------------------------------ | -------- | ------ |
+| 1 | `AppRoutes.tsx:13-17`         | `DashboardRedirect` toujours vers `/artist/dashboard` quel que soit le rôle | Venues redirigées vers dashboard artiste | ⚠️ Mineur — le login redirige déjà correctement |
+| 2 | `ArtistDashboard.tsx`         | "Messages non lus" hardcodé à `"0"` | Metric fausse | ✅ Corrigé v0.6.1 |
+| 3 | `sharedRoutes.tsx:54-62`      | Route `/calendar` = `ComingSoon` + derrière `PremiumRoute` | Feature invisible | ❌ À faire |
+| 4 | `ArtistDashboard.tsx`         | Charts (revenus, genre, performance) = données mockées | Données fausses | ❌ Phase 2 |
+| 5 | `ArtistDashboard.tsx`         | `recentActivities` = tableau statique | Activités fausses | ✅ Corrigé v0.6.1 |
+| 6 | `ArtistDashboard.tsx`         | Quick actions `onClick` = `console.log()` | Boutons inactifs | ✅ Corrigé v0.6.1 |
+| 7 | `UpgradePrompt.tsx:156`       | Bouton "Passer à Premium" sans handler Stripe | CTA mort | ❌ Bloqué par Stripe |
+| 8 | `validation-lead.controller.ts` | `// TODO: Add role check for ADMIN` | Sécurité manquante | ❌ À faire |
 
 ### **Pages en ComingSoon :**
 
@@ -235,6 +235,6 @@ Frontend (stagecomplete-frontend/)
 
 ---
 
-**Dernière mise à jour :** 27 avril 2026 (analyse complète du code)
-**Statut global :** ✅ Backend API complet | ✅ Booking management | ⚠️ Bugs UI à corriger | ❌ Paiement non implémenté
-**Confiance production :** 🟡 Moyenne (backend solide, UI avec plusieurs TODOs critiques)
+**Dernière mise à jour :** 27 avril 2026 (v0.6.1 — fix dashboard artiste)
+**Statut global :** ✅ Backend API complet | ✅ Booking management | ✅ Dashboard artiste corrigé | ❌ Paiement non implémenté
+**Confiance production :** 🟡 Moyenne (backend solide, route /calendar et Stripe restants)

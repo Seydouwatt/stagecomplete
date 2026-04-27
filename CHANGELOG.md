@@ -7,6 +7,25 @@ et ce projet adhère à [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.6.1] - 2026-04-27
+
+### 🐛 Corrigé
+
+#### Dashboard Artiste
+- **Messages non lus** : La stat card affichait toujours "0" — branchée sur `useUnreadMessagesCount()` avec polling 10s
+- **Quick actions inactives** : Les `onClick` étaient des `console.log()` — remplacés par de la vraie navigation (`useNavigate`) :
+  - "Nouvel événement" → `/artist/bookings/new`
+  - "Trouver des venues" → `/browse`
+  - "Upload contenu" → `/artist/portfolio`
+  - "Paramètres" → `/settings`
+  - "Voir ma fiche publique" → ouvre `/artist/:slug` dans un nouvel onglet (fallback portfolio si non publié)
+- **Activités récentes mockées** : Remplacées par les vraies conversations via `useConversations()`, cohérent avec le VenueDashboard
+
+#### Divers
+- Suppression du fichier `BIS2026-Exposants.md` hors projet
+
+---
+
 ## [0.6.0] - 2026-02-19
 
 ### 🚀 Ajouté
