@@ -2,8 +2,5 @@
   "scripts": {
     "build": "cd stagecomplete-backend && npm install && npm run build",
     "start": "cd stagecomplete-backend && npm run start"
-  },
-  "dependencies": {
-    "claude-code": "^0.0.2"
   }
 }
